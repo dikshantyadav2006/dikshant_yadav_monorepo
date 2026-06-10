@@ -42,7 +42,7 @@ export default function RootLayout({
               <div className="mx-auto flex max-w-6xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                 {/* Logo */}
                 <a href="/" className="flex items-center gap-2 group">
-                  <span className="h-6.5 w-6.5 rounded-lg bg-gradient-to-br from-accent to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-glow-primary group-hover:scale-105 transition-all">
+                  <span className="size-7 rounded-full bg-gradient-to-br from-accent to-indigo-500 flex items-center justify-center text-white font-bold leading-none">
                     D
                   </span>
                   <span className="font-bold tracking-tight text-foreground/90 group-hover:text-foreground transition-colors">

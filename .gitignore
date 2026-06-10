@@ -1,26 +1,80 @@
+# ──────────────────────────────────────────
+# Dependencies
+# ──────────────────────────────────────────
 node_modules/
+.pnp
+.pnp.js
+
+# ──────────────────────────────────────────
+# Build outputs
+# ──────────────────────────────────────────
 dist/
-/.cache
-/.vite
+build/
+out/
+.next/
+**/.next/
+apps/**/dist/
+packages/**/dist/
+types/**/dist/
+
+# ──────────────────────────────────────────
+# Cache (ALL levels)
+# ──────────────────────────────────────────
+.cache/
+**/.cache/
+.vite/
+**/.vite/
+.turbo/
+**/.turbo/
+.swc/
+**/.swc/
+*.tsbuildinfo
+next-env.d.ts
+
+# ──────────────────────────────────────────
+# Environment variables (never commit)
+# ──────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+
+# ──────────────────────────────────────────
+# Logs
+# ──────────────────────────────────────────
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+
+# ──────────────────────────────────────────
+# Lock files (managed by workspace root only)
+# ──────────────────────────────────────────
 package-lock.json
-/.turbo
-/.env
-.env.local
-.env.*.local
+yarn.lock
+pnpm-lock.yaml
+
+# ──────────────────────────────────────────
+# OS & editor artifacts
+# ──────────────────────────────────────────
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 .history/
-/*.zip
-/.cache/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ──────────────────────────────────────────
+# Misc
+# ──────────────────────────────────────────
 coverage/
-build/
-types/**/dist
-packages/**/dist
-apps/**/dist
 *.tgz
+*.zip
