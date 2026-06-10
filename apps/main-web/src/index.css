@@ -1,0 +1,165 @@
+@font-face {
+  font-family: "font-p-1";
+  src: url("./assets/fonts/font-portfolio-f1.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "font-p-2";
+  src: url("./assets/fonts/font-portfolio-f2.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "font-p-3";
+  src: url("./assets/fonts/font-portfolio-f3.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "font-p-4";
+  src: url("./assets/fonts/font-portfolio-f4.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-color: #121315;
+  --light-color: #EEF4F4;
+  --courser-color: #1d1e20;
+ /*  */
+  --primary-dark-color: #232427;
+  --primary-light-color: #bbc5c5;
+
+  /*  */
+  --secondary-dark-color: #3a3b3d;
+  --secondary-light-color: #909595;
+
+  /*  */
+  --tertiary-dark-color:#120222;
+  --tertiary-light-color:#8dc8db;
+
+  /*  */
+
+  --color-deep-charcoal: #1F1F1F;     /* Very dark grey, excellent for backgrounds */
+  --color-graphite-grey: #2C2C2E;     /* Rich neutral, ideal for secondary dark layers */
+  --color-soft-silver: #E5E5E5;       /* Subtle light grey, good for light mode backgrounds */
+  --color-cloud-white: #F2F2F7;
+}
+
+@font-face {
+  font-family: "boldtext";
+  src: url("./assets/fonts/bold.ttf");
+}
+
+@font-face {
+  font-family: "normaltext";
+  src: url("./assets/fonts/normal.ttf");
+}
+
+@font-face {
+  font-family: "text1";
+  src: url('./assets/fonts/Bigger-Display.woff2');
+}
+
+@font-face {
+  font-family: "Oswald";
+  src: url('./assets/fonts/Oswald-Bold.otf');
+}
+
+
+*::selection{
+  background: var(--dark-color);
+  color: var(--light-color);
+}
+
+* {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Hides scrollbar */
+}
+
+
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Cube Faces */
+.front  { transform: rotateY(0deg) translateZ(40px); }
+.back   { transform: rotateY(180deg) translateZ(40px); }
+.right  { transform: rotateY(90deg) translateZ(40px); }
+.left   { transform: rotateY(-90deg) translateZ(40px); }
+.top    { transform: rotateX(90deg) translateZ(40px); }
+.bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+.noise canvas,
+.noise svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+/* Smooth Scroll Optimization */
+html {
+  max-width: 100vw;
+  /* overflow-x: hidden; */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* Locomotive Scroll Optimization */
+.locomotive-scroll-container {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+[data-scroll-container] {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* GPU Acceleration for scroll animations */
+[data-scroll] {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+@media (pointer: coarse) {
+  .custom-cursor,
+  .mouse-follower,
+  .splash-cursor {
+    display: none !important;
+  }
+}

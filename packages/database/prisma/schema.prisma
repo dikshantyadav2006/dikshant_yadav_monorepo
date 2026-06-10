@@ -1,0 +1,234 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum ContentFormat {
+  MARKDOWN
+  MDX
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  INSIGHTFUL
+  FIRE
+}
+
+enum MediaType {
+  IMAGE
+}
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  email            String    @unique
+  name             String
+  passwordHash     String
+  role             Role      @default(ADMIN)
+  avatarUrl        String?
+  refreshTokenHash String?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  posts     Post[]
+  media     Media[]
+  bookmarks Bookmark[]
+
+  @@map("users")
+}
+
+model Post {
+  id              String      @id @default(uuid()) @db.Uuid
+  authorId        String      @db.Uuid
+  categoryId      String?     @db.Uuid
+  featuredImageId String?     @db.Uuid
+  ogImageId       String?     @db.Uuid
+  title           String
+  slug            String      @unique
+  excerpt         String?
+  status          PostStatus  @default(DRAFT)
+  featured        Boolean     @default(false)
+  readingTime     Int         @default(1)
+  toc             Json?
+  seoTitle        String?
+  seoDescription  String?
+  canonicalUrl    String?
+  noIndex         Boolean     @default(false)
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  author        User         @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  category      Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  featuredImage Media?       @relation("PostFeaturedImage", fields: [featuredImageId], references: [id], onDelete: SetNull)
+  ogImage       Media?       @relation("PostOgImage", fields: [ogImageId], references: [id], onDelete: SetNull)
+  content       PostContent?
+  tags          PostTag[]
+  views         View[]
+  reactions     Reaction[]
+  bookmarks     Bookmark[]
+
+  @@index([status, publishedAt])
+  @@index([featured, status])
+  @@index([categoryId, status])
+  @@index([authorId])
+  @@index([scheduledAt])
+  @@map("posts")
+}
+
+model PostContent {
+  id            String        @id @default(uuid()) @db.Uuid
+  postId        String        @unique @db.Uuid
+  format        ContentFormat @default(MDX)
+  body          String
+  compiledBody  String?
+  plainText     String?
+  searchVector  Unsupported("tsvector")?
+  contentHash   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([searchVector], type: Gin)
+  @@map("post_contents")
+}
+
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  description String?
+  seoTitle    String?
+  seoDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts Post[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+model Tag {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts PostTag[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+model PostTag {
+  postId    String   @db.Uuid
+  tagId     String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+  @@map("post_tags")
+}
+
+model Media {
+  id             String    @id @default(uuid()) @db.Uuid
+  uploadedById   String    @db.Uuid
+  type           MediaType @default(IMAGE)
+  key            String    @unique
+  bucket         String
+  publicUrl      String
+  fileName       String
+  contentType    String
+  size           Int
+  width          Int?
+  height         Int?
+  alt            String?
+  blurDataUrl    String?
+  dominantColor  String?
+  responsiveMeta Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  uploadedBy          User   @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  featuredImagePosts  Post[] @relation("PostFeaturedImage")
+  ogImagePosts        Post[] @relation("PostOgImage")
+
+  @@index([uploadedById])
+  @@index([createdAt])
+  @@map("media")
+}
+
+model View {
+  id          String   @id @default(uuid()) @db.Uuid
+  postId      String?  @db.Uuid
+  path        String
+  visitorHash String
+  referrer    String?
+  country     String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  post Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([postId, createdAt])
+  @@index([visitorHash, createdAt])
+  @@index([path, createdAt])
+  @@map("views")
+}
+
+model Reaction {
+  id          String       @id @default(uuid()) @db.Uuid
+  postId      String       @db.Uuid
+  type        ReactionType
+  visitorHash String
+  createdAt   DateTime     @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, visitorHash, type])
+  @@index([postId, type])
+  @@map("reactions")
+}
+
+model Bookmark {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @db.Uuid
+  userId    String?  @db.Uuid
+  visitorHash String?
+  createdAt DateTime @default(now())
+
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([visitorHash])
+  @@map("bookmarks")
+}
+

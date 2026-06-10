@@ -1,0 +1,13 @@
+{
+  "name": "@dikshant/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"]
+  ,
+  "scripts": {
+    "build": "npx esbuild src/index.js --bundle --outdir=dist --format=esm --target=es2017 --sourcemap"
+  }
+}
