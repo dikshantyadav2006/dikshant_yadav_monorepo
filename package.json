@@ -9,9 +9,11 @@
   "scripts": {
     "dev:main": "npm --workspace @dikshant/main-web run dev",
     "dev:post": "npm --workspace @dikshant/post-web run dev",
+    "dev:admin": "npm --workspace @dikshant/admin-web run dev",
     "dev:api": "npm --workspace @dikshant/api run dev",
     "build": "npm --workspace @dikshant/ui run build && npm --workspace @dikshant/shared run build && npm --workspace @dikshant/types run build && npm --workspace @dikshant/main-web run build && npm --workspace @dikshant/post-web run build && npm --workspace @dikshant/api run build",
     "lint": "npm --workspace @dikshant/main-web run lint && npm --workspace @dikshant/post-web run lint",
-    "generate:prisma": "npm --workspace @dikshant/database run generate"
+    "generate:prisma": "npm --workspace @dikshant/database run generate",
+    "db:push": "npm --workspace @dikshant/database run db:push"
   }
 }

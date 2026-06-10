@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DEV_DATABASE_URL } from './defaults.js';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -18,5 +19,5 @@ export type Env = z.infer<typeof envSchema>;
 export const env = envSchema.parse({
   ...process.env,
   // Fallbacks if not defined, to prevent startup crashes in development
-  DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/dikshant_db?schema=public',
+  DATABASE_URL: process.env.DATABASE_URL || DEV_DATABASE_URL,
 });

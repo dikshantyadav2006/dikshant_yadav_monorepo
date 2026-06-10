@@ -1,3 +1,4 @@
+import './load-env.js';
 import { buildApp } from './app.js';
 import { env } from './config/env.js';
 import { AuthService } from './services/auth.service.js';
