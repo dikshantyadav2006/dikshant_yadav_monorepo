@@ -20,7 +20,7 @@ export function HomePostList({ initialPosts, categories }: PostListProps) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
+    isPending,
   } = useInfiniteQuery({
     queryKey: ['posts-list', selectedCategory],
     queryFn: async ({ pageParam = 1 }) => {
@@ -86,7 +86,7 @@ export function HomePostList({ initialPosts, categories }: PostListProps) {
       </div>
 
       {/* Grid of posts */}
-      {status === 'pending' && selectedCategory !== 'all' ? (
+      {isPending && selectedCategory !== 'all' ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-[380px] w-full rounded-2xl border border-border bg-card/60 animate-pulse" />

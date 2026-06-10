@@ -55,12 +55,13 @@ export const mdxComponents = {
   pre: ({ children, ...props }: any) => {
     // Check if the pre element wraps a code tag
     if (React.isValidElement(children) && children.type === 'code') {
-      return <CodeBlock {...props}>{children.props.children}</CodeBlock>;
+      const codeElement = children as React.ReactElement<any>;
+      return <CodeBlock {...props}>{codeElement.props.children}</CodeBlock>;
     }
     return <pre className="my-6 p-4 bg-muted/40 rounded-xl overflow-auto" {...props}>{children}</pre>;
   },
   code: ({ children, ...props }: any) => (
-    <code className="rounded bg-muted/80 px-1.5 py-0.5 font-mono text-[13px] text-accent font-semibold" {...props}>
+    <code className="rounded bg-muted/80 px-1.5 py-0.5 font-mono text-[13px] text-accent font-semibold border border-border/10" {...props}>
       {children}
     </code>
   ),
@@ -73,10 +74,10 @@ export const mdxComponents = {
     return (
       <h2
         id={id}
-        className="group relative scroll-mt-24 mt-10 mb-4 text-xl font-bold tracking-tight text-foreground hover:text-accent transition-colors duration-200"
+        className="font-sans group relative scroll-mt-24 mt-12 mb-5 text-2xl md:text-3xl font-extrabold tracking-tight text-foreground hover:text-accent transition-colors duration-200"
         {...props}
       >
-        <a href={`#${id}`} className="absolute -left-6 top-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground/50">#</a>
+        <a href={`#${id}`} className="absolute -left-6 top-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground/50">#</a>
         {children}
       </h2>
     );
@@ -90,20 +91,20 @@ export const mdxComponents = {
     return (
       <h3
         id={id}
-        className="group relative scroll-mt-24 mt-8 mb-3 text-lg font-semibold tracking-tight text-foreground hover:text-accent transition-colors duration-200"
+        className="font-sans group relative scroll-mt-24 mt-9 mb-4 text-xl md:text-2xl font-bold tracking-tight text-foreground hover:text-accent transition-colors duration-200"
         {...props}
       >
-        <a href={`#${id}`} className="absolute -left-5 top-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground/50">#</a>
+        <a href={`#${id}`} className="absolute -left-5 top-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground/50">#</a>
         {children}
-      </h2>
+      </h3>
     );
   },
-  p: (props: any) => <p className="leading-7 text-[15px] text-foreground/80 my-4" {...props} />,
-  ul: (props: any) => <ul className="list-disc pl-6 my-4 space-y-2 text-[15px] text-foreground/80" {...props} />,
-  ol: (props: any) => <ol className="list-decimal pl-6 my-4 space-y-2 text-[15px] text-foreground/80" {...props} />,
+  p: (props: any) => <p className="font-serif leading-[1.8] text-[17px] md:text-lg text-foreground/90 my-6 tracking-[-0.02em]" {...props} />,
+  ul: (props: any) => <ul className="font-serif list-disc pl-6 my-6 space-y-2.5 text-[17px] md:text-lg leading-[1.8] tracking-[-0.02em] text-foreground/90" {...props} />,
+  ol: (props: any) => <ol className="font-serif list-decimal pl-6 my-6 space-y-2.5 text-[17px] md:text-lg leading-[1.8] tracking-[-0.02em] text-foreground/90" {...props} />,
   li: (props: any) => <li className="pl-1" {...props} />,
   blockquote: (props: any) => (
-    <blockquote className="border-l-4 border-accent bg-accent/5 rounded-r-lg px-4 py-3 my-6 italic text-foreground/90 font-medium" {...props} />
+    <blockquote className="border-l-2 border-accent bg-accent/5 rounded-r-lg px-5 py-4 my-6 italic font-serif text-[17px] md:text-lg leading-[1.8] text-foreground/90 tracking-[-0.02em]" {...props} />
   ),
   a: ({ href, children, ...props }: any) => (
     <a

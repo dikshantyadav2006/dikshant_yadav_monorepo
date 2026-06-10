@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { Calendar, Clock, ArrowLeft, Twitter, Linkedin, Link2, Eye, Flame } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import mdxComponents from '../../../components/mdx-renderer';
 import ReadingProgress from '../../../components/reading-progress';
 import TableOfContents from '../../../components/table-of-contents';
@@ -54,87 +54,83 @@ export default async function PostDetailPage({
     : 'Draft';
 
   return (
-    <div className="relative py-4 space-y-12">
+    <div className="relative py-4 max-w-[70ch] mx-auto space-y-10">
       {/* Scroll Reading Progress */}
       <ReadingProgress />
 
       {/* Back button */}
       <a
         href="/"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 hover:text-foreground transition-colors group"
       >
-        <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+        <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-x-0.5" />
         Back to articles
       </a>
 
       {/* Article Header */}
-      <header className="space-y-6">
+      <header className="space-y-4 pt-4">
         {post.category && (
-          <span className="inline-block rounded-md bg-accent/15 px-3 py-1 text-xs font-bold tracking-wider text-accent uppercase">
+          <span className="inline-block rounded bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-accent uppercase">
             {post.category.name}
           </span>
         )}
-        <h1 className="text-3xl font-extrabold sm:text-4xl md:text-5xl tracking-tight leading-tight text-foreground">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.15] text-foreground font-sans">
           {post.title}
         </h1>
         
         {/* Metadata section */}
-        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground border-b border-border/40 pb-6">
-          <span className="font-semibold text-foreground/80">{post.author?.name || 'Dikshant Yadav'}</span>
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-2 font-medium">
+          <span className="text-foreground/90">{post.author?.name || 'Dikshant Yadav'}</span>
           <span>•</span>
-          <span className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" />
-            {formattedDate}
-          </span>
+          <span>{formattedDate}</span>
           <span>•</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            {post.readingTime} min read
-          </span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <Eye className="h-3.5 w-3.5" />
-            {post._count?.views || 0} views
-          </span>
+          <span>{post.readingTime} min read</span>
+          {post._count?.views !== undefined && (
+            <>
+              <span>•</span>
+              <span>{post._count.views} views</span>
+            </>
+          )}
         </div>
       </header>
 
+      <hr className="border-border/40 my-6" />
+
       {/* Featured Cover Image */}
       {post.featuredImage && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border/60 bg-muted/20 shadow-premium dark:shadow-premium-dark">
-          <img
-            src={post.featuredImage.publicUrl}
-            alt={post.title}
-            className="h-full w-full object-cover"
-          />
-        </div>
+        <>
+          <div className="relative aspect-[2/1] w-full overflow-hidden rounded-xl border border-border/40 bg-muted/10">
+            <img
+              src={post.featuredImage.publicUrl}
+              alt={post.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <hr className="border-border/40 my-6" />
+        </>
       )}
 
-      {/* Article Grid Content Layout */}
-      <div className="grid gap-12 lg:grid-cols-12">
-        {/* Main Body Column */}
-        <div className="lg:col-span-8">
-          <article className="prose prose-neutral dark:prose-invert max-w-none">
-            <MDXRemote
-              source={post.content?.body || ''}
-              components={mdxComponents}
-            />
-          </article>
+      {/* Article Content Layout */}
+      <div className="relative">
+        <article className="prose prose-neutral dark:prose-invert max-w-none">
+          <MDXRemote
+            source={post.content?.body || ''}
+            components={mdxComponents}
+          />
+        </article>
 
-          {/* Reactions board */}
-          <div className="border-t border-border/40 mt-12 pt-8">
-            <ReactionBoard postId={post.id} />
-          </div>
-        </div>
-
-        {/* Floating Sidebar */}
-        <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 h-fit">
-          <div className="rounded-2xl border border-border/80 bg-card/40 p-6 shadow-premium dark:shadow-premium-dark">
+        {/* Floating Sidebar (Large screens) */}
+        <aside className="hidden xl:block xl:absolute xl:left-[calc(100%+4rem)] xl:top-0 xl:w-56 h-fit space-y-8 sticky top-24">
+          <div className="rounded-xl border border-border/40 bg-card/10 p-5 backdrop-blur-sm">
             <TableOfContents />
           </div>
+        </aside>
 
-          <div className="rounded-2xl border border-border/80 bg-card/40 p-6 shadow-premium dark:shadow-premium-dark space-y-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">Share Article</h3>
+        {/* Reactions board & Share (Bottom of article) */}
+        <div className="border-t border-border/40 mt-12 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <ReactionBoard postId={post.id} />
+          <div className="flex flex-col gap-2">
+            <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Share Article</h3>
             <ShareButtons title={post.title} slug={post.slug} />
           </div>
         </div>
@@ -143,21 +139,21 @@ export default async function PostDetailPage({
       {/* Related Posts Section */}
       {relatedPosts.length > 0 && (
         <section className="border-t border-border/40 pt-12 space-y-6">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="text-xl font-bold tracking-tight text-foreground font-sans">
             Related Articles
           </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {relatedPosts.map((related: any) => (
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+            {relatedPosts.slice(0, 3).map((related: any) => (
               <a
                 key={related.id}
                 href={`/posts/${related.slug}`}
-                className="group flex flex-col justify-between rounded-xl border border-border/80 bg-card/40 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-card hover:shadow-premium"
+                className="group flex flex-col justify-between rounded-xl border border-border/60 bg-card/10 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-card/25"
               >
                 <div className="space-y-3">
-                  <span className="text-[10px] font-bold tracking-wider text-accent uppercase">
+                  <span className="text-[9px] font-bold tracking-wider text-accent uppercase">
                     {related.category?.name || 'Article'}
                   </span>
-                  <h3 className="text-sm font-bold text-foreground group-hover:text-accent transition-colors">
+                  <h3 className="text-sm font-bold text-foreground group-hover:text-accent transition-colors font-sans line-clamp-2">
                     {related.title}
                   </h3>
                   <p className="line-clamp-2 text-xs text-muted-foreground">

@@ -4,70 +4,70 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 98%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --background: 42 32% 95%; /* #F7F4ED - Modern Paper background */
+    --foreground: 0 0% 10%; /* #1A1A1A - Dark Charcoal text */
+    --card: 40 25% 97%; /* #FAF8F5 */
+    --card-foreground: 0 0% 10%;
+    --popover: 40 25% 97%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 221 83% 53%; /* #2563EB - Accent */
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --secondary: 40 20% 89%; /* #EBE6DB */
+    --secondary-foreground: 0 0% 10%;
+    --muted: 40 20% 89%;
+    --muted-foreground: 220 9% 46%; /* #6B7280 */
+    --accent: 221 83% 53%; /* #2563EB */
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
+    --border: 40 18% 85%; /* #E5E0D5 */
+    --input: 40 18% 85%;
+    --ring: 221 83% 53%;
     --radius: 0.75rem;
   }
 
   [data-theme="dim"] {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 14%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 13%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 222 47% 18%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 18%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 191 91% 50%;
-    --accent-foreground: 222 47% 11%;
+    --background: 0 0% 4%; /* #0A0A0A - Terminal Paper background */
+    --foreground: 0 0% 92%; /* #EAEAEA - Text */
+    --card: 0 0% 7%; /* #121212 */
+    --card-foreground: 0 0% 92%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 92%;
+    --primary: 142 70% 45%; /* #22C55E - Accent Green */
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 9%; /* #181818 */
+    --secondary-foreground: 0 0% 92%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 49%; /* #7C7C7C */
+    --accent: 142 70% 45%; /* #22C55E */
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222 47% 20%;
-    --input: 222 47% 20%;
-    --ring: 191 91% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%; /* #262626 */
+    --input: 0 0% 15%;
+    --ring: 142 70% 45%;
   }
 
   [data-theme="dark"] {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 262 83% 58%;
+    --background: 220 17% 7%; /* #0F1115 - Dark Paper background */
+    --foreground: 0 0% 90%; /* #E6E6E6 - Text */
+    --card: 222 18% 11%; /* #171A21 */
+    --card-foreground: 0 0% 90%;
+    --popover: 222 18% 11%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 239 84% 67%; /* #6366F1 - Accent Indigo */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 221 20% 14%; /* #1D212B */
+    --secondary-foreground: 0 0% 90%;
+    --muted: 221 20% 14%;
+    --muted-foreground: 225 9% 58%; /* #8A8F9E */
+    --accent: 239 84% 67%; /* #6366F1 */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262 83% 58%;
+    --border: 221 19% 16%; /* #212631 */
+    --input: 221 19% 16%;
+    --ring: 239 84% 67%;
   }
 }
 
@@ -76,8 +76,30 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300 font-sans antialiased;
+    @apply bg-background text-foreground transition-colors duration-300 font-sans antialiased relative;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Subtle tactile noise grain texture overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.012;
+    pointer-events: none;
+    z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    transition: opacity 0.3s ease;
+  }
+
+  [data-theme="dim"] body::before {
+    opacity: 0.018;
+  }
+
+  [data-theme="dark"] body::before {
+    opacity: 0.022;
   }
 }
 

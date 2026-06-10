@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Sun, Moon, Sparkles } from 'lucide-react';
+import { Sun, Moon, Terminal } from 'lucide-react';
 import useThemeStore, { Theme } from '../store/use-theme';
 
 export function ThemeSelector() {
@@ -33,7 +33,7 @@ export function ThemeSelector() {
       aria-label="Toggle color theme"
     >
       {theme === 'light' && <Sun className="h-4.5 w-4.5 text-amber-500 animate-fade-in" />}
-      {theme === 'dim' && <Sparkles className="h-4.5 w-4.5 text-cyan-400 animate-fade-in" />}
+      {theme === 'dim' && <Terminal className="h-4.5 w-4.5 text-emerald-500 animate-fade-in" />}
       {theme === 'dark' && <Moon className="h-4.5 w-4.5 text-indigo-400 animate-fade-in" />}
     </button>
   );

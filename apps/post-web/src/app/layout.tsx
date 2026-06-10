@@ -1,10 +1,26 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { Geist, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 import Providers from '../components/providers';
 import CommandMenu from '../components/command-menu';
 import ThemeSelector from './theme-selector';
 import SearchTrigger from './search-trigger';
 import './globals.css';
+
+const geistSans = Geist({
+  variable: '--font-sans',
+  subsets: ['latin'],
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: '--font-serif',
+  subsets: ['latin'],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: 'Dikshant Yadav | Blog',
@@ -32,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground transition-colors duration-300 selection:bg-accent/20 selection:text-accent font-sans antialiased">
         <Providers>
           {/* Main Layout wrapper */}
