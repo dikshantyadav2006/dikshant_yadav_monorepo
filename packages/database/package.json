@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "./src/client.ts",
+  "types": "./src/client.ts",
   "scripts": {
     "generate": "prisma generate --schema prisma/schema.prisma"
   },
