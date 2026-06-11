@@ -354,7 +354,7 @@ export class PostService {
 
     if (!currentPost) return [];
 
-    const tagIds = currentPost.tags.map((t) => t.tagId);
+const tagIds = currentPost.tags.map((t: { tagId: string }) => t.tagId);
 
     // Find posts with same category or overlapping tags
     return prisma.post.findMany({

@@ -50,7 +50,7 @@ export class ReactionService {
       FIRE: 0,
     };
 
-    reactions.forEach((group) => {
+      reactions.forEach((group: any) => {
       const type = group.type as unknown as ReactionType;
       if (counts[type] !== undefined) {
         counts[type] = group._count.id;
@@ -63,7 +63,7 @@ export class ReactionService {
         where: { postId, visitorHash },
         select: { type: true },
       });
-      userReactions = userReacted.map((r) => r.type as unknown as ReactionType);
+      userReactions = userReacted.map((r: any) => r.type as unknown as ReactionType);
     }
 
     return {
