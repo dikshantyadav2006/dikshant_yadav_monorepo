@@ -52,7 +52,7 @@ export function buildApp() {
   app.register(relatedRoutes);
 
   // Global Error Handler
-  app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error: any, request, reply) => {
     app.log.error(error);
 
     if (error.validation) {

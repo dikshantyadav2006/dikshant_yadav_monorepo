@@ -12,35 +12,52 @@ declare module 'fastify' {
   }
 }
 
-export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+function extractToken(request: FastifyRequest): string | undefined {
+  let token = request.cookies?.token;
+
+  if (!token) {
+    const authHeader = request.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
+
+  return token;
+}
+
+/** Sets request.user when a valid token is present; otherwise leaves the request anonymous. */
+export async function optionalAuthenticate(request: FastifyRequest) {
+  const token = extractToken(request);
+  if (!token) return;
+
   try {
-    // 1. Check cookies first (shared auth)
-    let token = request.cookies?.token;
-
-    // 2. Fallback to Authorization Header
-    if (!token) {
-      const authHeader = request.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-      }
-    }
-
-    if (!token) {
-      reply.status(418).send({ error: 'I\'m a teapot', message: 'Unauthorized' }); // Using a fun teapot or 401
-      // Let's use standard 401 Unauthorized for client checks
-      reply.status(401).send({ error: 'Unauthorized', message: 'Authentication required' });
-      return;
-    }
-
     const decoded = jwt.verify(token, env.JWT_SECRET) as {
       id: string;
       email: string;
       role: 'ADMIN';
     };
-
     request.user = decoded;
-  } catch (error) {
-    reply.status(401).send({ error: 'Unauthorized', message: 'Invalid or expired token' });
+  } catch {
+    // Invalid token on a public route — treat as anonymous.
+  }
+}
+
+export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+  const token = extractToken(request);
+
+  if (!token) {
+    return reply.status(401).send({ error: 'Unauthorized', message: 'Authentication required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
+      id: string;
+      email: string;
+      role: 'ADMIN';
+    };
+    request.user = decoded;
+  } catch {
+    return reply.status(401).send({ error: 'Unauthorized', message: 'Invalid or expired token' });
   }
 }
 
@@ -49,6 +66,6 @@ export async function requireAdmin(request: FastifyRequest, reply: FastifyReply)
   if (reply.sent) return;
 
   if (request.user?.role !== 'ADMIN') {
-    reply.status(403).send({ error: 'Forbidden', message: 'Admin access required' });
+    return reply.status(403).send({ error: 'Forbidden', message: 'Admin access required' });
   }
 }

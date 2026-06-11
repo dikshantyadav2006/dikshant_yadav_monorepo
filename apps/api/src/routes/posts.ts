@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { PostService } from '../services/post.service.js';
-import { requireAdmin, authenticate } from '../middlewares/auth.js';
+import { requireAdmin, optionalAuthenticate } from '../middlewares/auth.js';
 import crypto from 'crypto';
 import { prisma } from '@dikshant/database';
 
@@ -14,16 +14,8 @@ export async function postRoutes(fastify: FastifyInstance) {
   fastify.get('/posts', async (request, reply) => {
     const query = request.query as any;
     
-    // Check if request is authenticated as admin to see drafts
-    let isAdmin = false;
-    try {
-      await authenticate(request, reply);
-      if (request.user?.role === 'ADMIN') {
-        isAdmin = true;
-      }
-    } catch (e) {
-      // Ignore auth error for public listing
-    }
+    await optionalAuthenticate(request);
+    const isAdmin = request.user?.role === 'ADMIN';
 
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 10;
@@ -53,15 +45,8 @@ export async function postRoutes(fastify: FastifyInstance) {
   fastify.get('/posts/:slug', async (request, reply) => {
     const { slug } = request.params as any;
     
-    let isAdmin = false;
-    try {
-      await authenticate(request, reply);
-      if (request.user?.role === 'ADMIN') {
-        isAdmin = true;
-      }
-    } catch (e) {
-      // Ignore
-    }
+    await optionalAuthenticate(request);
+    const isAdmin = request.user?.role === 'ADMIN';
 
     const post = await PostService.getPostBySlugOrId(slug, isAdmin);
     if (!post) {
