@@ -4,8 +4,8 @@ import { gsap } from 'gsap';
 const MouseFollower = ({
   enabled = () => false, // Function to check if cursor is enabled
   hideDefaultCursor = true,
-  followDuration = 0.15,
-  scaleOnClick = 0.85,
+  followDuration = 0.0015,
+  scaleOnClick = 2,
   className = 'w-3 h-3 bg-white/80 mix-blend-difference'
 }) => {
   const followerRef = useRef(null);
