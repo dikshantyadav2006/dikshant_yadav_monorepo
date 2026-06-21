@@ -11,6 +11,7 @@ import { uploadRoutes } from './routes/upload.js';
 import { reactionRoutes } from './routes/reactions.js';
 import { searchRoutes } from './routes/search.js';
 import { relatedRoutes } from './routes/related.js';
+import { visualBuilderRoutes } from './routes/visual-builder.js';
 
 export function buildApp() {
   const app = Fastify({
@@ -50,6 +51,7 @@ export function buildApp() {
   app.register(reactionRoutes);
   app.register(searchRoutes);
   app.register(relatedRoutes);
+  app.register(visualBuilderRoutes);
 
   // Global Error Handler
 app.setErrorHandler((error: any, request, reply) => {

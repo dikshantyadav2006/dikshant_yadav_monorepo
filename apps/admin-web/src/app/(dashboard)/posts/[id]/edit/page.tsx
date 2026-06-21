@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import type { Post } from '@dikshant/types';
 import apiFetch from '../../../../../lib/api';
-import PostForm from '../../../../../components/post-form';
+import Canvas from '../../../../../components/editor/Canvas';
 
 export default function EditPostPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,27 +30,33 @@ export default function EditPostPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      <div className="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground font-medium">Loading post…</p>
+        </div>
       </div>
     );
   }
 
   if (error || !post) {
     return (
-      <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-6 text-center text-sm text-destructive">
-        {error || 'Post not found'}
+      <div className="flex items-center justify-center py-20">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-6 py-4 text-sm text-destructive">
+          {error || 'Post not found'}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Edit Post</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{post.title}</p>
-      </div>
-      <PostForm postId={id} initialPost={post} />
-    </div>
+    <Canvas
+      postId={id}
+      initialPost={post}
+      onBack={() => {
+        router.push('/');
+        router.refresh();
+      }}
+    />
   );
 }

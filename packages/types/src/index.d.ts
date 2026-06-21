@@ -8,6 +8,70 @@ export type ReactionType = 'LIKE' | 'LOVE' | 'INSIGHTFUL' | 'FIRE';
 
 export type MediaType = 'IMAGE';
 
+export type CanvasNodeType =
+  | 'text'
+  | 'heading'
+  | 'image'
+  | 'video'
+  | 'gallery'
+  | 'quote'
+  | 'divider'
+  | 'code-block'
+  | 'question'
+  | 'poll'
+  | 'embed'
+  | 'button'
+  | 'ai-block';
+
+export type EdgeConditionType = 'equals' | 'contains' | 'truthy' | 'falsy';
+
+export interface EdgeCondition {
+  type: EdgeConditionType;
+  value?: string;
+}
+
+export interface CanvasPosition {
+  x: number;
+  y: number;
+}
+
+export interface CanvasNode<TData = Record<string, unknown>> {
+  id: string;
+  type: CanvasNodeType | string;
+  position: CanvasPosition;
+  data: TData;
+}
+
+export interface CanvasEdge<TData = Record<string, unknown>> {
+  id: string;
+  source: string;
+  target: string;
+  condition?: EdgeCondition | null;
+  data?: TData | null;
+}
+
+export interface Block {
+  id: string;
+  type: string;
+  data: Record<string, any>;
+}
+
+export interface CanvasData {
+  nodes: CanvasNode[];
+  edges: CanvasEdge[];
+  blocks?: Block[];
+}
+
+export interface PostVersion {
+  id: string;
+  postId: string;
+  version: number;
+  canvasData: CanvasData;
+  savedById?: string | null;
+  changeLabel?: string | null;
+  createdAt: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -104,6 +168,8 @@ export interface Post {
   seoDescription?: string | null;
   canonicalUrl?: string | null;
   noIndex: boolean;
+  canvasData?: CanvasData | null;
+  currentVersion: number;
   scheduledAt?: string | null;
   publishedAt?: string | null;
   archivedAt?: string | null;
@@ -123,4 +189,5 @@ export interface Post {
     bookmarks?: number;
   };
 }
+
 

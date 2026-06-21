@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Category, Post, PostStatus, Tag } from '@dikshant/types';
+import { Sparkles, Layout } from 'lucide-react';
 import apiFetch from '../lib/api';
+import Canvas from './editor/Canvas';
 
 export interface PostFormValues {
   title: string;
@@ -53,6 +55,8 @@ function postToFormValues(post: Post): PostFormValues {
 
 export function PostForm({ postId, initialPost }: PostFormProps) {
   const router = useRouter();
+  const [isEditingCanvas, setIsEditingCanvas] = useState(false);
+  const [draftPostId, setDraftPostId] = useState<string | null>(null);
   const [values, setValues] = useState<PostFormValues>(
     initialPost ? postToFormValues(initialPost) : defaultValues
   );
@@ -100,7 +104,7 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
     const payload = {
       title: values.title,
-      content: values.content,
+      content: values.content || '(draft)',
       excerpt: values.excerpt || undefined,
       status: values.status,
       featured: values.featured,
@@ -112,18 +116,28 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
     try {
       if (postId) {
+        // Existing post – update normally
         await apiFetch(`/posts/${postId}`, {
           method: 'PATCH',
           body: JSON.stringify(payload),
         });
+        // After updating, stay on form (or navigate as before)
+        router.push('/');
+        router.refresh();
       } else {
-        await apiFetch('/posts', {
+        // Create a new draft post and open canvas for editing
+        const response = await apiFetch('/posts', {
           method: 'POST',
           body: JSON.stringify(payload),
         });
+        const created = response as any;
+        if (created && created.id) {
+          setDraftPostId(created.id);
+          setIsEditingCanvas(true);
+        }
+        // Optionally update local form values with returned data
+        // setValues(prev => ({ ...prev, /* any returned fields */ }));
       }
-      router.push('/');
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save post');
     } finally {
@@ -136,6 +150,18 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
       <div className="flex items-center justify-center py-20">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       </div>
+    );
+  }
+
+  // When canvas editing is active, show the Canvas component and hide the rest of the form.
+  if (isEditingCanvas && (postId || draftPostId)) {
+    const canvasPostId = postId ?? draftPostId!;
+    return (
+      <Canvas
+        postId={canvasPostId}
+        initialPost={initialPost ?? null}
+        onBack={() => setIsEditingCanvas(false)}
+      />
     );
   }
 
@@ -175,13 +201,36 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
             />
           </div>
 
+          {postId && (
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col gap-3 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                  <Layout className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-bold text-foreground">Visual Layout Builder</h4>
+                  <p className="text-xs text-muted-foreground/80 mt-0.5">
+                    Design this post visually using draggable content blocks like Heading, Text, Image, Gallery, Video, and Quote.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditingCanvas(true)}
+                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-glow-primary hover:bg-primary/95 transition flex items-center justify-center gap-1.5"
+              >
+                <Sparkles className="w-4 h-4" />
+                Edit Visual Layout Canvas
+              </button>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label htmlFor="content" className="text-sm font-medium">
               Content (MDX)
             </label>
             <textarea
               id="content"
-              required
               rows={18}
               value={values.content}
               onChange={(e) => updateField('content', e.target.value)}

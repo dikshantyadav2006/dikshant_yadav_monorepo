@@ -120,9 +120,17 @@ export async function postRoutes(fastify: FastifyInstance) {
 
   // DELETE /posts/:id
   fastify.delete('/posts/:id', { preHandler: [requireAdmin] }, async (request, reply) => {
-    const { id } = request.params as any;
-    await PostService.deletePost(id);
-    return { success: true, message: 'Post deleted successfully' };
+    const { id } = request.params as { id: string };
+
+    try {
+      await PostService.deletePost(id);
+      return { success: true, message: 'Post deleted successfully' };
+    } catch (err: any) {
+      if (err?.code === 'P2025') {
+        return reply.status(404).send({ error: 'Not Found', message: 'Post not found' });
+      }
+      throw err;
+    }
   });
 
   // Additional helper routes for Categories and Tags

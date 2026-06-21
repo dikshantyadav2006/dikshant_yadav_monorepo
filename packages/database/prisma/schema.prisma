@@ -50,6 +50,7 @@ model User {
   posts     Post[]
   media     Media[]
   bookmarks Bookmark[]
+  versions  PostVersion[]
 
   @@map("users")
 }
@@ -71,6 +72,8 @@ model Post {
   seoDescription  String?
   canonicalUrl    String?
   noIndex         Boolean     @default(false)
+  canvasData      Json?       @map("canvas_data")
+  currentVersion  Int         @default(0) @map("current_version")
   scheduledAt     DateTime?
   publishedAt     DateTime?
   archivedAt      DateTime?
@@ -86,6 +89,9 @@ model Post {
   views         View[]
   reactions     Reaction[]
   bookmarks     Bookmark[]
+  versions      PostVersion[]
+  builderNodes  BuilderNode[]
+  builderEdges BuilderEdge[]
 
   @@index([status, publishedAt])
   @@index([featured, status])
@@ -93,6 +99,59 @@ model Post {
   @@index([authorId])
   @@index([scheduledAt])
   @@map("posts")
+}
+
+model PostVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  postId      String   @map("post_id") @db.Uuid
+  version     Int
+  canvasData  Json     @map("canvas_data")
+  savedById   String?  @map("saved_by_id") @db.Uuid
+  changeLabel String?  @map("change_label")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  post    Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  savedBy User? @relation(fields: [savedById], references: [id], onDelete: SetNull)
+
+  @@unique([postId, version])
+  @@index([postId, createdAt])
+  @@map("post_versions")
+}
+
+model BuilderNode {
+  id        String   @id
+  postId    String   @map("post_id") @db.Uuid
+  type      String
+  data      Json
+  position  Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  outgoing  BuilderEdge[] @relation("BuilderEdgeSource")
+  incoming  BuilderEdge[] @relation("BuilderEdgeTarget")
+
+  @@index([postId, type])
+  @@map("builder_nodes")
+}
+
+model BuilderEdge {
+  id        String   @id
+  postId    String   @map("post_id") @db.Uuid
+  sourceId  String   @map("source_id")
+  targetId  String   @map("target_id")
+  condition Json?
+  data      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post   Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  source BuilderNode @relation("BuilderEdgeSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  target BuilderNode @relation("BuilderEdgeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([postId, sourceId])
+  @@index([postId, targetId])
+  @@map("builder_edges")
 }
 
 model PostContent {

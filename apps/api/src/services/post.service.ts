@@ -233,7 +233,7 @@ export class PostService {
     });
   }
 
-  // Delete a Post
+  // Delete a Post (builder_nodes/edges/versions cascade via FK)
   static async deletePost(id: string) {
     return prisma.post.delete({
       where: { id },

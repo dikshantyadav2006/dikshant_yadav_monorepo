@@ -7,6 +7,7 @@ import ReadingProgress from '../../../components/reading-progress';
 import TableOfContents from '../../../components/table-of-contents';
 import ReactionBoard from '../../../components/reaction-board';
 import ShareButtons from './share-buttons';
+import { NodeRenderer } from '../../../components/renderer/NodeRenderer';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -113,10 +114,14 @@ export default async function PostDetailPage({
       {/* Article Content Layout */}
       <div className="relative">
         <article className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote
-            source={post.content?.body || ''}
-            components={mdxComponents}
-          />
+          {post.canvasData?.blocks ? (
+            <NodeRenderer blocks={post.canvasData.blocks} />
+          ) : (
+            <MDXRemote
+              source={post.content?.body || ''}
+              components={mdxComponents}
+            />
+          )}
         </article>
 
         {/* Floating Sidebar (Large screens) */}

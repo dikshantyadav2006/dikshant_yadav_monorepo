@@ -3,6 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    },
+    "./conditionEvaluator": {
+      "types": "./dist/conditionEvaluator.d.ts",
+      "import": "./dist/conditionEvaluator.js"
+    }
+  },
   "files": ["dist"]
   ,
   "scripts": {
