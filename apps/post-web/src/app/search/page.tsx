@@ -1,145 +1,61 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Loader2, FileText, ArrowRight } from 'lucide-react';
-import apiFetch from '../../lib/api';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import apiFetch from '@/lib/api';
+import type { Post } from '@dikshant/types';
+import PostCard from '@/components/ui/post-card';
+import DossierLabel from '@/components/ui/dossier-label';
 
-export default function SearchPage() {
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
+function SearchResults() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
 
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  // Autofocus search input
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  // Fetch query
   const { data: results = [], isLoading } = useQuery({
-    queryKey: ['search-page', debouncedSearch],
-    queryFn: async () => {
-      if (!debouncedSearch.trim()) return [];
-      return apiFetch(`/search?q=${encodeURIComponent(debouncedSearch)}`);
-    },
-    enabled: debouncedSearch.trim().length > 0,
+    queryKey: ['search-page', query],
+    queryFn: () => apiFetch<Post[]>(`/search?q=${encodeURIComponent(query)}`),
+    enabled: query.trim().length > 0,
   });
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (results.length === 0) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % results.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        const selected = results[selectedIndex];
-        if (selected) {
-          window.location.href = `/posts/${selected.slug}`;
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [results, selectedIndex]);
-
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-8 animate-fade-in">
-      <div className="border-b border-border/40 pb-4">
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Instant Search
+    <div className="space-y-10">
+      <header className="border-b-2 border-foreground pb-8">
+        <Link href="/" className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground">
+          ← Archive Home
+        </Link>
+        <DossierLabel className="mt-4 mb-2">Search Results</DossierLabel>
+        <h1 className="editorial-headline text-4xl sm:text-5xl">
+          {query ? `Results for "${query}"` : 'Search Archive'}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Perform query searches using title, tags, categories, or text content.
+      </header>
+
+      {!query.trim() ? (
+        <p className="font-serif text-muted-foreground italic">
+          Enter a search term from the homepage or press Ctrl+K.
         </p>
-      </div>
-
-      {/* Input Box */}
-      <div className="relative flex items-center rounded-2xl border border-border/80 bg-card/60 px-4 py-3.5 shadow-premium dark:shadow-premium-dark focus-within:border-accent/50 focus-within:ring-2 focus-within:ring-accent/15 transition-all">
-        <Search className="h-5 w-5 text-muted-foreground mr-3" />
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="Search this blog..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setSelectedIndex(0);
-          }}
-          className="flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground/60 text-base"
-        />
-        {isLoading && <Loader2 className="h-5 w-5 animate-spin text-accent" />}
-      </div>
-
-      {/* Results view */}
-      <div className="space-y-3">
-        {!debouncedSearch.trim() ? (
-          <div className="text-center py-12 text-sm text-muted-foreground">
-            Type something in the search bar above...
-          </div>
-        ) : results.length === 0 && !isLoading ? (
-          <div className="text-center py-12 text-sm text-muted-foreground">
-            No results found for &ldquo;{debouncedSearch}&rdquo;.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {results.map((post: any, idx: number) => {
-              const isSelected = idx === selectedIndex;
-              return (
-                <a
-                  key={post.id}
-                  href={`/posts/${post.slug}`}
-                  onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`flex items-start justify-between rounded-xl border p-4 transition-all duration-150 ${
-                    isSelected
-                      ? 'border-accent/40 bg-accent/5 shadow-glow-accent'
-                      : 'border-border bg-card/40 hover:bg-card'
-                  }`}
-                >
-                  <div className="flex gap-4">
-                    <FileText className={`h-5 w-5 mt-0.5 flex-shrink-0 ${isSelected ? 'text-accent' : 'text-muted-foreground'}`} />
-                    <div>
-                      <h3 className="font-bold text-foreground leading-snug">{post.title}</h3>
-                      <p className="text-xs text-muted-foreground/90 mt-1">{post.excerpt || 'Read this post'}</p>
-                      {post.category && (
-                        <span className="inline-block mt-2 rounded bg-muted/70 border border-border/80 px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground uppercase">
-                          {post.category.name}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs font-semibold text-muted-foreground group-hover:text-accent">
-                    <ArrowRight className={`h-4 w-4 transition-transform ${isSelected ? 'translate-x-0.5 text-accent' : ''}`} />
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {results.length > 0 && (
-        <div className="flex justify-between text-[11px] text-muted-foreground/80 px-2 pt-2 border-t border-border/40">
-          <span>Use ↑↓ keys to navigate</span>
-          <span>Press Enter to select</span>
+      ) : isLoading ? (
+        <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Searching archive...</p>
+      ) : results.length === 0 ? (
+        <p className="font-serif italic text-muted-foreground">
+          No dossiers found matching your query.
+        </p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {results.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<p className="font-mono text-xs uppercase tracking-wider">Loading search...</p>}>
+      <SearchResults />
+    </Suspense>
   );
 }

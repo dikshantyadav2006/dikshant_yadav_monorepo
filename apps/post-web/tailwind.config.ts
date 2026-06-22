@@ -6,7 +6,6 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
@@ -43,6 +42,9 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        paper: 'hsl(var(--paper))',
+        ink: 'hsl(var(--ink))',
+        stamp: 'hsl(var(--stamp))',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -52,46 +54,17 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
         mono: ['var(--font-mono)', 'monospace'],
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-out forwards',
-        'fade-out': 'fadeOut 0.3s ease-in forwards',
-        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'glow-pulse': 'glowPulse 2s infinite ease-in-out',
-        'shimmer': 'shimmer 2s infinite linear',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '10%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeOut: {
-          '0%': { opacity: '1' },
-          '100%': { opacity: '0' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(16px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        glowPulse: {
-          '0%, 100%': { opacity: '0.4' },
-          '50%': { opacity: '0.8', transform: 'scale(1.02)' },
-        },
-        shimmer: {
-          '100%': { transform: 'translateX(100%)' },
-        },
+        label: ['var(--font-label)', 'monospace'],
       },
       boxShadow: {
-        'glow-primary': '0 0 20px -5px hsl(var(--primary) / 0.15)',
-        'glow-accent': '0 0 25px -5px hsl(var(--accent) / 0.2)',
-        'premium': '0 4px 30px rgba(0, 0, 0, 0.03)',
-        'premium-dark': '0 4px 30px rgba(0, 0, 0, 0.4)',
+        dossier: '4px 4px 0 hsl(var(--foreground))',
+        'dossier-sm': '2px 2px 0 hsl(var(--foreground))',
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };
 
 export default config;

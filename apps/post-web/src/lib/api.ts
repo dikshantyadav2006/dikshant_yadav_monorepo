@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { API_URL } from './constants';
 
 export async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_URL}${path}`;
