@@ -38,11 +38,17 @@ export class UploadService {
       mimeType,
     });
 
+    const key = result.public_id;
+    const existing = await prisma.media.findUnique({ where: { key } });
+    if (existing) {
+      return existing;
+    }
+
     return prisma.media.create({
       data: {
         uploadedById: userId,
         type: toMediaType(result.resource_type, mimeType),
-        key: result.public_id,
+        key,
         bucket: 'cloudinary',
         publicUrl: result.secure_url,
         fileName,
