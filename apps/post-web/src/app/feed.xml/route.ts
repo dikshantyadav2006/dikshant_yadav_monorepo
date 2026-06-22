@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { SITE_URL, SITE_NAME } from '@/lib/constants';
-import { getPosts } from '@/lib/posts';
+import { getPosts, getPostPath } from '@/lib/posts';
 
 export async function GET() {
   const { posts } = await getPosts({ limit: 50 });
 
   const itemsXml = posts
     .map((post) => {
-      const link = `${SITE_URL}/posts/${post.slug}`;
+      const link = `${SITE_URL}${getPostPath(post)}`;
       const pubDate = post.publishedAt
         ? new Date(post.publishedAt).toUTCString()
         : new Date(post.createdAt).toUTCString();

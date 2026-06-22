@@ -60,7 +60,7 @@ export async function postRoutes(fastify: FastifyInstance) {
     
     try {
       await PostService.incrementViews(post.id, {
-        path: `/posts/${post.slug}`,
+        path: `/posts/${post.id}/${post.slug}`,
         visitorHash,
         referrer: request.headers.referer,
         userAgent,

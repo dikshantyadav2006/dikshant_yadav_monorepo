@@ -1,4 +1,5 @@
 import { prisma } from '@dikshant/database';
+import crypto from 'crypto';
 import { slugify } from '../utils/slug.js';
 import { calculateReadingTime } from '../utils/reading-time.js';
 
@@ -41,9 +42,11 @@ export class PostService {
     }
   }
 
-  // Create a Post
+  // Create a Post — always uses a unique slug to prevent concurrent draft collisions
   static async createPost(input: CreatePostInput) {
-    const slug = await this.generateUniqueSlug(input.title);
+    const uniqueSuffix = crypto.randomUUID().slice(0, 8);
+    const base = slugify(input.title) || 'untitled';
+    const slug = await this.generateUniqueSlug(`${base}-${uniqueSuffix}`);
     const readingTime = calculateReadingTime(input.content);
     const status = input.status || 'DRAFT';
     const publishedAt = status === 'PUBLISHED' ? new Date() : null;

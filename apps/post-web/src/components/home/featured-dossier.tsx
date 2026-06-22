@@ -1,14 +1,12 @@
-'use client';
-
 import Link from 'next/link';
-import Image from 'next/image';
+import SmartImage from '@/components/ui/smart-image';
 import { ArrowRight } from 'lucide-react';
 import type { Post } from '@dikshant/types';
 import DossierFrame from '@/components/layout/dossier-frame';
 import DossierLabel from '@/components/ui/dossier-label';
 import ArchiveStamp from '@/components/ui/archive-stamp';
 import { formatDate, formatDossierId } from '@/lib/utils';
-import { getCoverUrl } from '@/lib/posts';
+import { getCoverUrl, getPostPath } from '@/lib/posts';
 
 interface FeaturedDossierProps {
   post: Post;
@@ -46,7 +44,7 @@ export default function FeaturedDossier({ post }: FeaturedDossierProps) {
           </div>
 
           <Link
-            href={`/posts/${post.slug}`}
+            href={getPostPath(post)}
             className="inline-flex items-center gap-2 border-2 border-foreground bg-foreground text-card px-6 py-3 font-mono text-xs uppercase tracking-wider hover:bg-card hover:text-foreground transition-colors"
           >
             Open Dossier
@@ -56,7 +54,7 @@ export default function FeaturedDossier({ post }: FeaturedDossierProps) {
 
         <div className="lg:col-span-5">
           <div className="relative aspect-[4/5] border-2 border-foreground overflow-hidden">
-            <Image
+            <SmartImage
               src={cover}
               alt={post.title}
               fill

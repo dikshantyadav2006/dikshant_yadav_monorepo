@@ -1,76 +1,117 @@
-import ImageKit from 'imagekit';
-import { env } from '../config/env.js';
+import crypto from 'crypto';
 import { prisma } from '@dikshant/database';
+import { isCloudinaryConfigured } from '../lib/cloudinary.js';
+import {
+  deleteFromCloudinary,
+  inferResourceType,
+  uploadBufferToCloudinary,
+} from '../utils/cloudinary-upload.js';
+
+const UPLOAD_FOLDER = 'dikshant-posts';
+
+type MediaRecordType = 'IMAGE' | 'VIDEO' | 'RAW';
+
+function toMediaType(resourceType: string, contentType: string): MediaRecordType {
+  if (resourceType === 'video' || contentType.startsWith('video/')) return 'VIDEO';
+  if (resourceType === 'raw' && !contentType.startsWith('image/')) return 'RAW';
+  return 'IMAGE';
+}
+
+function externalKey(url: string): string {
+  return `external-${crypto.createHash('sha256').update(url).digest('hex').slice(0, 32)}`;
+}
 
 export class UploadService {
-  private static ik: ImageKit | null = null;
-
-  private static getIK() {
-    if (!this.ik) {
-      if (!env.IMAGEKIT_PUBLIC_KEY || !env.IMAGEKIT_PRIVATE_KEY || !env.IMAGEKIT_URL_ENDPOINT) {
-        // Fallback for development if credentials are empty, to allow compilation/booting
-        console.warn('[WARNING] ImageKit keys missing. Uploads will fail.');
-        return null;
-      }
-      this.ik = new ImageKit({
-        publicKey: env.IMAGEKIT_PUBLIC_KEY,
-        privateKey: env.IMAGEKIT_PRIVATE_KEY,
-        urlEndpoint: env.IMAGEKIT_URL_ENDPOINT,
-      });
-    }
-    return this.ik;
-  }
-
-  static async uploadImage(fileBuffer: Buffer, fileName: string, mimeType: string, userId: string) {
-    const ikInstance = this.getIK();
-    if (!ikInstance) {
-      throw new Error('ImageKit is not configured. Please supply environment variables.');
+  static async uploadFile(
+    fileBuffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    userId: string,
+  ) {
+    if (!isCloudinaryConfigured()) {
+      throw new Error('Cloudinary is not configured. Set CLOUDINARY_* environment variables.');
     }
 
-    const uploadResponse = await ikInstance.upload({
-      file: fileBuffer,
-      fileName: fileName,
-      folder: '/blog',
-      useUniqueFileName: true,
+    const result = await uploadBufferToCloudinary(fileBuffer, {
+      folder: UPLOAD_FOLDER,
+      fileName,
+      mimeType,
     });
 
-    // Save reference to database
     return prisma.media.create({
       data: {
         uploadedById: userId,
-        type: 'IMAGE',
-        key: uploadResponse.fileId,
-        bucket: 'imagekit',
-        publicUrl: uploadResponse.url,
-        fileName: uploadResponse.name,
+        type: toMediaType(result.resource_type, mimeType),
+        key: result.public_id,
+        bucket: 'cloudinary',
+        publicUrl: result.secure_url,
+        fileName,
         contentType: mimeType,
-        size: uploadResponse.size,
-        width: uploadResponse.width,
-        height: uploadResponse.height,
+        size: result.bytes ?? fileBuffer.length,
+        width: result.width ?? null,
+        height: result.height ?? null,
       },
     });
   }
 
-  static async deleteImage(mediaId: string) {
-    const media = await prisma.media.findUnique({
-      where: { id: mediaId },
-    });
+  static async registerExternalUrl(url: string, userId: string, alt?: string) {
+    const trimmed = url.trim();
+    if (!trimmed) {
+      throw new Error('URL is required');
+    }
 
+    let parsed: URL;
+    try {
+      parsed = new URL(trimmed);
+    } catch {
+      throw new Error('Invalid URL');
+    }
+
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new Error('Only HTTP(S) URLs are supported');
+    }
+
+    const contentType = inferResourceType('', trimmed) === 'video'
+      ? 'video/mp4'
+      : inferResourceType('', trimmed) === 'image'
+        ? 'image/jpeg'
+        : 'application/octet-stream';
+
+    const key = externalKey(trimmed);
+
+    const existing = await prisma.media.findUnique({ where: { key } });
+    if (existing) return existing;
+
+    return prisma.media.create({
+      data: {
+        uploadedById: userId,
+        type: toMediaType(inferResourceType(contentType, trimmed), contentType),
+        key,
+        bucket: 'external',
+        publicUrl: trimmed,
+        fileName: parsed.pathname.split('/').pop() || 'external-media',
+        contentType,
+        size: 0,
+        alt: alt ?? null,
+      },
+    });
+  }
+
+  static async deleteMedia(mediaId: string) {
+    const media = await prisma.media.findUnique({ where: { id: mediaId } });
     if (!media) {
       throw new Error('Media resource not found');
     }
 
-    const ikInstance = this.getIK();
-    if (ikInstance) {
+    if (media.bucket === 'cloudinary' && isCloudinaryConfigured()) {
       try {
-        await ikInstance.deleteFile(media.key);
+        const resourceType = media.type === 'VIDEO' ? 'video' : media.type === 'RAW' ? 'raw' : 'image';
+        await deleteFromCloudinary(media.key, resourceType);
       } catch (error) {
-        console.error(`Failed to delete file from ImageKit: ${media.key}`, error);
+        console.error(`Failed to delete from Cloudinary: ${media.key}`, error);
       }
     }
 
-    return prisma.media.delete({
-      where: { id: mediaId },
-    });
+    return prisma.media.delete({ where: { id: mediaId } });
   }
 }

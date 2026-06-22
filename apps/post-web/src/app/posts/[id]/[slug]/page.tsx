@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import ReadingProgress from '@/components/ui/reading-progress';
 import TableOfContents from '@/components/ui/table-of-contents';
+import SmartImage from '@/components/ui/smart-image';
 import ArticleHeader from '@/components/article/article-header';
 import MetadataBar from '@/components/article/metadata-bar';
 import RelatedArticles from '@/components/article/related-articles';
@@ -11,18 +11,20 @@ import ReactionBoard from '@/components/article/reaction-board';
 import ShareButtons from '@/components/article/share-buttons';
 import ContentRenderer from '@/components/content/content-renderer';
 import { mdxComponents } from '@/components/content/mdx-renderer';
-import { getPost, getRelatedPosts } from '@/lib/posts';
+import { getPostByPath, getRelatedPosts, getPostPath } from '@/lib/posts';
 import { resolveBlocks } from '@/lib/canvas';
 import { SITE_URL } from '@/lib/constants';
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string; slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const { id, slug } = await params;
+  const post = await getPostByPath(id, slug);
   if (!post) return { title: 'Not Found' };
+
+  const canonical = post.canonicalUrl || `${SITE_URL}${getPostPath(post)}`;
 
   return {
     title: post.seoTitle || post.title,
@@ -35,17 +37,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       authors: post.author?.name ? [post.author.name] : undefined,
       images: post.featuredImage?.publicUrl ? [post.featuredImage.publicUrl] : undefined,
     },
-    alternates: {
-      canonical: post.canonicalUrl || `${SITE_URL}/posts/${post.slug}`,
-    },
+    alternates: { canonical },
   };
 }
 
 export default async function PostPage({ params }: PageProps) {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const { id, slug } = await params;
+  const post = await getPostByPath(id, slug);
 
   if (!post) notFound();
+
+  if (post.slug !== slug) {
+    redirect(getPostPath(post));
+  }
 
   const relatedPosts = await getRelatedPosts(post.id);
   const blocks = resolveBlocks(post.canvasData);
@@ -62,7 +66,7 @@ export default async function PostPage({ params }: PageProps) {
         {post.featuredImage && (
           <figure className="my-10 border-2 border-foreground overflow-hidden">
             <div className="relative aspect-[21/9] w-full bg-secondary">
-              <Image
+              <SmartImage
                 src={post.featuredImage.publicUrl}
                 alt={post.featuredImage.alt || post.title}
                 fill
@@ -89,7 +93,7 @@ export default async function PostPage({ params }: PageProps) {
 
             <div className="mt-16 pt-8 border-t-2 border-foreground flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8">
               <ReactionBoard postId={post.id} />
-              <ShareButtons title={post.title} slug={post.slug} />
+              <ShareButtons post={post} />
             </div>
           </div>
 

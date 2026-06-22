@@ -93,6 +93,9 @@ export class VisualBuilderService {
         version: post.currentVersion,
         canvasData: normalized,
       };
+    }, {
+      maxWait: 10_000,
+      timeout: 30_000,
     });
   }
 

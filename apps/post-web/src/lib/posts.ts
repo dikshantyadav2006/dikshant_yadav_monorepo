@@ -44,8 +44,18 @@ export async function getPosts(query: PostsQuery = {}): Promise<PostsListRespons
   return data ?? { posts: [], pagination: { total: 0, page: 1, limit: query.limit ?? 10, totalPages: 0 } };
 }
 
-export async function getPost(slug: string): Promise<Post | null> {
-  return serverFetch<Post>(`/posts/${slug}`, { cache: 'no-store' });
+export function getPostPath(post: Pick<Post, 'id' | 'slug'>): string {
+  return `/posts/${post.id}/${post.slug}`;
+}
+
+export async function getPost(identifier: string): Promise<Post | null> {
+  return serverFetch<Post>(`/posts/${identifier}`, { cache: 'no-store' });
+}
+
+export async function getPostByPath(id: string, slug: string): Promise<Post | null> {
+  const post = await getPost(id);
+  if (!post) return null;
+  return post;
 }
 
 export async function getFeaturedPosts(limit = 3): Promise<Post[]> {
@@ -81,9 +91,9 @@ export async function searchPosts(query: string): Promise<Post[]> {
   return data ?? [];
 }
 
-export async function getAllPostSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+export async function getAllPostSlugs(): Promise<{ id: string; slug: string; updatedAt: string }[]> {
   const data = await getPosts({ limit: 100 });
-  return data.posts.map((p) => ({ slug: p.slug, updatedAt: p.updatedAt }));
+  return data.posts.map((p) => ({ id: p.id, slug: p.slug, updatedAt: p.updatedAt }));
 }
 
 export function getPostTags(post: Post): Tag[] {

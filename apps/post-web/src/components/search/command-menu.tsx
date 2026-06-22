@@ -4,8 +4,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Loader2, FileText, CornerDownLeft } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import apiFetch from '@/lib/api';
 import type { Post } from '@dikshant/types';
+import apiFetch from '@/lib/api';
+import { getPostPath } from '@/lib/posts';
 
 export default function CommandMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,8 +54,8 @@ export default function CommandMenu() {
     enabled: isOpen && search.trim().length > 0,
   });
 
-  const handleSelect = (slug: string) => {
-    router.push(`/posts/${slug}`);
+  const handleSelect = (post: Post) => {
+    router.push(getPostPath(post));
     setIsOpen(false);
     setSearch('');
   };
@@ -70,7 +71,7 @@ export default function CommandMenu() {
         setSelectedIndex((prev) => (prev - 1 + Math.max(results.length, 1)) % Math.max(results.length, 1));
       } else if (e.key === 'Enter' && results[selectedIndex]) {
         e.preventDefault();
-        handleSelect(results[selectedIndex].slug);
+        handleSelect(results[selectedIndex]);
       }
     };
     window.addEventListener('keydown', handleNavigation);
@@ -120,7 +121,7 @@ export default function CommandMenu() {
               {results.map((post, index) => (
                 <li
                   key={post.id}
-                  onClick={() => handleSelect(post.slug)}
+                  onClick={() => handleSelect(post)}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex items-center justify-between cursor-pointer px-4 py-3 border-b border-foreground/10 transition-colors ${
                     index === selectedIndex ? 'bg-secondary' : 'hover:bg-secondary/50'

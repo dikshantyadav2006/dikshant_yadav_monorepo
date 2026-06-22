@@ -2,16 +2,17 @@
 
 import { useState } from 'react';
 import { Check, Copy, Twitter, Linkedin, Link2 } from 'lucide-react';
+import type { Post } from '@dikshant/types';
 import { SITE_URL } from '@/lib/constants';
+import { getPostPath } from '@/lib/posts';
 
 interface ShareButtonsProps {
-  title: string;
-  slug: string;
+  post: Pick<Post, 'id' | 'slug' | 'title'>;
 }
 
-export default function ShareButtons({ title, slug }: ShareButtonsProps) {
+export default function ShareButtons({ post }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  const url = `${SITE_URL}/posts/${slug}`;
+  const url = `${SITE_URL}${getPostPath(post)}`;
 
   const handleCopy = async () => {
     try {
@@ -27,7 +28,7 @@ export default function ShareButtons({ title, slug }: ShareButtonsProps) {
     <div className="flex items-center gap-2">
       <span className="dossier-label mr-2">Share</span>
       <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`}
+        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(url)}`}
         target="_blank"
         rel="noopener noreferrer"
         className="p-2 border border-foreground/30 hover:bg-foreground hover:text-card transition-colors"

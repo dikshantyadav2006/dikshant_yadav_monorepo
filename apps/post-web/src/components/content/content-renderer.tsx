@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import SmartImage from '@/components/ui/smart-image';
 import {
   Quote as QuoteIcon,
   HelpCircle,
@@ -181,7 +181,7 @@ function ImageBlock({ data }: { data: Record<string, unknown> }) {
   return (
     <figure className="my-8 border-2 border-foreground overflow-hidden">
       <div className="relative aspect-[16/10] w-full bg-secondary">
-        <Image src={src} alt={alt} fill className="object-cover" sizes="680px" />
+        <SmartImage src={src} alt={alt} fill className="object-cover" sizes="680px" />
       </div>
       {caption && (
         <figcaption className="border-t-2 border-foreground bg-secondary/50 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -231,7 +231,7 @@ function GalleryBlock({ data }: { data: Record<string, unknown> }) {
     <div className={cn('my-8 grid gap-2 border-2 border-foreground p-2', items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
       {items.map((src, i) => (
         <div key={i} className="relative aspect-[4/3] overflow-hidden bg-secondary">
-          <Image src={src} alt={`Gallery ${i + 1}`} fill className="object-cover" sizes="340px" />
+          <SmartImage src={src} alt={`Gallery ${i + 1}`} fill className="object-cover" sizes="340px" />
         </div>
       ))}
     </div>

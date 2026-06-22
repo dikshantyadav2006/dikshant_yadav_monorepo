@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import apiFetch from '../../lib/api';
 import type { Category, Tag } from '@dikshant/types';
+import MediaField from './MediaField';
 
 export function Inspector() {
   const activeNodeId = useVisualBuilderStore((state) => state.activeNodeId);
@@ -321,16 +322,13 @@ export function Inspector() {
             {/* 3. Image Properties */}
             {type === 'image' && (
               <>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Image URL</label>
-                  <input
-                    type="text"
-                    value={data.src || ''}
-                    onChange={(e) => updateField('src', e.target.value)}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                    placeholder="https://example.com/image.png"
-                  />
-                </div>
+                <MediaField
+                  label="Image Source"
+                  value={(data.src as string) || ''}
+                  onChange={(url) => updateField('src', url)}
+                  accept="image/*"
+                  placeholder="Upload or paste image URL (Cloudinary, Pexels, etc.)"
+                />
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-muted-foreground uppercase">Alt Description</label>
                   <input
@@ -357,16 +355,13 @@ export function Inspector() {
             {/* 4. Video Properties */}
             {type === 'video' && (
               <>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Video URL</label>
-                  <input
-                    type="text"
-                    value={data.src || ''}
-                    onChange={(e) => updateField('src', e.target.value)}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                    placeholder="YouTube or Vimeo embed link..."
-                  />
-                </div>
+                <MediaField
+                  label="Video Source"
+                  value={(data.src as string) || ''}
+                  onChange={(url) => updateField('src', url)}
+                  accept="video/*"
+                  placeholder="Upload video or paste YouTube/Vimeo/direct URL"
+                />
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-muted-foreground uppercase">Title</label>
                   <input
@@ -394,17 +389,19 @@ export function Inspector() {
                 </div>
                 <div className="space-y-2">
                   {((data.items as any[]) || []).map((src: string, index: number) => (
-                    <div key={index} className="flex gap-1.5 items-center">
-                      <input
-                        type="text"
-                        value={src}
-                        onChange={(e) => handleGalleryImageChange(index, e.target.value)}
-                        className="flex-1 rounded-xl border border-input bg-background px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        placeholder="https://image-url.com"
-                      />
+                    <div key={index} className="flex gap-1.5 items-start">
+                      <div className="flex-1">
+                        <MediaField
+                          label={`Image ${index + 1}`}
+                          value={src}
+                          onChange={(url) => handleGalleryImageChange(index, url)}
+                          accept="image/*"
+                          placeholder="Upload or paste URL"
+                        />
+                      </div>
                       <button
                         onClick={() => removeGalleryImage(index)}
-                        className="text-muted-foreground/60 hover:text-destructive p-1.5 rounded hover:bg-muted"
+                        className="text-muted-foreground/60 hover:text-destructive p-1.5 rounded hover:bg-muted mt-5"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

@@ -6,7 +6,7 @@ export type ContentFormat = 'MARKDOWN' | 'MDX';
 
 export type ReactionType = 'LIKE' | 'LOVE' | 'INSIGHTFUL' | 'FIRE';
 
-export type MediaType = 'IMAGE';
+export type MediaType = 'IMAGE' | 'VIDEO' | 'RAW';
 
 export type CanvasNodeType =
   | 'text'

@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import SmartImage from '@/components/ui/smart-image';
 import type { Post } from '@dikshant/types';
 import { Clock, Eye } from 'lucide-react';
 import DossierLabel from '@/components/ui/dossier-label';
 import { formatDate, formatDossierId } from '@/lib/utils';
-import { getCoverUrl } from '@/lib/posts';
+import { getCoverUrl, getPostPath } from '@/lib/posts';
 
 interface PostCardProps {
   post: Post;
@@ -17,10 +17,10 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
 
   if (variant === 'horizontal') {
     return (
-      <Link href={`/posts/${post.slug}`} className="post-card group flex gap-5">
+      <Link href={getPostPath(post)} className="post-card group flex gap-5">
         {cover && (
           <div className="relative h-24 w-32 shrink-0 overflow-hidden border-2 border-foreground">
-            <Image
+            <SmartImage
               src={cover}
               alt={post.title}
               fill
@@ -42,7 +42,7 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
 
   if (variant === 'compact') {
     return (
-      <Link href={`/posts/${post.slug}`} className="group block border-b border-foreground/20 py-4 last:border-0">
+      <Link href={getPostPath(post)} className="group block border-b border-foreground/20 py-4 last:border-0">
         <div className="flex items-baseline justify-between gap-4">
           <span className="font-mono text-[10px] text-muted-foreground shrink-0">
             {index !== undefined ? String(index + 1).padStart(2, '0') : formatDossierId(post.id)}
@@ -59,10 +59,10 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
   }
 
   return (
-    <Link href={`/posts/${post.slug}`} className="post-card group flex flex-col h-full">
+    <Link href={getPostPath(post)} className="post-card group flex flex-col h-full">
       {cover && (
         <div className="relative aspect-[16/10] -mx-5 -mt-5 mb-4 overflow-hidden border-b-2 border-foreground">
-          <Image
+          <SmartImage
             src={cover}
             alt={post.title}
             fill

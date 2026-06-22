@@ -33,6 +33,8 @@ enum ReactionType {
 
 enum MediaType {
   IMAGE
+  VIDEO
+  RAW
 }
 
 model User {

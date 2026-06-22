@@ -144,7 +144,7 @@ export function PostsTable() {
                   <div className="flex items-center justify-end gap-1">
                     {post.status === 'PUBLISHED' && (
                       <a
-                        href={`${process.env.NEXT_PUBLIC_POST_URL || 'http://localhost:3000'}/posts/${post.slug}`}
+                        href={`${process.env.NEXT_PUBLIC_POST_URL || 'http://localhost:3000'}/posts/${post.id}/${post.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
