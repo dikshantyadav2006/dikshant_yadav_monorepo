@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3002",
-    "build": "next build",
+    "build": "npm run build --workspace=@dikshant/types && npm run build --workspace=@dikshant/shared && next build",
     "start": "next start",
     "lint": "next lint"
   },
