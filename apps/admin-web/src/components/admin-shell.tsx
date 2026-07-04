@@ -3,13 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, LayoutDashboard, LogOut, Plus } from 'lucide-react';
+import { FileText, LayoutDashboard, LogOut, Plus, Settings } from 'lucide-react';
 import ThemeSelector from '../app/theme-selector';
 import { useAuth } from '../context/auth-provider';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/posts/new', label: 'New Post', icon: Plus },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

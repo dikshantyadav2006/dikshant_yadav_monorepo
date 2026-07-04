@@ -9,6 +9,10 @@ export interface UploadResponse {
   type: string;
   width?: number | null;
   height?: number | null;
+  alt?: string | null;
+  blurDataUrl?: string | null;
+  dominantColor?: string | null;
+  responsiveMeta?: Record<string, unknown> | null;
   size: number;
 }
 
