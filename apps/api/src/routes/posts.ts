@@ -3,6 +3,7 @@ import { PostService } from '../services/post.service.js';
 import { requireAdmin, optionalAuthenticate } from '../middlewares/auth.js';
 import crypto from 'crypto';
 import { prisma } from '@dikshant/database';
+import { getCached, setCache, clearCache } from '../lib/cache.js';
 
 export async function postRoutes(fastify: FastifyInstance) {
   // Helpers to get visitor hash
@@ -38,13 +39,17 @@ export async function postRoutes(fastify: FastifyInstance) {
       isAdmin,
     });
 
+    if (!isAdmin) {
+      reply.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+    }
     return result;
   });
 
   // GET /posts/:slug
   fastify.get('/posts/:slug', async (request, reply) => {
     const { slug } = request.params as any;
-    
+    const requestStart = performance.now();
+
     await optionalAuthenticate(request);
     const isAdmin = request.user?.role === 'ADMIN';
 
@@ -53,21 +58,29 @@ export async function postRoutes(fastify: FastifyInstance) {
       return reply.status(404).send({ error: 'Not Found', message: 'Post not found' });
     }
 
-    // Track views asynchronously
     const ip = request.ip || '127.0.0.1';
     const userAgent = request.headers['user-agent'] || '';
     const visitorHash = getVisitorHash(ip, userAgent);
-    
-    try {
-      await PostService.incrementViews(post.id, {
-        path: `/posts/${post.id}/${post.slug}`,
-        visitorHash,
-        referrer: request.headers.referer,
-        userAgent,
-      });
-    } catch (err) {
+
+    void PostService.incrementViews(post.id, {
+      path: `/posts/${post.id}/${post.slug}`,
+      visitorHash,
+      referrer: request.headers.referer,
+      userAgent,
+    }).catch((err) => {
       fastify.log.error(err, 'Failed to track view');
-    }
+    });
+
+    reply.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+
+    fastify.log.info(
+      {
+        type: 'api-post-detail',
+        postId: post.id,
+        durationMs: Math.round(performance.now() - requestStart),
+      },
+      'Post detail served',
+    );
 
     return post;
   });
@@ -85,9 +98,12 @@ export async function postRoutes(fastify: FastifyInstance) {
       excerpt: body.excerpt,
       categoryId: body.categoryId,
       featuredImageId: body.featuredImageId,
+      featuredBannerImageId: body.featuredBannerImageId,
+      featuredBannerImageMeta: body.featuredBannerImageMeta,
       tags: body.tags,
       status: body.status,
       featured: body.featured,
+      featuredPinned: body.featuredPinned,
       seoTitle: body.seoTitle,
       seoDescription: body.seoDescription,
       authorId: request.user!.id,
@@ -108,9 +124,12 @@ export async function postRoutes(fastify: FastifyInstance) {
       excerpt: body.excerpt,
       categoryId: body.categoryId,
       featuredImageId: body.featuredImageId,
+      featuredBannerImageId: body.featuredBannerImageId,
+      featuredBannerImageMeta: body.featuredBannerImageMeta,
       tags: body.tags,
       status: body.status,
       featured: body.featured,
+      featuredPinned: body.featuredPinned,
       seoTitle: body.seoTitle,
       seoDescription: body.seoDescription,
     });
@@ -136,10 +155,21 @@ export async function postRoutes(fastify: FastifyInstance) {
   // Additional helper routes for Categories and Tags
   
   // GET /categories
-  fastify.get('/categories', async () => {
-    return prisma.category.findMany({
+  fastify.get('/categories', async (_request, reply) => {
+    const cached = getCached<any[]>('categories');
+    if (cached) {
+      reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+      return cached;
+    }
+
+    const categories = await prisma.category.findMany({
+      select: { id: true, name: true, slug: true, description: true },
       orderBy: { name: 'asc' },
     });
+
+    setCache('categories', categories, 60_000);
+    reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    return categories;
   });
 
   // POST /categories
@@ -149,16 +179,30 @@ export async function postRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Bad Request', message: 'Name and Slug are required' });
     }
 
-    return prisma.category.create({
+    const category = await prisma.category.create({
       data: { name, slug, description },
     });
+
+    clearCache('categories');
+    return category;
   });
 
   // GET /tags
-  fastify.get('/tags', async () => {
-    return prisma.tag.findMany({
+  fastify.get('/tags', async (_request, reply) => {
+    const cached = getCached<any[]>('tags');
+    if (cached) {
+      reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+      return cached;
+    }
+
+    const tags = await prisma.tag.findMany({
+      select: { id: true, name: true, slug: true },
       orderBy: { name: 'asc' },
     });
+
+    setCache('tags', tags, 60_000);
+    reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    return tags;
   });
 
   // POST /tags
@@ -168,8 +212,11 @@ export async function postRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Bad Request', message: 'Name and Slug are required' });
     }
 
-    return prisma.tag.create({
+    const tag = await prisma.tag.create({
       data: { name, slug, description },
     });
+
+    clearCache('tags');
+    return tag;
   });
 }

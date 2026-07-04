@@ -53,6 +53,7 @@ model User {
   media     Media[]
   bookmarks Bookmark[]
   versions  PostVersion[]
+  preferences UserPreferences?
 
   @@map("users")
 }
@@ -62,12 +63,15 @@ model Post {
   authorId        String      @db.Uuid
   categoryId      String?     @db.Uuid
   featuredImageId String?     @db.Uuid
+  featuredBannerImageId String? @db.Uuid
+  featuredBannerImageMeta Json? @map("featured_banner_image_meta")
   ogImageId       String?     @db.Uuid
   title           String
   slug            String      @unique
   excerpt         String?
   status          PostStatus  @default(DRAFT)
   featured        Boolean     @default(false)
+  featuredPinned  Boolean     @default(false) @map("featured_pinned")
   readingTime     Int         @default(1)
   toc             Json?
   seoTitle        String?
@@ -85,6 +89,7 @@ model Post {
   author        User         @relation(fields: [authorId], references: [id], onDelete: Restrict)
   category      Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   featuredImage Media?       @relation("PostFeaturedImage", fields: [featuredImageId], references: [id], onDelete: SetNull)
+  featuredBannerImage Media? @relation("PostFeaturedBannerImage", fields: [featuredBannerImageId], references: [id], onDelete: SetNull)
   ogImage       Media?       @relation("PostOgImage", fields: [ogImageId], references: [id], onDelete: SetNull)
   content       PostContent?
   tags          PostTag[]
@@ -94,13 +99,48 @@ model Post {
   versions      PostVersion[]
   builderNodes  BuilderNode[]
   builderEdges BuilderEdge[]
+  shareLinks    ShareLink[]
 
   @@index([status, publishedAt])
+  @@index([status])
   @@index([featured, status])
+  @@index([featuredPinned, status, publishedAt])
+  @@index([publishedAt])
   @@index([categoryId, status])
   @@index([authorId])
   @@index([scheduledAt])
   @@map("posts")
+}
+
+model SiteConfig {
+  id String @id @default("default")
+  homepageFeaturedCount Int @default(1) @map("homepage_featured_count")
+  homepageConfig Json? @map("homepage_config")
+  autosaveEnabled Boolean @default(true) @map("autosave_enabled")
+  autosaveIntervalMs Int @default(60000) @map("autosave_interval_ms")
+  socialLinks Json? @map("social_links")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_config")
+}
+
+model UserPreferences {
+  userId String @id @map("user_id") @db.Uuid
+  autosaveEnabled Boolean @default(true) @map("autosave_enabled")
+  autosaveIntervalMs Int @default(60000) @map("autosave_interval_ms")
+  compactEditorMode Boolean @default(false) @map("compact_editor_mode")
+  focusMode Boolean @default(false) @map("focus_mode")
+  defaultVisibility PostStatus @default(DRAFT) @map("default_visibility")
+  defaultFeatured Boolean @default(false) @map("default_featured")
+  defaultImageLayout String? @map("default_image_layout")
+  defaultHeroImageStyle String? @map("default_hero_image_style")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
 }
 
 model PostVersion {
@@ -237,8 +277,9 @@ model Media {
   updatedAt      DateTime  @updatedAt
 
   uploadedBy          User   @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
-  featuredImagePosts  Post[] @relation("PostFeaturedImage")
-  ogImagePosts        Post[] @relation("PostOgImage")
+  featuredImagePosts         Post[] @relation("PostFeaturedImage")
+  featuredBannerImagePosts   Post[] @relation("PostFeaturedBannerImage")
+  ogImagePosts               Post[] @relation("PostOgImage")
 
   @@index([uploadedById])
   @@index([createdAt])
@@ -293,3 +334,16 @@ model Bookmark {
   @@map("bookmarks")
 }
 
+model ShareLink {
+  id        String    @id @default(uuid()) @db.Uuid
+  postId    String    @db.Uuid
+  token     String    @unique
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([postId, createdAt])
+  @@map("share_links")
+}

@@ -6,6 +6,7 @@ function normalizeCanvasData(canvasData: CanvasData): CanvasData {
   return {
     nodes: Array.isArray(canvasData.nodes) ? canvasData.nodes : [],
     edges: Array.isArray(canvasData.edges) ? canvasData.edges : [],
+    blocks: Array.isArray(canvasData.blocks) ? canvasData.blocks : undefined,
   };
 }
 
@@ -14,8 +15,8 @@ function nodeRow(postId: string, node: CanvasNode) {
     id: node.id,
     postId,
     type: node.type,
-    data: (node.data ?? {}) as unknown as Prisma.InputJsonValue,
-    position: (node.position ?? { x: 0, y: 0 }) as unknown as Prisma.InputJsonValue,
+    data: (node.data ?? {}) as any,
+    position: (node.position ?? { x: 0, y: 0 }) as any,
   };
 }
 
@@ -25,8 +26,8 @@ function edgeRow(postId: string, edge: CanvasEdge) {
     postId,
     sourceId: edge.source,
     targetId: edge.target,
-    condition: edge.condition ? (edge.condition as unknown as Prisma.InputJsonValue) : undefined,
-    data: edge.data ? (edge.data as unknown as Prisma.InputJsonValue) : undefined,
+    condition: edge.condition ? (edge.condition as any) : undefined,
+    data: edge.data ? (edge.data as any) : undefined,
   };
 }
 
@@ -49,11 +50,11 @@ export class VisualBuilderService {
   ) {
     const normalized = normalizeCanvasData(canvasData);
 
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const post = await tx.post.update({
         where: { id: postId },
         data: {
-          canvasData: normalized as unknown as Prisma.InputJsonValue,
+          canvasData: normalized as any,
           currentVersion: { increment: 1 },
         },
         select: { currentVersion: true },
@@ -83,7 +84,7 @@ export class VisualBuilderService {
         data: {
           postId,
           version: post.currentVersion,
-          canvasData: normalized as unknown as Prisma.InputJsonValue,
+          canvasData: normalized as any,
           savedById: userId,
           changeLabel: changeLabel ?? null,
         },
