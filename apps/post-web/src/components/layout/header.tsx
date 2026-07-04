@@ -7,12 +7,15 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center border-2 border-foreground bg-foreground text-card font-label text-xs font-bold">
-            IA
+            A
           </div>
           <div className="hidden sm:block">
-            <p className="font-display text-lg leading-none tracking-tight">Intelligence Archive</p>
-            <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground mt-0.5">
-              Editorial Dossier System
+            <p className="font-display text-lg leading-none tracking-tight">ABHAY SINGH YADAV</p>
+            <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground mt-0.5">
+              Reflections from the intersection of law
+            </p>
+            <p className="font-mono text-[7px] uppercase tracking-[0.25em] text-muted-foreground mt-0.5">
+            leadership, and social consciousness
             </p>
           </div>
         </Link>
@@ -24,14 +27,14 @@ export default function Header() {
           <Link href="/search" className="hover:underline underline-offset-4">
             Search
           </Link>
-          <a
+          {/* <a
             href="https://dikshantyadav.in"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline underline-offset-4"
           >
             Portfolio
-          </a>
+          </a> */}
         </nav>
 
         <div className="flex items-center gap-3">

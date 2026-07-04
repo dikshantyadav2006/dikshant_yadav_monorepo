@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE_NAME } from '@/lib/constants';
+import SocialLinks from './social-links';
 
 export default function Footer() {
   return (
@@ -21,24 +22,8 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <p className="dossier-label mb-3">External</p>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="https://dikshantyadav.in" target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4">
-                  Portfolio
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/dikshantyadav" target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="https://x.com/dikshant_yadav" target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4">
-                  Twitter / X
-                </a>
-              </li>
-            </ul>
+            <p className="dossier-label mb-3">Connect</p>
+            <SocialLinks />
           </div>
         </div>
         <div className="mt-10 pt-6 border-t border-foreground/20 flex flex-col sm:flex-row items-center justify-between gap-4">
