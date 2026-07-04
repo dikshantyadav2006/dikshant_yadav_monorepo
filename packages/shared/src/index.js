@@ -1,1 +1,1 @@
-export const SITE_NAME = 'dikshantyadav';
+export const SITE_NAME = 'theabhay.in';

@@ -2,18 +2,17 @@
   "name": "@dikshant/types",
   "version": "0.0.0",
   "private": true,
-  "types": "dist/index.d.ts",
+  "types": "src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts"
+      "types": "./src/index.d.ts"
     },
     "./conditionEvaluator": {
-      "types": "./dist/conditionEvaluator.d.ts",
-      "import": "./dist/conditionEvaluator.js"
+      "types": "./src/conditionEvaluator.d.ts",
+      "import": "./src/conditionEvaluator.js"
     }
   },
-  "files": ["dist"]
-  ,
+  "files": ["src", "dist"],
   "scripts": {
     "build": "node build.js"
   }

@@ -62,6 +62,27 @@ export interface CanvasData {
   blocks?: Block[];
 }
 
+export type ImageLayout = 'auto' | 'wide' | 'standard' | 'portrait' | 'full-width';
+
+export interface ImageFocalPoint {
+  x: number;
+  y: number;
+}
+
+export interface ImageNodeData {
+  src: string;
+  alt?: string;
+  caption?: string;
+  mediaId?: string | null;
+  width?: number | null;
+  height?: number | null;
+  blurDataUrl?: string | null;
+  dominantColor?: string | null;
+  responsiveMeta?: Record<string, any> | null;
+  layout?: ImageLayout;
+  focalPoint?: ImageFocalPoint | null;
+}
+
 export interface PostVersion {
   id: string;
   postId: string;
@@ -80,6 +101,7 @@ export interface User {
   role: Role;
   createdAt: string;
   updatedAt: string;
+  preferences?: UserPreferences | null;
 }
 
 export interface Category {
@@ -117,6 +139,7 @@ export interface Media {
   alt?: string | null;
   blurDataUrl?: string | null;
   dominantColor?: string | null;
+  responsiveMeta?: Record<string, any> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -156,12 +179,18 @@ export interface Post {
   authorId: string;
   categoryId?: string | null;
   featuredImageId?: string | null;
+  featuredBannerImageId?: string | null;
+  featuredBannerImageMeta?: {
+    layout?: ImageLayout;
+    focalPoint?: ImageFocalPoint;
+  } | null;
   ogImageId?: string | null;
   title: string;
   slug: string;
   excerpt?: string | null;
   status: PostStatus;
   featured: boolean;
+  featuredPinned: boolean;
   readingTime: number;
   toc?: any | null;
   seoTitle?: string | null;
@@ -180,6 +209,7 @@ export interface Post {
   author?: User;
   category?: Category | null;
   featuredImage?: Media | null;
+  featuredBannerImage?: Media | null;
   ogImage?: Media | null;
   content?: PostContent | null;
   tags?: { tag: Tag }[] | Tag[];
@@ -190,4 +220,50 @@ export interface Post {
   };
 }
 
+export interface HomepageConfig {
+  featuredLayout?: 'hero-grid';
+  heroSectionStyle?: 'editorial';
+  showLatestArticles?: boolean;
+  showPopularArticles?: boolean;
+  showCategories?: boolean;
+  showTrendingTopics?: boolean;
+}
 
+export interface SocialLink {
+  platform: string;
+  label: string;
+  url: string;
+}
+
+export interface SiteConfig {
+  id: string;
+  homepageFeaturedCount: number;
+  homepageConfig?: HomepageConfig | null;
+  autosaveEnabled: boolean;
+  autosaveIntervalMs: number;
+  socialLinks?: SocialLink[] | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShareLink {
+  id: string;
+  postId: string;
+  token: string;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+export interface UserPreferences {
+  userId: string;
+  autosaveEnabled: boolean;
+  autosaveIntervalMs: number;
+  compactEditorMode: boolean;
+  focusMode: boolean;
+  defaultVisibility: PostStatus;
+  defaultFeatured: boolean;
+  defaultImageLayout?: ImageLayout | null;
+  defaultHeroImageStyle?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
