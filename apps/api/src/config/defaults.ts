@@ -1,3 +1,6 @@
-/** Local dev fallback when DATABASE_URL is not set in the environment. */
+/**
+ * Local dev fallback when DATABASE_URL is not set in the environment.
+ * Set DATABASE_URL in apps/api/.env — never commit real credentials here.
+ */
 export const DEV_DATABASE_URL =
-  'postgresql://neondb_owner:npg_3oNDws4nexRU@ep-little-dawn-apg2n3xz.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require';
+  'postgresql://user:password@localhost:5432/devdb?sslmode=prefer';

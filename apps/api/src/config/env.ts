@@ -7,7 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3001),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string().default('dikshant_yadav_blog_secret_key_change_me_in_prod'),
-  COOKIE_DOMAIN: z.string().default('.dikshantyadav.in'),
+  COOKIE_DOMAIN: z.string().default('.theabhay.in'),
   IMAGEKIT_PUBLIC_KEY: z.string().optional(),
   IMAGEKIT_PRIVATE_KEY: z.string().optional(),
   IMAGEKIT_URL_ENDPOINT: z.string().optional(),
