@@ -1,4 +1,4 @@
-# post.dikshantyadav.in Architecture
+# theabhay.in Architecture
 
 Production blueprint for a dark-first developer publishing platform spanning public sites, admin publishing, shared SSO, API services, database, cache, media, SEO, analytics, and deployment.
 
@@ -29,15 +29,6 @@ flowchart TB
 
 ```txt
 apps/
-  main-web/
-    src/
-      app/
-      features/auth/
-      routes/
-      lib/api-client.ts
-      lib/seo.ts
-    public/
-    vite.config.ts
   post-web/
     src/
       app/
@@ -284,7 +275,7 @@ Fastify plugins:
 - `prisma`: singleton Prisma client.
 - `redis`: Upstash Redis client.
 - `auth`: JWT verify/sign helpers.
-- `cors`: allow `https://dikshantyadav.in`, `https://post.dikshantyadav.in`, `https://work.dikshantyadav.in`, admin preview domains.
+- `cors`: allow `https://theabhay.in`, `https://post.theabhay.in`, `https://work.theabhay.in`, admin preview domains.
 - `rate-limit`: stricter on auth and analytics endpoints.
 
 Service boundaries:
@@ -303,7 +294,7 @@ Cookies:
 
 ```txt
 access_token
-  Domain=.dikshantyadav.in
+  Domain=.theabhay.in
   Path=/
   HttpOnly=true
   Secure=true
@@ -311,7 +302,7 @@ access_token
   MaxAge=15m
 
 refresh_token
-  Domain=.dikshantyadav.in
+  Domain=.theabhay.in
   Path=/v1/auth
   HttpOnly=true
   Secure=true
@@ -324,8 +315,8 @@ Login flow:
 1. Admin submits email/password to `POST /v1/auth/login`.
 2. API verifies password hash.
 3. API creates a refresh token record hash in `users.refreshTokenHash`.
-4. API returns admin profile and sets shared cookies for `.dikshantyadav.in`.
-5. `main-web`, `post-web`, `work-web`, and `admin-web` all call `GET /v1/auth/session` and become authenticated from shared cookies.
+4. API returns admin profile and sets shared cookies for `.theabhay.in`.
+5. `post-web`, and `admin-web` all call `GET /v1/auth/session` and become authenticated from shared cookies.
 
 Refresh flow:
 
@@ -338,7 +329,7 @@ Logout:
 
 1. `POST /v1/auth/logout`.
 2. Null refresh token hash in DB.
-3. Clear both cookies on `.dikshantyadav.in`.
+3. Clear both cookies on `.theabhay.in`.
 
 Security:
 
@@ -510,7 +501,7 @@ Required outputs:
 
 - `sitemap.xml`: all published posts, categories, tags, home.
 - `robots.txt`: allow public pages, disallow admin.
-- Canonical URLs using `https://post.dikshantyadav.in/posts/:slug`.
+- Canonical URLs using `https://theabhay.in/posts/:slug`.
 - Open Graph title, description, image, type.
 - Twitter card: `summary_large_image`.
 - Article schema.org JSON-LD on post pages.
