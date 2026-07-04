@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { PostService } from '../services/post.service.js';
-import { authenticate } from '../middlewares/auth.js';
+import { optionalAuthenticate } from '../middlewares/auth.js';
 
 export async function searchRoutes(fastify: FastifyInstance) {
   // GET /search
@@ -8,16 +8,10 @@ export async function searchRoutes(fastify: FastifyInstance) {
     const query = request.query as any;
     const q = query.q || '';
 
-    let isAdmin = false;
-    try {
-      await authenticate(request, reply);
-      if (request.user?.role === 'ADMIN') {
-        isAdmin = true;
-      }
-    } catch (e) {
-      // Ignore
-    }
+    await optionalAuthenticate(request);
+    const isAdmin = request.user?.role === 'ADMIN';
 
+    reply.header('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=60');
     const posts = await PostService.searchPosts(q, isAdmin);
     return posts;
   });

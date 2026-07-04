@@ -12,6 +12,8 @@ export async function relatedRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Bad Request', message: 'postId query parameter is required' });
     }
 
+    reply.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+
     const posts = await PostService.getRelatedPosts(postId, limit);
     return posts;
   });

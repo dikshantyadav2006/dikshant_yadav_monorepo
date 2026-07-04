@@ -27,7 +27,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       domain: isProd ? env.COOKIE_DOMAIN : undefined, // omit domain for local development to prevent chrome block on localhost
       httpOnly: true,
       secure: isProd,
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
 
@@ -43,6 +43,9 @@ export async function authRoutes(fastify: FastifyInstance) {
     reply.clearCookie('token', {
       path: '/',
       domain: isProd ? env.COOKIE_DOMAIN : undefined,
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
     });
     return { success: true, message: 'Logged out successfully' };
   });

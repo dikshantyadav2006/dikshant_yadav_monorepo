@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
+import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 
@@ -12,6 +13,8 @@ import { reactionRoutes } from './routes/reactions.js';
 import { searchRoutes } from './routes/search.js';
 import { relatedRoutes } from './routes/related.js';
 import { visualBuilderRoutes } from './routes/visual-builder.js';
+import { settingsRoutes } from './routes/settings.js';
+import { shareLinkRoutes } from './routes/share-links.js';
 
 export function buildApp() {
   const app = Fastify({
@@ -21,10 +24,13 @@ export function buildApp() {
   // Register CORS
   app.register(cors, {
     origin: env.NODE_ENV === 'production'
-      ? [/dikshantyadav\.in$/]
+      ? [/dikshantyadav\.in$/, /theabhay\.in$/]
       : true, // true allows localhost:3000 / localhost:3001 etc.
     credentials: true,
   });
+
+  // Register Helmet (security headers)
+  app.register(helmet);
 
   // Register Cookie
   app.register(cookie, {
@@ -44,6 +50,22 @@ export function buildApp() {
     timeWindow: '1 minute',
   });
 
+  app.addHook('onResponse', async (request, reply) => {
+    const responseTime = reply.elapsedTime;
+    if (responseTime > 100 || process.env.LOG_PERF === 'true') {
+      request.log.info(
+        {
+          type: 'api-response',
+          method: request.method,
+          url: request.url,
+          statusCode: reply.statusCode,
+          durationMs: Math.round(responseTime),
+        },
+        'API response timing',
+      );
+    }
+  });
+
   // Register Custom Routes
   app.register(authRoutes);
   app.register(postRoutes);
@@ -52,6 +74,8 @@ export function buildApp() {
   app.register(searchRoutes);
   app.register(relatedRoutes);
   app.register(visualBuilderRoutes);
+  app.register(settingsRoutes);
+  app.register(shareLinkRoutes);
 
   // Global Error Handler
 app.setErrorHandler((error: any, request, reply) => {
