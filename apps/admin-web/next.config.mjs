@@ -4,6 +4,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  transpilePackages: ['@dikshant/ui'],
   images: {
     remotePatterns: [
       {
