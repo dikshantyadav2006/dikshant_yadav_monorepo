@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Noise, ScrambledText, ScrollReveal } from '@animation';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import {ClockAnimation} from '@animation';
 
 const container = {
     hidden: {},
@@ -63,7 +64,7 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
     const width = useTransform(
         scrollYProgress,
         [0, 0.5, 1],
-        ["80vw", "100vw", "90vw"]
+        ["80vw", "100vw", "100vw"]
     )
 
     return (
@@ -73,7 +74,9 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
                 style={{ width }}
                 className="relative mx-auto rounded-md overflow-hidden p-[2vw] py-[5vh]"
             >
-
+                <div className="absolute top-[0%] scale-75 right-[0%] -translate-x-1/5 w-[400px] h-[400px] pointer-events-none select-none opacity-80">
+                    <ClockAnimation />
+                </div>
                 <div className="absolute inset-0 z-[9999] pointer-events-none">
                     <div className="w-full h-full noise">
                         <Noise

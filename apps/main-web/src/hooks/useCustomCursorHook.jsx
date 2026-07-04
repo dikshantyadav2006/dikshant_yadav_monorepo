@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, memo, useMemo } from 'react'
-import { SplashCursor, TargetCursor, MouseFollower } from '@animation'
+import { TargetCursor, MouseFollower } from '@animation'
+// SplashCursor available at @animation/cursor/SplashCursor — uncomment import and JSX below to re-enable
 
 /**
  * Cursor modes - MULTIPLE can be active simultaneously
@@ -32,7 +33,7 @@ export const cursorModes = {
  */
 const useCustomCursorHook = () => {
   // MULTI-CURSOR: Set of active modes (allows SPLASH + TARGET simultaneously)
-  const activeModesRef = useRef(new Set([cursorModes.SPLASH,cursorModes.FOLLOWER])) // Default: Splash enabled
+  const activeModesRef = useRef(new Set([cursorModes.FOLLOWER])) // Default: only light follower cursor
   const isMobileRef = useRef(false)
 
   // Detect mobile ONCE on mount
@@ -48,9 +49,7 @@ const useCustomCursorHook = () => {
    */
   const addCursor = useCallback((mode) => {
     if (isMobileRef.current) return
-    console.log(`[Cursor] Adding: ${mode}. Active cursors:`, Array.from(activeModesRef.current))
     activeModesRef.current.add(mode)
-    console.log(`[Cursor] After add. Active cursors:`, Array.from(activeModesRef.current))
   }, [])
 
   /**
@@ -59,9 +58,7 @@ const useCustomCursorHook = () => {
    */
   const removeCursor = useCallback((mode) => {
     if (isMobileRef.current) return
-    console.log(`[Cursor] Removing: ${mode}. Active cursors:`, Array.from(activeModesRef.current))
     activeModesRef.current.delete(mode)
-    console.log(`[Cursor] After remove. Active cursors:`, Array.from(activeModesRef.current))
   }, [])
 
   /**
@@ -86,8 +83,6 @@ const useCustomCursorHook = () => {
 
       return (
         <>
-          {/* Each cursor self-checks if it's in the active Set */}
-          <SplashCursor enabled={() => activeModesRef.current.has(cursorModes.SPLASH)} />
           <TargetCursor enabled={() => activeModesRef.current.has(cursorModes.TARGET)} />
           <MouseFollower enabled={() => activeModesRef.current.has(cursorModes.FOLLOWER)} />
         </>

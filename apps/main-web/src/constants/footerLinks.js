@@ -50,7 +50,7 @@ export const footerContent = {
   socials: [
     {
       platform: 'instagram',
-      href: 'https://instagram.com/dikshantyadav.profile',
+      href: 'https://instagram.com/dikshantyadav.in',
       label: 'Instagram',
     },
     {
@@ -67,7 +67,7 @@ export const footerContent = {
 
   contact: {
     phone: '+91 70818 84742',
-    email: 'hello@dikshant.dev',
+    email: 'hello@dikshantyadav.in',
     address: 'Based in Delhi, India',
   },
 };

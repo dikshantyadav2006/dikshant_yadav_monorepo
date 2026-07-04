@@ -3,10 +3,56 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DIKSHANT YADAV || PORTFOLIO </title> 
+    <title>Dikshant Yadav | Creative Developer Portfolio</title>
+    <meta name="description" content="Dikshant Yadav — Creative developer crafting modern web experiences. Explore my work in design, development, and interactive projects." />
+    <meta name="keywords" content="Dikshant Yadav, portfolio, creative developer, web developer, frontend, react" />
+    <meta name="author" content="Dikshant Yadav" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.dikshantyadav.in" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Dikshant Yadav | Creative Developer Portfolio" />
+    <meta property="og:description" content="Creative developer crafting modern web experiences." />
+    <meta property="og:url" content="https://www.dikshantyadav.in" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dikshant Yadav | Creative Developer Portfolio" />
+    <meta name="twitter:description" content="Creative developer crafting modern web experiences." />
+
+    <link rel="preconnect" href="https://res.cloudinary.com" />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+
+    <style>
+      #loader {
+        position: fixed; inset: 0; z-index: 999999;
+        display: flex; align-items: center; justify-content: center;
+        background: #091223;
+        color: #c9e7e7;
+        font-family: system-ui, sans-serif;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+      }
+      #loader.hidden {
+        opacity: 0; visibility: hidden; pointer-events: none;
+      }
+      #loader span {
+        font-size: 2rem; font-weight: 700; letter-spacing: 0.15em;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: .3; transform: scale(.95); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+    </style>
   </head>
   <body>
+    <div id="loader"><span>hello@dikshantyadav.in</span></div>
     <div id="root"></div>
+    <script>
+      window.removeLoader = () => document.getElementById('loader').classList.add('hidden');
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

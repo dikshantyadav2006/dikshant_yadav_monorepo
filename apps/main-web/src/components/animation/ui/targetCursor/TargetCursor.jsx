@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 const TargetCursor = ({
     enabled = () => false, // Function to check if cursor is enabled
     targetSelector = '.cursor-target',
-    spinDuration = 2,
+    spinDuration = 7.5,
     hideDefaultCursor = true,
     hoverDuration = 0.2,
     parallaxOn = true
@@ -311,19 +311,19 @@ const TargetCursor = ({
                 style={{ willChange: 'transform' }}
             />
             <div
-                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white -translate-x-[150%] -translate-y-[150%] border-r-0 border-b-0"
+                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[1px] border-white -translate-x-[150%] -translate-y-[150%] border-r-0 border-b-0"
                 style={{ willChange: 'transform' }}
             />
             <div
-                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white translate-x-1/2 -translate-y-[150%] border-l-0 border-b-0"
+                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[1px] border-white translate-x-1/2 -translate-y-[150%] border-l-0 border-b-0"
                 style={{ willChange: 'transform' }}
             />
             <div
-                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white translate-x-1/2 translate-y-1/2 border-l-0 border-t-0"
+                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[1px] border-white translate-x-1/2 translate-y-1/2 border-l-0 border-t-0"
                 style={{ willChange: 'transform' }}
             />
             <div
-                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white -translate-x-[150%] translate-y-1/2 border-r-0 border-t-0"
+                className="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[1px] border-white -translate-x-[150%] translate-y-1/2 border-r-0 border-t-0"
                 style={{ willChange: 'transform' }}
             />
         </div>

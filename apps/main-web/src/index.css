@@ -41,8 +41,8 @@
 }
 
 :root {
-  --dark-color: #121315;
-  --light-color: #EEF4F4;
+  --dark-color: #091223;
+  --light-color: #c9e7e7;
   --courser-color: #1d1e20;
  /*  */
   --primary-dark-color: #232427;
@@ -79,10 +79,6 @@
   src: url('./assets/fonts/Bigger-Display.woff2');
 }
 
-@font-face {
-  font-family: "Oswald";
-  src: url('./assets/fonts/Oswald-Bold.otf');
-}
 
 
 *::selection{

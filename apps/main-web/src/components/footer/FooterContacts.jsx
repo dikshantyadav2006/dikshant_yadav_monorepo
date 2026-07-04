@@ -62,7 +62,7 @@ const FooterContacts = ({ contact, socials }) => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '0px 0px -100px 0px' }}
-            className="not-italic space-y-8"
+            className="not-italic space-y-8 p-6 w-max min-w-[320px] md:min-w-[400px]" 
         >
             {/* Phone */}
             <motion.a
@@ -78,6 +78,7 @@ const FooterContacts = ({ contact, socials }) => {
           hover:text-[--secondary-dark-color]
           dark:hover:text-[--secondary-light-color]
             cursor-target
+            w-fit
         "
             >
                 {contact.phone}

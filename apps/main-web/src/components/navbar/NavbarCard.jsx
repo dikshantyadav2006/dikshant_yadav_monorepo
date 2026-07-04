@@ -1,8 +1,14 @@
-import React from 'react'
+import { BentoGrid } from '@sections'
 
-const NavbarCard = () => {
+const NavbarCard = ({ showNav, isDarkMode, addCursor, removeCursor, cursorModes }) => {
   return (
-    <div>NavbarCard</div>
+    <div className="h-full w-full overflow-y-auto">
+      <BentoGrid
+        addCursor={addCursor}
+        removeCursor={removeCursor}
+        cursorModes={cursorModes}
+      />
+    </div>
   )
 }
 

@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
 
-  base: "/", // ✅ REQUIRED for Vercel SPA routing
+  base: "/",
 
   resolve: {
     alias: {
@@ -15,11 +15,23 @@ export default defineConfig({
       "@sections": path.resolve(__dirname, "./src/components/sections"),
       "@animation": path.resolve(__dirname, "./src/components/animation"),
       "@assets": path.resolve(__dirname, "./src/assets"),
-      "@utils": path.resolve(__dirname, "./src/utils"),
       "@hooks": path.resolve(__dirname, "./src/hooks"),
-      "@styles": path.resolve(__dirname, "./src/styles"),
       "@types": path.resolve(__dirname, "./src/types"),
       "@constants": path.resolve(__dirname, "./src/constants"),
+    },
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          gsap: ["gsap", "@gsap/react"],
+          "gsap-plugins": ["gsap/ScrollTrigger", "gsap/SplitText", "gsap/ScrambleTextPlugin"],
+          "framer-motion": ["framer-motion"],
+          locomotive: ["locomotive-scroll"],
+        },
+      },
     },
   },
 

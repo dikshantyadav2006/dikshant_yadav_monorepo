@@ -23,7 +23,7 @@ const LandingAnimation = () => {
     useGSAP(() => {
         // Random target percentage between 91-99
         const targetPercentage = Math.floor(Math.random() * 9) + 91;
-        const animationDuration = 4; // Duration for counter to reach target
+        const animationDuration = 1.8; // Duration for counter to reach target
 
         const tl = gsap.timeline({
             defaults: { ease: "power2.inOut" }
@@ -37,8 +37,8 @@ const LandingAnimation = () => {
             if (textPathElement) {
                 tl.to(textPathElement, {
                     attr: { startOffset: `${150 * direction}%` },
-                    duration: 4,
-                    ease: "none", // Linear motion for smooth circular travel
+                    duration: animationDuration,
+                    ease: "none",
                 }, 0);
             }
         });
@@ -46,7 +46,7 @@ const LandingAnimation = () => {
         // 2. Counter Animation (0% to random 91-99%)
         tl.to(counterRef.current, {
             innerText: targetPercentage,
-            duration: animationDuration+0.5,
+            duration: animationDuration,
             snap: { innerText: 1 },
             onUpdate: function () {
                 if (counterRef.current) {

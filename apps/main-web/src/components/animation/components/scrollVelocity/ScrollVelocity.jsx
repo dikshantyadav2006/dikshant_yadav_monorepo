@@ -85,15 +85,17 @@ export const ScrollVelocity = ({
 
         const directionFactor = useRef(1);
         useAnimationFrame((t, delta) => {
-            let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+            const scrollFactor = velocityFactor.get();
 
-            if (velocityFactor.get() < 0) {
+            if (scrollFactor < 0) {
                 directionFactor.current = -1;
-            } else if (velocityFactor.get() > 0) {
+            } else if (scrollFactor > 0) {
                 directionFactor.current = 1;
             }
 
-            moveBy += directionFactor.current * moveBy * velocityFactor.get();
+            let moveBy = baseVelocity * (delta / 1000);
+            moveBy += moveBy * Math.abs(scrollFactor);
+            moveBy *= directionFactor.current;
             baseX.set(baseX.get() + moveBy);
         });
 
@@ -109,7 +111,7 @@ export const ScrollVelocity = ({
         return (
             <div className={`${parallaxClassName} relative overflow-hidden`} style={parallaxStyle}>
                 <motion.div
-                    className={`${scrollerClassName} flex whitespace-nowrap text-center font-sans text-4xl font-bold tracking-[-0.02em] drop-shadow md:text-[5rem] md:leading-[5rem]`}
+                    className={`${scrollerClassName} flex whitespace-nowrap`}
                     style={{ x, ...scrollerStyle }}
                 >
                     {spans}

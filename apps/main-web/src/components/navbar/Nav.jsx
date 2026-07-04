@@ -3,7 +3,7 @@ import light from '../../assets/images/light.png';
 import dark from '../../assets/images/dark.png';
 import NavbarCard from './NavbarCard.jsx';
 
-const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCardRef, spanRefs, navCardLinksRefs, addCursor, removeCursor, cursorModes }) => {
+const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCardRef, spanRefs, addCursor, removeCursor, cursorModes }) => {
   const ref = useRef(null)
   
       useEffect(() => {
@@ -30,7 +30,7 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
       }, [addCursor, removeCursor, cursorModes])
   return (
     <>
-      <nav ref={ref} className="top-2 left-0 w-full px-2 md:px-20 py-2 flex justify-between items-center z-999 overflow-hidden">
+      <nav ref={ref} className="relative w-full px-2 md:px-20 py-2 flex justify-between items-center">
         <h1 className="text-[2vw] font-['boldtext'] text-black dark:text-white">Dikshant</h1>
 
         <button onClick={toggleDarkMode} className="px-2 cursor-target cursor-none ">
@@ -51,9 +51,14 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
             <span ref={(el) => (spanRefs.current[2] = el)} className={`w-8 h-[4px] inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
           </div>
         </div>
-         {/* Pass navMainRefs to NavMain component */}
-     <div  ref={(el) => (navCardRef.current = el )} className={`z-[-1] left-0 top-[10vh] absolute w-full h-[90vh] transition-all duration-300  transform ${showNav ? "translate-y-[0%] bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "-translate-y-[200%] pointer-events-none  bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
-      <NavbarCard   showNav={showNav} navCardLinksRefs={navCardLinksRefs} navCardToggleButton={navCardToggleButton}/>
+      <div  ref={navCardRef} className={`z-[-1] left-0 top-0 absolute w-full h-[100vh] ${showNav ? "bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "pointer-events-none bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
+      <NavbarCard 
+            addCursor={addCursor}
+            removeCursor={removeCursor}
+            cursorModes={cursorModes}
+            showNav={showNav}
+            isDarkMode={isDarkMode}
+            navCardToggleButton={navCardToggleButton}/>
       </div>
       </nav>
     </>

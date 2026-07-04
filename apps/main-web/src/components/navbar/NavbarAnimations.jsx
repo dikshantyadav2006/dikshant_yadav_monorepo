@@ -1,10 +1,17 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 
 const useNavbarAnimations = (showNav, setShowNav) => {
-  const navCardRef = useRef([]);
+  const navCardRef = useRef(null);
   const spanRefs = useRef([]);
   const navCardLinksRefs = useRef([]);
+
+  // Initialize card off-screen on mount
+  useEffect(() => {
+    if (navCardRef.current) {
+      gsap.set(navCardRef.current, { y: "-150%" });
+    }
+  }, []);
 
   // Animate the Navbar (Show/Hide)
   const animateNavbarCard = () => {
@@ -12,7 +19,7 @@ const useNavbarAnimations = (showNav, setShowNav) => {
       opacity: 1,
       y: showNav ? "-150%" : "0%",
       duration: 1,
-      ease: "power1.out",
+      ease: "liniear",
     });
 
     setShowNav(!showNav);
