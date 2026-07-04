@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import type { ImageLayout, ImageNodeData } from '@dikshant/types';
 import { 
   Heading as HeadingIcon, 
   AlignLeft, 
@@ -19,6 +20,34 @@ import {
   Trash2
 } from 'lucide-react';
 import { useVisualBuilderStore } from '../../../features/visual-builder/store';
+
+const DEFAULT_FOCAL_POINT = { x: 50, y: 50 };
+
+function resolveAutoImageLayout(width?: number | null, height?: number | null): Exclude<ImageLayout, 'auto' | 'full-width'> {
+  if (!width || !height) return 'standard';
+
+  const aspectRatio = width / height;
+  if (aspectRatio >= 1.55) return 'wide';
+  if (aspectRatio <= 0.9) return 'portrait';
+  return 'standard';
+}
+
+function getPreviewAspectClass(layout?: ImageLayout, width?: number | null, height?: number | null) {
+  const effectiveLayout =
+    layout === 'wide' || layout === 'standard' || layout === 'portrait'
+      ? layout
+      : resolveAutoImageLayout(width, height);
+
+  switch (effectiveLayout) {
+    case 'wide':
+      return 'aspect-video';
+    case 'portrait':
+      return 'aspect-[3/4]';
+    case 'standard':
+    default:
+      return 'aspect-[4/3]';
+  }
+}
 
 // Helper component for standard node layout on the canvas
 interface BaseNodeProps {
@@ -110,13 +139,23 @@ export function TextNode({ id, data, selected }: NodeProps) {
 
 // 3. Image Node
 export function ImageNode({ id, data, selected }: NodeProps) {
-  const src = data.src;
-  const caption = data.caption || '';
+  const imageData = data as ImageNodeData;
+  const src = imageData.src;
+  const caption = imageData.caption || '';
+  const alt = imageData.alt || caption || 'Image preview';
+  const focalPoint = imageData.focalPoint ?? DEFAULT_FOCAL_POINT;
   return (
     <BaseNode id={id} title="Image" icon={<ImageIcon className="w-3.5 h-3.5 text-indigo-500" />} selected={selected}>
       {src ? (
         <div className="space-y-1.5">
-          <img src={src} alt={caption} className="w-full aspect-[2/1] object-cover rounded-md border border-border/40" />
+          <div className={`overflow-hidden rounded-md border border-border/40 bg-muted/30 ${getPreviewAspectClass(imageData.layout, imageData.width, imageData.height)}`}>
+            <img
+              src={src}
+              alt={alt}
+              className="h-full w-full object-cover"
+              style={{ objectPosition: `${focalPoint.x}% ${focalPoint.y}%` }}
+            />
+          </div>
           {caption && <span className="text-[10px] text-muted-foreground line-clamp-1 italic">{caption}</span>}
         </div>
       ) : (

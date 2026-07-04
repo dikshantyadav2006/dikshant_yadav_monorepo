@@ -1,27 +1,52 @@
 'use client';
 
 import { create } from 'zustand';
-import type { CanvasData, CanvasEdge, CanvasNode } from '@dikshant/types';
+import type { CanvasData, CanvasEdge, CanvasNode, ImageLayout } from '@dikshant/types';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+interface FeaturedBannerImageMeta {
+  layout?: ImageLayout;
+  focalPoint?: {
+    x: number;
+    y: number;
+  };
+}
+
+interface PostMetadata {
+  title: string;
+  excerpt: string;
+  status: string;
+  featured: boolean;
+  featuredPinned: boolean;
+  categoryId: string;
+  tagIds: string[];
+  seoTitle: string;
+  seoDescription: string;
+  featuredImageId?: string | null;
+  featuredBannerImageId?: string | null;
+  featuredBannerImageUrl?: string;
+  featuredBannerImageAlt?: string;
+  featuredBannerImageWidth?: number | null;
+  featuredBannerImageHeight?: number | null;
+  featuredBannerImageMeta?: FeaturedBannerImageMeta | null;
+}
+
+interface AutosaveConfig {
+  enabled: boolean;
+  intervalMs: number;
+}
 
 interface VisualBuilderState {
   canvasData: CanvasData;
   selectedNodeIds: string[];
   clipboard: CanvasNode[];
   saveStatus: SaveStatus;
+  isDirty: boolean;
   activeNodeId: string | null;
-  postMetadata: {
-    title: string;
-    excerpt: string;
-    status: string;
-    featured: boolean;
-    categoryId: string;
-    tagIds: string[];
-    seoTitle: string;
-    seoDescription: string;
-  } | null;
-  setPostMetadata: (metadata: any) => void;
+  autosaveConfig: AutosaveConfig;
+  postMetadata: PostMetadata | null;
+  setPostMetadata: (metadata: PostMetadata | null) => void;
   updatePostMetadata: (metadata: Record<string, any>) => void;
   setCanvasData: (canvasData: CanvasData) => void;
   setNodes: (nodes: CanvasNode[]) => void;
@@ -31,6 +56,8 @@ interface VisualBuilderState {
   copyNodes: () => void;
   pasteNodes: () => void;
   setSaveStatus: (status: SaveStatus) => void;
+  setDirty: (isDirty: boolean) => void;
+  setAutosaveConfig: (config: Partial<AutosaveConfig>) => void;
   setActiveNode: (nodeId: string | null) => void;
 }
 
@@ -39,7 +66,9 @@ export const useVisualBuilderStore = create<VisualBuilderState>((set, get) => ({
   selectedNodeIds: [],
   clipboard: [],
   saveStatus: 'idle',
+  isDirty: false,
   activeNodeId: null,
+  autosaveConfig: { enabled: true, intervalMs: 60000 },
   postMetadata: null,
 
   setPostMetadata: (postMetadata) => set({ postMetadata }),
@@ -90,5 +119,9 @@ export const useVisualBuilderStore = create<VisualBuilderState>((set, get) => ({
   },
 
   setSaveStatus: (saveStatus) => set({ saveStatus }),
+  setDirty: (isDirty) => set({ isDirty }),
+  setAutosaveConfig: (config) => set((state) => ({
+    autosaveConfig: { ...state.autosaveConfig, ...config },
+  })),
   setActiveNode: (activeNodeId) => set({ activeNodeId }),
 }));

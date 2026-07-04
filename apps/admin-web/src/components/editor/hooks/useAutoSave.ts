@@ -15,6 +15,8 @@ export function useAutoSave({ postId }: AutoSaveProps) {
   const postMetadata = useVisualBuilderStore((state) => state.postMetadata);
   const saveStatus = useVisualBuilderStore((state) => state.saveStatus);
   const setSaveStatus = useVisualBuilderStore((state) => state.setSaveStatus);
+  const autosaveConfig = useVisualBuilderStore((state) => state.autosaveConfig);
+  const setDirty = useVisualBuilderStore((state) => state.setDirty);
 
   const isDirty = useRef(false);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -40,6 +42,7 @@ export function useAutoSave({ postId }: AutoSaveProps) {
     // If it's different from the last saved state, mark dirty
     if (currentDataStr !== lastSavedDataRef.current) {
       isDirty.current = true;
+      setDirty(true);
       setSaveStatus('idle');
 
       // Reset timer
@@ -47,10 +50,14 @@ export function useAutoSave({ postId }: AutoSaveProps) {
         clearTimeout(saveTimerRef.current);
       }
 
+      if (!autosaveConfig.enabled) {
+        return;
+      }
+
       // Schedule save
       saveTimerRef.current = setTimeout(async () => {
         await triggerSave();
-      }, 3000);
+      }, autosaveConfig.intervalMs);
     }
 
     return () => {
@@ -58,48 +65,58 @@ export function useAutoSave({ postId }: AutoSaveProps) {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [canvasData.nodes, canvasData.edges, postMetadata]);
+  }, [autosaveConfig.enabled, autosaveConfig.intervalMs, canvasData.nodes, canvasData.edges, postMetadata, setDirty, setSaveStatus]);
 
-  const triggerSave = async () => {
-    if (!isDirty.current) return;
+  const triggerSave = async ({ force = false } = {}) => {
+    if (!force && !isDirty.current) return;
     setSaveStatus('saving');
+
+    const state = useVisualBuilderStore.getState();
+    const currentMeta = state.postMetadata;
+    const currentNodes = state.canvasData.nodes;
+    const currentEdges = state.canvasData.edges;
 
     try {
       // Serialize nodes to ordered block structure
-      const blocks = orderNodes(canvasData.nodes, canvasData.edges);
+      const blocks = orderNodes(currentNodes, currentEdges);
       
       const payload = {
-        nodes: canvasData.nodes,
-        edges: canvasData.edges,
+        nodes: currentNodes,
+        edges: currentEdges,
         blocks
       };
 
       await savePostCanvas(postId, payload);
 
       // Save post metadata
-      if (postMetadata) {
+      if (currentMeta) {
         await apiFetch(`/posts/${postId}`, {
           method: 'PATCH',
           body: JSON.stringify({
-            title: postMetadata.title,
-            excerpt: postMetadata.excerpt,
-            status: postMetadata.status,
-            featured: postMetadata.featured,
-            categoryId: postMetadata.categoryId || null,
-            tags: postMetadata.tagIds,
-            seoTitle: postMetadata.seoTitle,
-            seoDescription: postMetadata.seoDescription,
+            title: currentMeta.title,
+            excerpt: currentMeta.excerpt,
+            status: currentMeta.status,
+            featured: currentMeta.featured,
+            featuredPinned: currentMeta.featuredPinned,
+            categoryId: currentMeta.categoryId || null,
+            tags: currentMeta.tagIds,
+            seoTitle: currentMeta.seoTitle,
+            seoDescription: currentMeta.seoDescription,
+            featuredImageId: currentMeta.featuredImageId || null,
+            featuredBannerImageId: currentMeta.featuredBannerImageId || null,
+            featuredBannerImageMeta: currentMeta.featuredBannerImageMeta || null,
           }),
         });
       }
       
       // Update last saved state
       lastSavedDataRef.current = JSON.stringify({
-        nodes: canvasData.nodes,
-        edges: canvasData.edges,
-        metadata: postMetadata
+        nodes: currentNodes,
+        edges: currentEdges,
+        metadata: currentMeta
       });
       isDirty.current = false;
+      setDirty(false);
       setSaveStatus('saved');
 
       // Clear success indicator after 2 seconds
@@ -117,7 +134,7 @@ export function useAutoSave({ postId }: AutoSaveProps) {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
     }
-    await triggerSave();
+    await triggerSave({ force: true });
   };
 
   // Keyboard shortcut listener for Ctrl+S / Cmd+S
@@ -134,8 +151,14 @@ export function useAutoSave({ postId }: AutoSaveProps) {
 
   // Tab close beacon fallback
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isDirty.current) {
+        if (!autosaveConfig.enabled) {
+          event.preventDefault();
+          event.returnValue = '';
+          return '';
+        }
+
         const blocks = orderNodes(canvasData.nodes, canvasData.edges);
         const payload = {
           canvasData: {
@@ -160,8 +183,8 @@ export function useAutoSave({ postId }: AutoSaveProps) {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [canvasData, postId]);
+  }, [autosaveConfig.enabled, canvasData, postId]);
 
-  return { saveImmediately };
+  return { saveImmediately, isDirty: isDirty.current, autosaveEnabled: autosaveConfig.enabled, saveStatus };
 }
 export default useAutoSave;

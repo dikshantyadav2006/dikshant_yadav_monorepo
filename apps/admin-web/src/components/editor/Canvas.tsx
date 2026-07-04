@@ -42,8 +42,9 @@ import {
   ButtonNode,
   AIBlockNode
 } from './nodes/editable-nodes';
+import PreviewPanel from './PreviewPanel';
 
-import type { Post, Tag } from '@dikshant/types';
+import type { Post, Tag, UserPreferences } from '@dikshant/types';
 
 const nodeTypes = {
   heading: HeadingNode,
@@ -76,9 +77,13 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
   const setSelectedNodes = useVisualBuilderStore((state) => state.setSelectedNodes);
   const setPostMetadata = useVisualBuilderStore((state) => state.setPostMetadata);
   const updatePostMetadata = useVisualBuilderStore((state) => state.updatePostMetadata);
+  const setAutosaveConfig = useVisualBuilderStore((state) => state.setAutosaveConfig);
+  const autosaveConfig = useVisualBuilderStore((state) => state.autosaveConfig);
+  const isDirty = useVisualBuilderStore((state) => state.isDirty);
 
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [isVersionsOpen, setIsVersionsOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -91,41 +96,65 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
   useEffect(() => {
     let active = true;
 
-    // Set post metadata into store
-    if (initialPost) {
-      const tags = initialPost.tags ?? [];
-      const tagIds = tags.map((t) => ('tag' in t && t.tag ? t.tag.id : (t as any).id));
-      setPostMetadata({
-        title: initialPost.title || '',
-        excerpt: initialPost.excerpt || '',
-        status: initialPost.status || 'DRAFT',
-        featured: initialPost.featured || false,
-        categoryId: initialPost.categoryId || '',
-        tagIds,
-        seoTitle: initialPost.seoTitle || '',
-        seoDescription: initialPost.seoDescription || '',
-      });
-    } else {
-      setPostMetadata({
-        title: 'Untitled Post',
-        excerpt: '',
-        status: 'DRAFT',
-        featured: false,
-        categoryId: '',
-        tagIds: [],
-        seoTitle: '',
-        seoDescription: '',
-      });
-    }
-
-    async function loadCanvas() {
+    async function loadEditorState() {
       try {
+        const preferences = await apiFetch<UserPreferences>('/preferences').catch(() => null);
+        if (active && preferences) {
+          setAutosaveConfig({
+            enabled: preferences.autosaveEnabled,
+            intervalMs: preferences.autosaveIntervalMs,
+          });
+        }
+
+        // Set post metadata into store
+        if (initialPost) {
+          const tags = initialPost.tags ?? [];
+          const tagIds = tags.map((t) => ('tag' in t && t.tag ? t.tag.id : (t as any).id));
+          setPostMetadata({
+            title: initialPost.title || '',
+            excerpt: initialPost.excerpt || '',
+            status: initialPost.status || 'DRAFT',
+            featured: initialPost.featured || false,
+            featuredPinned: initialPost.featuredPinned || false,
+            categoryId: initialPost.categoryId || '',
+            tagIds,
+            seoTitle: initialPost.seoTitle || '',
+            seoDescription: initialPost.seoDescription || '',
+            featuredImageId: initialPost.featuredImageId || null,
+            featuredBannerImageId: initialPost.featuredBannerImageId || null,
+            featuredBannerImageUrl: initialPost.featuredBannerImage?.publicUrl || '',
+            featuredBannerImageAlt: initialPost.featuredBannerImage?.alt || '',
+            featuredBannerImageWidth: initialPost.featuredBannerImage?.width ?? null,
+            featuredBannerImageHeight: initialPost.featuredBannerImage?.height ?? null,
+            featuredBannerImageMeta: initialPost.featuredBannerImageMeta || null,
+          });
+        } else {
+          setPostMetadata({
+            title: 'Untitled Post',
+            excerpt: '',
+            status: preferences?.defaultVisibility || 'DRAFT',
+            featured: preferences?.defaultFeatured || false,
+            featuredPinned: false,
+            categoryId: '',
+            tagIds: [],
+            seoTitle: '',
+            seoDescription: '',
+            featuredImageId: null,
+            featuredBannerImageId: null,
+            featuredBannerImageUrl: '',
+            featuredBannerImageAlt: '',
+            featuredBannerImageWidth: null,
+            featuredBannerImageHeight: null,
+            featuredBannerImageMeta: null,
+          });
+        }
+
         const data = await getPostCanvas(postId);
         if (active) {
           setCanvasData(data && (data.nodes || data.edges) ? data : { nodes: [], edges: [] });
         }
       } catch (err) {
-        console.error('[Canvas] Failed to load canvas data:', err);
+        console.error('[Canvas] Failed to load editor state:', err);
         if (active) {
           setCanvasData({ nodes: [], edges: [] });
         }
@@ -135,11 +164,22 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
         }
       }
     }
-    loadCanvas();
+    loadEditorState();
     return () => {
       active = false;
     };
-  }, [postId, setCanvasData, setPostMetadata]);
+  }, [initialPost, postId, setAutosaveConfig, setCanvasData, setPostMetadata]);
+
+  const handleBack = useCallback(() => {
+    if (!autosaveConfig.enabled && isDirty) {
+      const confirmed = window.confirm('You have unsaved changes. Leave anyway?');
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    onBack();
+  }, [autosaveConfig.enabled, isDirty, onBack]);
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const hasMoveChange = changes.some(c => c.type === 'position' && c.dragging === false);
@@ -243,8 +283,9 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
         postId={postId}
         postTitle={initialPost?.title || 'Untitled Post'}
         postStatus={initialPost?.status || 'DRAFT'}
-        onBack={onBack}
+        onBack={handleBack}
         onToggleVersions={() => setIsVersionsOpen(!isVersionsOpen)}
+        onTogglePreview={() => setIsPreviewOpen(!isPreviewOpen)}
         onSave={saveImmediately}
         onPublish={handlePublish}
         undo={undo}
@@ -254,6 +295,10 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
       />
 
       <div className="flex flex-1 overflow-hidden relative">
+        {isPreviewOpen ? (
+          <PreviewPanel post={initialPost ?? null} onClose={() => setIsPreviewOpen(false)} />
+        ) : (
+          <>
         {/* Left Drag Palette */}
         <Sidebar />
 
@@ -291,6 +336,8 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
           />
         ) : (
           <Inspector />
+        )}
+      </>
         )}
       </div>
     </div>

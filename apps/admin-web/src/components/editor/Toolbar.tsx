@@ -21,6 +21,7 @@ interface ToolbarProps {
   postStatus: string;
   onBack: () => void;
   onToggleVersions: () => void;
+  onTogglePreview: () => void;
   onSave: () => void;
   onPublish: () => void;
   undo: () => void;
@@ -35,6 +36,7 @@ export function Toolbar({
   postStatus,
   onBack,
   onToggleVersions,
+  onTogglePreview,
   onSave,
   onPublish,
   undo,
@@ -44,6 +46,8 @@ export function Toolbar({
 }: ToolbarProps) {
   const saveStatus = useVisualBuilderStore((state) => state.saveStatus);
   const postMetadata = useVisualBuilderStore((state) => state.postMetadata);
+  const autosaveConfig = useVisualBuilderStore((state) => state.autosaveConfig);
+  const isDirty = useVisualBuilderStore((state) => state.isDirty);
 
   const title = postMetadata?.title || postTitle || 'Untitled Post';
   const status = postMetadata?.status || postStatus || 'DRAFT';
@@ -78,7 +82,13 @@ export function Toolbar({
       default:
         return (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
-            <span>Auto-save enabled</span>
+            <span>
+              {autosaveConfig.enabled
+                ? `Auto-save ${Math.round(autosaveConfig.intervalMs / 1000)}s`
+                : isDirty
+                  ? 'Unsaved changes'
+                  : 'Auto-save off'}
+            </span>
           </div>
         );
     }
@@ -138,8 +148,17 @@ export function Toolbar({
         </div>
       </div>
 
-      {/* Right side: Save, Version History, Publish */}
+      {/* Right side: Preview, Save, Version History, Publish */}
       <div className="flex items-center gap-2">
+        <button
+          onClick={onTogglePreview}
+          className="p-2 hover:bg-muted rounded-xl border border-border/40 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1"
+          title="Preview"
+        >
+          <Eye className="w-4 h-4" />
+          <span className="text-xs font-semibold">Preview</span>
+        </button>
+
         <button
           onClick={onSave}
           className="p-2 hover:bg-muted rounded-xl border border-border/40 text-muted-foreground hover:text-foreground transition-all flex items-center gap-1"

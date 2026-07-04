@@ -1,29 +1,37 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link2, Loader2, Upload } from 'lucide-react';
-import { uploadFile, registerMediaUrl } from '@/lib/upload';
+import { uploadFile, registerMediaUrl, type UploadResponse } from '@/lib/upload';
 
 interface MediaFieldProps {
   label?: string;
   value: string;
   onChange: (url: string) => void;
+  onSelect?: (media: UploadResponse) => void;
   accept?: string;
   placeholder?: string;
+  alt?: string;
 }
 
 export default function MediaField({
   label = 'Media',
   value,
   onChange,
+  onSelect,
   accept = 'image/*,video/*,.pdf',
   placeholder = 'https://example.com/image.jpg',
+  alt,
 }: MediaFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<'upload' | 'url'>('url');
   const [urlInput, setUrlInput] = useState(value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setUrlInput(value);
+  }, [value]);
 
   const handleFile = async (file: File | null) => {
     if (!file) return;
@@ -32,6 +40,7 @@ export default function MediaField({
     try {
       const result = await uploadFile(file);
       onChange(result.secure_url || result.publicUrl);
+      onSelect?.(result);
       setUrlInput(result.secure_url || result.publicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
@@ -48,7 +57,8 @@ export default function MediaField({
     setLoading(true);
     setError('');
     try {
-      await registerMediaUrl(trimmed);
+      const result = await registerMediaUrl(trimmed, alt);
+      onSelect?.(result);
     } catch {
       // URL still works in editor even if media registry fails
     } finally {
