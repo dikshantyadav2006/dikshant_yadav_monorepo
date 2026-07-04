@@ -10,7 +10,15 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  return { title: `${slug.replace(/-/g, ' ')} — Category Archive` };
+  const name = slug.replace(/-/g, ' ');
+  return {
+    title: `${name} — Category Archive`,
+    description: `Browse all dossiers filed under ${name}.`,
+    openGraph: {
+      title: `${name} — Category Archive`,
+      description: `Browse all dossiers filed under ${name}.`,
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: PageProps) {

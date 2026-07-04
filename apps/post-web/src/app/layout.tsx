@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Newsreader, Special_Elite, JetBrains_Mono } from 'next/font/google';
 import Providers from '@/components/providers';
+import NavigationProvider from '@/components/ui/navigation-provider';
 import CommandMenu from '@/components/search/command-menu';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
@@ -35,23 +36,23 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE_NAME} | Dikshant Yadav`,
+    default: `${SITE_NAME} | Abhay Singh Yadav`,
     template: `%s | ${SITE_NAME}`,
   },
-  description: 'Premium editorial reading experience. Intelligence dossiers, technical reports, and archived publications.',
+  description: 'Reflections from the intersection of law, leadership, and social consciousness.',
   metadataBase: new URL(SITE_URL),
   openGraph: {
     title: SITE_NAME,
-    description: 'Intelligence archive and editorial dossier system.',
+    description: 'Reflections from the intersection of law, leadership, and social consciousness.',
     url: SITE_URL,
     siteName: SITE_NAME,
     locale: 'en_US',
     type: 'website',
   },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@dikshantyadav',
-  },
+  // twitter: {
+  //   card: 'summary_large_image',
+  //   creator: '@theabhayin',
+  // },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -63,16 +64,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen paper-texture relative">
         <PaperTexture />
         <Providers>
-          <div className="relative z-10 flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">
-              <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-                {children}
-              </div>
-            </main>
-            <Footer />
-          </div>
-          <CommandMenu />
+          <NavigationProvider>
+            <div className="relative z-10 flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">
+                <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+                  {children}
+                </div>
+              </main>
+              <Footer />
+            </div>
+            <CommandMenu />
+          </NavigationProvider>
         </Providers>
       </body>
     </html>

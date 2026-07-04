@@ -9,52 +9,66 @@ import {
   getPosts,
   getFeaturedPosts,
   getCategories,
+  getSiteConfig,
   getTrendingPosts,
 } from '@/lib/posts';
 
 export default async function HomePage() {
-  const [initialPosts, featuredPosts, categories, trendingPosts] = await Promise.all([
+  const [siteConfig, initialPosts, categories, trendingPosts] = await Promise.all([
+    getSiteConfig(),
     getPosts({ page: 1, limit: 6 }),
-    getFeaturedPosts(3),
     getCategories(),
     getTrendingPosts(5),
   ]);
 
-  const heroPost = featuredPosts[0] || initialPosts.posts[0];
-  const latestPosts = heroPost
-    ? initialPosts.posts.filter((p) => p.id !== heroPost.id)
-    : initialPosts.posts;
+  const featuredPosts = await getFeaturedPosts(siteConfig.homepageFeaturedCount);
+  const homepageConfig = siteConfig.homepageConfig ?? {};
+  const displayedFeaturedIds = new Set(featuredPosts.map((post) => post.id));
+  const latestPosts = initialPosts.posts.filter((p) => !displayedFeaturedIds.has(p.id));
 
   return (
     <div className="space-y-16">
       <section className="text-center space-y-3 pb-4 border-b-2 border-foreground">
         <DossierLabel>Vol. {new Date().getFullYear()} — Public Edition</DossierLabel>
         <h1 className="editorial-headline text-5xl sm:text-6xl md:text-7xl">
-          Intelligence Archive
+          Abhay Singh Yadav 
         </h1>
         <p className="font-serif text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Curated dossiers on engineering, architecture, and technology — presented in the tradition of editorial intelligence reports.
+          Degree: LLB (Hons.)
+- University: Lucknow University
+- Roles: Social Worker, Legal Learner
+- Focus: Academic credibility, leadership, professionalism
         </p>
       </section>
 
       <SearchHero />
 
-      {heroPost && <FeaturedDossier post={heroPost} />}
+      {featuredPosts.length > 0 && (
+        <div className="space-y-16">
+          {featuredPosts.map((post) => (
+            <FeaturedDossier key={post.id} post={post} />
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-16 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-16">
-          <LatestReports posts={latestPosts} />
-          <LoadMoreReports
-            initialPage={1}
-            totalPages={initialPosts.pagination.totalPages}
-          />
+          {homepageConfig.showLatestArticles !== false && (
+            <>
+              <LatestReports posts={latestPosts} />
+              <LoadMoreReports
+                initialPage={1}
+                totalPages={initialPosts.pagination.totalPages}
+              />
+            </>
+          )}
         </div>
         <aside className="lg:col-span-4">
-          <TrendingArticles posts={trendingPosts} />
+          {homepageConfig.showPopularArticles !== false && <TrendingArticles posts={trendingPosts} />}
         </aside>
       </div>
 
-      <CategoriesSection categories={categories} />
+      {homepageConfig.showCategories !== false && <CategoriesSection categories={categories} />}
     </div>
   );
 }

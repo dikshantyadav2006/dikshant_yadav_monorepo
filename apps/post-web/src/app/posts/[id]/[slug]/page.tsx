@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -11,12 +12,29 @@ import ReactionBoard from '@/components/article/reaction-board';
 import ShareButtons from '@/components/article/share-buttons';
 import ContentRenderer from '@/components/content/content-renderer';
 import { mdxComponents } from '@/components/content/mdx-renderer';
-import { getPostByPath, getRelatedPosts, getPostPath } from '@/lib/posts';
+import { RelatedArticlesSkeleton } from '@/components/ui/article-skeleton';
+import {
+  getPostByPath,
+  getRelatedPosts,
+  getPostPath,
+  getPosts,
+} from '@/lib/posts';
 import { resolveBlocks } from '@/lib/canvas';
 import { SITE_URL } from '@/lib/constants';
+import { logServerRender } from '@/lib/perf';
 
 interface PageProps {
   params: Promise<{ id: string; slug: string }>;
+}
+
+export const revalidate = 30;
+
+export async function generateStaticParams() {
+  const data = await getPosts({ limit: 50 });
+  return data.posts.map((post) => ({
+    id: post.id,
+    slug: post.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -41,7 +59,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+async function RelatedArticlesSection({ postId }: { postId: string }) {
+  const relatedPosts = await getRelatedPosts(postId);
+  return <RelatedArticles posts={relatedPosts} />;
+}
+
 export default async function PostPage({ params }: PageProps) {
+  const renderStart = performance.now();
   const { id, slug } = await params;
   const post = await getPostByPath(id, slug);
 
@@ -51,15 +75,19 @@ export default async function PostPage({ params }: PageProps) {
     redirect(getPostPath(post));
   }
 
-  const relatedPosts = await getRelatedPosts(post.id);
   const blocks = resolveBlocks(post.canvasData);
   const hasBlocks = blocks.length > 0;
+
+  logServerRender('post-page', renderStart, {
+    postId: post.id,
+    hasBlocks,
+  });
 
   return (
     <>
       <ReadingProgress />
 
-      <article className="relative">
+      <article className="relative article-enter">
         <ArticleHeader post={post} />
         <MetadataBar post={post} />
 
@@ -71,6 +99,8 @@ export default async function PostPage({ params }: PageProps) {
                 alt={post.featuredImage.alt || post.title}
                 fill
                 priority
+                blurDataUrl={post.featuredImage.blurDataUrl}
+                dominantColor={post.featuredImage.dominantColor}
                 className="object-cover grayscale"
                 sizes="(max-width: 1024px) 100vw, 896px"
               />
@@ -82,7 +112,7 @@ export default async function PostPage({ params }: PageProps) {
         )}
 
         <div className="grid gap-12 xl:grid-cols-[1fr_220px] mt-10">
-          <div className="reading-column min-w-0">
+          <div className="reading-column min-w-0 article-content-enter">
             {hasBlocks ? (
               <ContentRenderer blocks={blocks} />
             ) : (
@@ -102,7 +132,9 @@ export default async function PostPage({ params }: PageProps) {
           </aside>
         </div>
 
-        <RelatedArticles posts={relatedPosts} />
+        <Suspense fallback={<RelatedArticlesSkeleton />}>
+          <RelatedArticlesSection postId={post.id} />
+        </Suspense>
       </article>
     </>
   );

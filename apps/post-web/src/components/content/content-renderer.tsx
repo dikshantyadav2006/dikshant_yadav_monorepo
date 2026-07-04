@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SmartImage from '@/components/ui/smart-image';
+import Masonry from '@/components/ui/masonry';
 import {
   Quote as QuoteIcon,
   HelpCircle,
@@ -11,11 +12,55 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import type { Block } from '@dikshant/types';
+import type { Block, ImageLayout, ImageNodeData } from '@dikshant/types';
 import { cn, slugify } from '@/lib/utils';
 
 interface ContentRendererProps {
   blocks: Block[];
+}
+
+const DEFAULT_FOCAL_POINT = { x: 50, y: 50 };
+
+function resolveAutoImageLayout(width?: number | null, height?: number | null): Exclude<ImageLayout, 'auto' | 'full-width'> {
+  if (!width || !height) return 'standard';
+
+  const aspectRatio = width / height;
+  if (aspectRatio >= 1.55) return 'wide';
+  if (aspectRatio <= 0.9) return 'portrait';
+  return 'standard';
+}
+
+function resolveCropLayout(layout?: ImageLayout, width?: number | null, height?: number | null) {
+  if (layout === 'wide' || layout === 'standard' || layout === 'portrait') {
+    return layout;
+  }
+
+  return resolveAutoImageLayout(width, height);
+}
+
+function getImageAspectClass(layout?: ImageLayout, width?: number | null, height?: number | null) {
+  switch (resolveCropLayout(layout, width, height)) {
+    case 'wide':
+      return 'aspect-video';
+    case 'portrait':
+      return 'aspect-[3/4]';
+    case 'standard':
+    default:
+      return 'aspect-[4/3]';
+  }
+}
+
+function getImageSizes(layout?: ImageLayout, width?: number | null, height?: number | null) {
+  if (layout === 'full-width') {
+    return '(max-width: 768px) 100vw, (max-width: 1280px) calc(100vw - 2rem), 1200px';
+  }
+
+  const cropLayout = resolveCropLayout(layout, width, height);
+  if (cropLayout === 'portrait') {
+    return '(max-width: 768px) 100vw, 540px';
+  }
+
+  return '(max-width: 768px) 100vw, 680px';
 }
 
 function getBlockStyles(data: Record<string, unknown>) {
@@ -173,15 +218,38 @@ function TextBlock({ data }: { data: Record<string, unknown> }) {
 }
 
 function ImageBlock({ data }: { data: Record<string, unknown> }) {
-  const src = data.src as string;
-  const caption = (data.caption as string) || '';
-  const alt = (data.alt as string) || caption || 'Document image';
+  const image = data as unknown as ImageNodeData;
+  const src = image.src;
+  const caption = image.caption || '';
+  const alt = image.alt || caption || 'Document image';
+  const layout = image.layout || 'auto';
+  const focalPoint = image.focalPoint ?? DEFAULT_FOCAL_POINT;
   if (!src) return null;
 
+  const figureClassName = cn(
+    'my-8 border-2 border-foreground overflow-hidden bg-card',
+    layout === 'portrait' && 'mx-auto max-w-[540px]',
+    layout === 'full-width' && 'relative left-1/2 -translate-x-1/2',
+  );
+
+  const figureStyle =
+    layout === 'full-width'
+      ? ({ width: 'min(1200px, calc(100vw - 2rem))', boxShadow: '4px 4px 0 hsl(var(--foreground))' } as React.CSSProperties)
+      : ({ boxShadow: '4px 4px 0 hsl(var(--foreground))' } as React.CSSProperties);
+
   return (
-    <figure className="my-8 border-2 border-foreground overflow-hidden">
-      <div className="relative aspect-[16/10] w-full bg-secondary">
-        <SmartImage src={src} alt={alt} fill className="object-cover" sizes="680px" />
+    <figure className={figureClassName} style={figureStyle}>
+      <div className={cn('relative w-full bg-secondary max-h-[85vh]', getImageAspectClass(layout, image.width, image.height))}>
+        <SmartImage
+          src={src}
+          alt={alt}
+          fill
+          blurDataUrl={image.blurDataUrl}
+          dominantColor={image.dominantColor}
+          className="object-contain"
+          sizes={getImageSizes(layout, image.width, image.height)}
+          style={{ objectPosition: `${focalPoint.x}% ${focalPoint.y}%` }}
+        />
       </div>
       {caption && (
         <figcaption className="border-t-2 border-foreground bg-secondary/50 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -227,13 +295,26 @@ function GalleryBlock({ data }: { data: Record<string, unknown> }) {
   const items = (data.items as string[]) || [];
   if (!items.length) return null;
 
+  const masonryItems = useMemo(
+    () =>
+      items.map((src, i) => ({
+        id: `${i}`,
+        img: src,
+        url: src,
+      })),
+    [items]
+  );
+
   return (
-    <div className={cn('my-8 grid gap-2 border-2 border-foreground p-2', items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
-      {items.map((src, i) => (
-        <div key={i} className="relative aspect-[4/3] overflow-hidden bg-secondary">
-          <SmartImage src={src} alt={`Gallery ${i + 1}`} fill className="object-cover" sizes="340px" />
-        </div>
-      ))}
+    <div className="my-8 border-2 border-foreground bg-card p-2" style={{ boxShadow: '4px 4px 0 hsl(var(--foreground))' }}>
+      <Masonry
+        items={masonryItems}
+        animateFrom="bottom"
+        scaleOnHover={true}
+        hoverScale={0.95}
+        blurToFocus={true}
+        colorShiftOnHover={false}
+      />
     </div>
   );
 }

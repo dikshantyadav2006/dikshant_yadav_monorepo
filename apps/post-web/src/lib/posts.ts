@@ -1,5 +1,7 @@
-import type { Category, Post, Tag } from '@dikshant/types';
+import { cache } from 'react';
+import type { Category, HomepageConfig, Post, Tag } from '@dikshant/types';
 import { API_URL, REVALIDATE_SECONDS } from './constants';
+import { logServerFetch } from './perf';
 
 export interface PostsListResponse {
   posts: Post[];
@@ -11,6 +13,11 @@ export interface PostsListResponse {
   };
 }
 
+export interface SiteConfigPublic {
+  homepageFeaturedCount: number;
+  homepageConfig?: HomepageConfig | null;
+}
+
 export interface PostsQuery {
   page?: number;
   limit?: number;
@@ -19,15 +26,30 @@ export interface PostsQuery {
   tagSlug?: string;
 }
 
-async function serverFetch<T>(path: string, options: RequestInit = {}): Promise<T | null> {
+type FetchTags = string[];
+
+async function serverFetch<T>(
+  path: string,
+  options: RequestInit & { tags?: FetchTags } = {},
+): Promise<T | null> {
+  const start = performance.now();
+  const { tags, ...fetchOptions } = options;
+
   try {
     const res = await fetch(`${API_URL}${path}`, {
-      ...options,
-      next: options.cache === 'no-store' ? undefined : { revalidate: REVALIDATE_SECONDS },
+      ...fetchOptions,
+      next: {
+        revalidate: REVALIDATE_SECONDS,
+        tags: tags ?? ['posts'],
+      },
     });
+
+    logServerFetch(path, start, res.status);
+
     if (!res.ok) return null;
     return res.json();
   } catch {
+    logServerFetch(path, start, 0, { error: true });
     return null;
   }
 }
@@ -40,7 +62,9 @@ export async function getPosts(query: PostsQuery = {}): Promise<PostsListRespons
   if (query.categorySlug) params.set('categorySlug', query.categorySlug);
   if (query.tagSlug) params.set('tagSlug', query.tagSlug);
 
-  const data = await serverFetch<PostsListResponse>(`/posts?${params.toString()}`);
+  const data = await serverFetch<PostsListResponse>(`/posts?${params.toString()}`, {
+    tags: ['posts', 'posts-list'],
+  });
   return data ?? { posts: [], pagination: { total: 0, page: 1, limit: query.limit ?? 10, totalPages: 0 } };
 }
 
@@ -49,18 +73,26 @@ export function getPostPath(post: Pick<Post, 'id' | 'slug'>): string {
 }
 
 export async function getPost(identifier: string): Promise<Post | null> {
-  return serverFetch<Post>(`/posts/${identifier}`, { cache: 'no-store' });
+  return serverFetch<Post>(`/posts/${identifier}`, {
+    tags: ['posts', `post-${identifier}`],
+  });
 }
 
-export async function getPostByPath(id: string, slug: string): Promise<Post | null> {
-  const post = await getPost(id);
-  if (!post) return null;
-  return post;
-}
+export const getPostByPath = cache(async (id: string, _slug: string): Promise<Post | null> => {
+  return getPost(id);
+});
 
 export async function getFeaturedPosts(limit = 3): Promise<Post[]> {
   const data = await getPosts({ featured: true, limit });
   return data.posts;
+}
+
+export async function getSiteConfig(): Promise<SiteConfigPublic> {
+  const data = await serverFetch<SiteConfigPublic>('/site-config', {
+    tags: ['site-config'],
+  });
+
+  return data ?? { homepageFeaturedCount: 1, homepageConfig: null };
 }
 
 export async function getTrendingPosts(limit = 5): Promise<Post[]> {
@@ -71,23 +103,27 @@ export async function getTrendingPosts(limit = 5): Promise<Post[]> {
 }
 
 export async function getRelatedPosts(postId: string, limit = 3): Promise<Post[]> {
-  const data = await serverFetch<Post[]>(`/related?postId=${postId}&limit=${limit}`);
+  const data = await serverFetch<Post[]>(`/related?postId=${postId}&limit=${limit}`, {
+    tags: ['posts', 'related', `related-${postId}`],
+  });
   return data ?? [];
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const data = await serverFetch<Category[]>('/categories');
+  const data = await serverFetch<Category[]>('/categories', { tags: ['categories'] });
   return data ?? [];
 }
 
 export async function getTags(): Promise<Tag[]> {
-  const data = await serverFetch<Tag[]>('/tags');
+  const data = await serverFetch<Tag[]>('/tags', { tags: ['tags'] });
   return data ?? [];
 }
 
 export async function searchPosts(query: string): Promise<Post[]> {
   if (!query.trim()) return [];
-  const data = await serverFetch<Post[]>(`/search?q=${encodeURIComponent(query)}`);
+  const data = await serverFetch<Post[]>(`/search?q=${encodeURIComponent(query)}`, {
+    tags: ['search'],
+  });
   return data ?? [];
 }
 
@@ -103,4 +139,8 @@ export function getPostTags(post: Post): Tag[] {
 
 export function getCoverUrl(post: Post, fallback?: string): string {
   return post.featuredImage?.publicUrl || fallback || '';
+}
+
+export function getFeaturedBannerUrl(post: Post, fallback?: string): string {
+  return post.featuredBannerImage?.publicUrl || getCoverUrl(post, fallback);
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +33,9 @@ interface SmartImageProps {
   priority?: boolean;
   className?: string;
   sizes?: string;
+  blurDataUrl?: string | null;
+  dominantColor?: string | null;
+  style?: CSSProperties;
 }
 
 export default function SmartImage({
@@ -43,8 +47,15 @@ export default function SmartImage({
   priority,
   className,
   sizes,
+  blurDataUrl,
+  dominantColor,
+  style,
 }: SmartImageProps) {
+  const [loaded, setLoaded] = useState(false);
+
   if (!src) return null;
+
+  const blurClass = loaded ? 'smart-image-loaded' : 'smart-image-loading';
 
   if (canOptimize(src)) {
     return (
@@ -55,8 +66,16 @@ export default function SmartImage({
         width={fill ? undefined : width}
         height={fill ? undefined : height}
         priority={priority}
-        className={className}
+        placeholder={blurDataUrl ? 'blur' : 'empty'}
+        blurDataURL={blurDataUrl || undefined}
+        onLoad={() => setLoaded(true)}
+        className={cn('smart-image', blurClass, className)}
         sizes={sizes}
+        style={
+          !blurDataUrl && dominantColor
+            ? { ...style, backgroundColor: dominantColor }
+            : style
+        }
       />
     );
   }
@@ -68,7 +87,18 @@ export default function SmartImage({
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        className={cn('absolute inset-0 h-full w-full object-cover', className)}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        className={cn(
+          'absolute inset-0 h-full w-full object-cover smart-image',
+          blurClass,
+          className,
+        )}
+        style={
+          dominantColor && !loaded
+            ? { ...style, backgroundColor: dominantColor }
+            : style
+        }
       />
     );
   }
@@ -81,7 +111,10 @@ export default function SmartImage({
       width={width}
       height={height}
       loading={priority ? 'eager' : 'lazy'}
-      className={className}
+      decoding="async"
+      onLoad={() => setLoaded(true)}
+      className={cn('smart-image', blurClass, className)}
+      style={style}
     />
   );
 }

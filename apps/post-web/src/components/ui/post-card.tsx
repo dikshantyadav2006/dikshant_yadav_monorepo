@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NavigationLink from '@/components/ui/navigation-link';
 import SmartImage from '@/components/ui/smart-image';
 import type { Post } from '@dikshant/types';
 import { Clock, Eye } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
 
   if (variant === 'horizontal') {
     return (
-      <Link href={getPostPath(post)} className="post-card group flex gap-5">
+      <NavigationLink href={getPostPath(post)} className="post-card group flex gap-5">
         {cover && (
           <div className="relative h-24 w-32 shrink-0 overflow-hidden border-2 border-foreground">
             <SmartImage
@@ -36,13 +36,13 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
           </h3>
           <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{post.excerpt}</p>
         </div>
-      </Link>
+      </NavigationLink>
     );
   }
 
   if (variant === 'compact') {
     return (
-      <Link href={getPostPath(post)} className="group block border-b border-foreground/20 py-4 last:border-0">
+      <NavigationLink href={getPostPath(post)} className="group block border-b border-foreground/20 py-4 last:border-0">
         <div className="flex items-baseline justify-between gap-4">
           <span className="font-mono text-[10px] text-muted-foreground shrink-0">
             {index !== undefined ? String(index + 1).padStart(2, '0') : formatDossierId(post.id)}
@@ -54,12 +54,12 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
             {formatDate(post.publishedAt, 'short')}
           </span>
         </div>
-      </Link>
+      </NavigationLink>
     );
   }
 
   return (
-    <Link href={getPostPath(post)} className="post-card group flex flex-col h-full">
+    <NavigationLink href={getPostPath(post)} className="post-card group flex flex-col h-full">
       {cover && (
         <div className="relative aspect-[16/10] -mx-5 -mt-5 mb-4 overflow-hidden border-b-2 border-foreground">
           <SmartImage
@@ -91,6 +91,6 @@ export default function PostCard({ post, variant = 'default', index }: PostCardP
         )}
         <span className="ml-auto">{formatDate(post.publishedAt, 'short')}</span>
       </div>
-    </Link>
+    </NavigationLink>
   );
 }

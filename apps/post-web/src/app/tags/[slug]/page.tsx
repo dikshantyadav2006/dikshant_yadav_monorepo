@@ -10,7 +10,15 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  return { title: `#${slug.replace(/-/g, ' ')} — Tag Archive` };
+  const name = slug.replace(/-/g, ' ');
+  return {
+    title: `#${name} — Tag Archive`,
+    description: `Browse all dossiers tagged with ${name}.`,
+    openGraph: {
+      title: `#${name} — Tag Archive`,
+      description: `Browse all dossiers tagged with ${name}.`,
+    },
+  };
 }
 
 export default async function TagPage({ params }: PageProps) {

@@ -6,14 +6,14 @@ import DossierFrame from '@/components/layout/dossier-frame';
 import DossierLabel from '@/components/ui/dossier-label';
 import ArchiveStamp from '@/components/ui/archive-stamp';
 import { formatDate, formatDossierId } from '@/lib/utils';
-import { getCoverUrl, getPostPath } from '@/lib/posts';
+import { getFeaturedBannerUrl, getPostPath } from '@/lib/posts';
 
 interface FeaturedDossierProps {
   post: Post;
 }
 
 export default function FeaturedDossier({ post }: FeaturedDossierProps) {
-  const cover = getCoverUrl(post, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80');
+  const cover = getFeaturedBannerUrl(post);
 
   return (
     <DossierFrame label="Featured Dossier" className="relative overflow-hidden">
@@ -53,7 +53,7 @@ export default function FeaturedDossier({ post }: FeaturedDossierProps) {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="relative aspect-[4/5] border-2 border-foreground overflow-hidden">
+          <div className="relative aspect-[7/5] border-2 border-foreground overflow-hidden">
             <SmartImage
               src={cover}
               alt={post.title}
