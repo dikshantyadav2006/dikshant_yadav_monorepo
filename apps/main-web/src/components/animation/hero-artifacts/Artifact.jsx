@@ -1,11 +1,14 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { LinkLabel, ProjectCard, StatusNote, TechArtifact, Achievement } from './ArtifactTypes'
 
+const RESUME_DELAY = 1500
+
 const Artifact = ({ data, onRemove }) => {
   const wrapperRef = useRef(null)
   const innerRef = useRef(null)
   const [hovering, setHovering] = useState(false)
-  const pausedAtRef = useRef(null)
+  const resumeTimeoutRef = useRef(null)
+  const hoveringRef = useRef(false)
 
   const positions = useMemo(() => {
     const midX1 = data.startX + (data.exitX - data.startX) * 0.12
@@ -56,17 +59,31 @@ const Artifact = ({ data, onRemove }) => {
   }, [data.id, data.duration, keyframeName, onRemove])
 
   const onEnter = useCallback(() => {
+    hoveringRef.current = true
     setHovering(true)
-    pausedAtRef.current = Date.now()
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current)
+      resumeTimeoutRef.current = null
+    }
     const el = wrapperRef.current
     if (el) el.style.animationPlayState = 'paused'
   }, [])
 
   const onLeave = useCallback(() => {
+    hoveringRef.current = false
     setHovering(false)
-    pausedAtRef.current = null
-    const el = wrapperRef.current
-    if (el) el.style.animationPlayState = 'running'
+    resumeTimeoutRef.current = setTimeout(() => {
+      if (hoveringRef.current) return
+      const el = wrapperRef.current
+      if (el) el.style.animationPlayState = 'running'
+      resumeTimeoutRef.current = null
+    }, RESUME_DELAY)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current)
+    }
   }, [])
 
   const handleClick = useCallback(() => {
