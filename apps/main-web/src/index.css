@@ -1,6 +1,6 @@
 @font-face {
   font-family: "font-p-1";
-  src: url("./assets/fonts/font-portfolio-f1.woff2") format("woff2");
+  src: url("@dikshant/assets/fonts/font-portfolio-f1.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "font-p-2";
-  src: url("./assets/fonts/font-portfolio-f2.woff2") format("woff2");
+  src: url("@dikshant/assets/fonts/font-portfolio-f2.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -16,14 +16,14 @@
 
 @font-face {
   font-family: "font-p-3";
-  src: url("./assets/fonts/font-portfolio-f3.woff2") format("woff2");
+  src: url("@dikshant/assets/fonts/font-portfolio-f3.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "font-p-4";
-  src: url("./assets/fonts/font-portfolio-f4.woff2") format("woff2");
+  src: url("@dikshant/assets/fonts/font-portfolio-f4.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -66,17 +66,17 @@
 
 @font-face {
   font-family: "boldtext";
-  src: url("./assets/fonts/bold.ttf");
+  src: url("@dikshant/assets/fonts/bold.ttf");
 }
 
 @font-face {
   font-family: "normaltext";
-  src: url("./assets/fonts/normal.ttf");
+  src: url("@dikshant/assets/fonts/normal.ttf");
 }
 
 @font-face {
   font-family: "text1";
-  src: url('./assets/fonts/Bigger-Display.woff2');
+  src: url('@dikshant/assets/fonts/Bigger-Display.woff2');
 }
 
 
