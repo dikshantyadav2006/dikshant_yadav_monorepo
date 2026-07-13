@@ -63,7 +63,7 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
 
     const width = useTransform(
         scrollYProgress,
-        [0, 0.5, 1],
+        [0, 0.4, 1],
         ["80vw", "100vw", "100vw"]
     )
 
@@ -132,17 +132,8 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
                         their experiences.
                     </ScrambledText>
                 </div>
-                <div className="lg:max-w-[30vw] min-h-[40vh] md:max-w-[70vw] flex justify-self-start font-['font-p-1'] uppercase leading-relaxed font-light text-md md:text-md lg:text-2xl ml-[5vw] cursor-target ">
-                    <ScrollReveal
-                        baseOpacity={0.1}
-                        enableBlur
-                        baseRotation={2}
-                        blurStrength={7}
-                    >
-                        Every project I take on is  more than just a task—it’s a story I help tell through design.
-                        I believe a good interface goes beyond colors and fonts;  it’s about the emotions and experiences it evokes
-                    </ScrollReveal>
-                </div>
+                {/* <div className="lg:max-w-[30vw] min-h-[40vh] md:max-w-[70vw] flex justify-self-start font-['font-p-1'] uppercase leading-relaxed font-light text-md md:text-md lg:text-2xl ml-[5vw] cursor-target ">
+                </div> */}
             </motion.div>
         </div>
     );
