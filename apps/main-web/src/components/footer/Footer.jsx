@@ -40,7 +40,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
     return (
         <div ref={ref}>
             <div className='relative' style={{ width: "100vw",mixBlendMode: "difference" }}>
-                <div className="absolute top-[-20%] scale-75 left-[10%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-30">
+                <div className="absolute  top-[200%] scale-75 left-[5%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90">
                     <ClockAnimation />
                 </div>
                 {/* This will be full screen width */}
