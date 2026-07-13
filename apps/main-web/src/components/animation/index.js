@@ -11,3 +11,4 @@ export { default as ScrollFloat } from './texts/scrollFloat/ScrollFloat';
 export { default as ScrollReveal } from './texts/scrollReveal/ScrollReveal';
 export { default as ScrambledText } from './texts/scrambledText/ScrambledText';
 export { default as Noise } from './backgrounds/noise/Noise';
+export { default as ArtifactSpawner } from './hero-artifacts/ArtifactSpawner';

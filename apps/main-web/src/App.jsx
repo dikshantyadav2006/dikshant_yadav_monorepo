@@ -47,7 +47,7 @@ function App() {
         <CursorRenderer />
       </div >
       <div className="sticky top-0 left-0 w-full h-[100vh] z-0">
-        <MainHero addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
+        <MainHero addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} isDesktop={isDesktop} />
       </div>
       <nav className="fixed top-0 left-0 w-screen z-[999]">
         <TopScroller />
@@ -65,7 +65,7 @@ function App() {
       </nav>
       <div className="relative dark:selection:bg-[--light-color] dark:selection:text-[--dark-color] z-0 w-screen transition-colors duration-500 text-[--dark-color] dark:text-[--light-color]">
         <BackgroundLayers isDarkMode={isDarkMode} />
-        {isDesktop && (
+        {/* {isDesktop && (
           <div className="relative" style={{ width: "100vw", paddingTop: "30px", overflowX: "hidden", overflowY: "visible" }}>
             <div className="absolute top-[-60%] lg:top-[-40%] left-[15%] lg:left-[-15%] w-full h-full pointer-events-none mix-blend-difference text-white">
               <AnimationCircularText2 items={[
@@ -78,9 +78,9 @@ function App() {
             </div>
             <ElasticString height={300} />
           </div>
-        )}
+        )} */}
         <div className="w-screen" data-scroll-container>
-          <OutroMarquee />
+          {/* <OutroMarquee /> */}
           <div>
             <ThinkingNote addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
             <LogoMarquee isDarkMode={isDarkMode} />
