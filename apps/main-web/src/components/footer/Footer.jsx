@@ -49,25 +49,25 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
 
                 {/* This will be full screen width */}
                 <ElasticString color="black" height={300} />
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                    className="hidden lg:block absolute  top-[70%] scale-75 left-[25%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90"
-                >
-                    <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 text-center">
-                        <h2
-                            className="font-['playground'] text-[8vw] xl:text-[7vw] leading-none tracking-tight text-[var(--dark-color)] dark:text-[var(--light-color)] cursor-target whitespace-nowrap"
-                            style={{ fontWeight: 300 }}
-                        >
-                            Let's work together!
-                        </h2>
-                    </div>
-                </motion.div>
             </div>
 
-            {/* CTA Section - Desktop only */}
+            {/* CTA Section - All screens */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                className="py-10 sm:py-14 md:py-16 lg:py-0"
+            >
+                <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 text-center">
+                    <h2
+                        className="font-['playground'] text-[10vw] sm:text-[9vw] md:text-[8vw] xl:text-[10vw] leading-none tracking-tight text-[var(--dark-color)] dark:text-[var(--light-color)] cursor-target whitespace-nowrap"
+                        style={{ fontWeight: 300 }}
+                    >
+                        Let's work together!
+                    </h2>
+                </div>
+            </motion.div>
 
             <motion.footer
                 initial={{ opacity: 0 }}
