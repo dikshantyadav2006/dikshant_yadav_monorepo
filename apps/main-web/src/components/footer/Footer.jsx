@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion';
-import FooterBrand from './FooterBrand';
-import FooterNav from './FooterNav';
-import FooterContacts from './FooterContacts';
-import { footerContent } from '@/constants/footerLinks';
-import { ElasticString ,ClockAnimation } from '@animation';
+import React, { useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import FooterBrand from "./FooterBrand";
+import FooterNav from "./FooterNav";
+import FooterContacts from "./FooterContacts";
+import { footerContent } from "@/constants/footerLinks";
+import { ElasticString, ClockAnimation } from "@animation";
 
 /**
  * Footer Component
@@ -17,40 +17,63 @@ import { ElasticString ,ClockAnimation } from '@animation';
  * @component
  */
 const Footer = ({ addCursor, removeCursor, cursorModes }) => {
-    const ref = useRef(null)
+    const ref = useRef(null);
     const currentYear = new Date().getFullYear();
     useEffect(() => {
-        const el = ref.current
-        if (!el) return
+        const el = ref.current;
+        if (!el) return;
 
         // Direct imperative event handlers (NO STATE)
         // On hover: ADD target cursor (both SPLASH + TARGET visible)
-        const handleEnter = () => addCursor(cursorModes.TARGET)
+        const handleEnter = () => addCursor(cursorModes.TARGET);
         // On leave: REMOVE target cursor (only SPLASH visible)
-        const handleLeave = () => removeCursor(cursorModes.TARGET)
+        const handleLeave = () => removeCursor(cursorModes.TARGET);
 
-        el.addEventListener('mouseenter', handleEnter)
-        el.addEventListener('mouseleave', handleLeave)
+        el.addEventListener("mouseenter", handleEnter);
+        el.addEventListener("mouseleave", handleLeave);
 
         return () => {
-            el.removeEventListener('mouseenter', handleEnter)
-            el.removeEventListener('mouseleave', handleLeave)
-        }
-    }, [addCursor, removeCursor, cursorModes])
+            el.removeEventListener("mouseenter", handleEnter);
+            el.removeEventListener("mouseleave", handleLeave);
+        };
+    }, [addCursor, removeCursor, cursorModes]);
     return (
         <div ref={ref}>
-            <div className='relative' style={{ width: "100vw",mixBlendMode: "difference" }}>
+            <div
+                className="relative"
+                style={{ width: "100vw", mixBlendMode: "difference" }}
+            >
                 <div className="absolute  top-[200%] scale-75 left-[5%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90">
                     <ClockAnimation />
                 </div>
+
                 {/* This will be full screen width */}
                 <ElasticString color="black" height={300} />
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                    className="hidden lg:block absolute  top-[70%] scale-75 left-[25%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90"
+                >
+                    <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 text-center">
+                        <h2
+                            className="font-['playground'] text-[8vw] xl:text-[7vw] leading-none tracking-tight text-[var(--dark-color)] dark:text-[var(--light-color)] cursor-target whitespace-nowrap"
+                            style={{ fontWeight: 300 }}
+                        >
+                            Let's work together!
+                        </h2>
+                    </div>
+                </motion.div>
             </div>
+
+            {/* CTA Section - Desktop only */}
+
             <motion.footer
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.8 }}
-                viewport={{ once: true, margin: '0px 0px -50px 0px' }}
+                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
                 className="  font-['font-p-3']      pb-16 md:pb-20 lg:pb-24 "
             >
                 <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12">
@@ -63,7 +86,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.6, delay: 0.1 }}
-                                viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+                                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                                 className="space-y-10"
                             >
                                 {/* Internal Navigation */}
@@ -85,7 +108,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                                 initial={{ opacity: 0, x: 20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.6, delay: 0.15 }}
-                                viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+                                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                                 className="lg:col-start-3"
                             >
                                 <FooterContacts
@@ -102,11 +125,12 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
-                        viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+                        viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                         className="    border-gray-200    flex     flex-col      font-['font-p-2']     md:flex-row     md:items-center     md:justify-between      border-t      gap-4"
                     >
                         <p className="  hover:text-white  cursor-target cursor-nonedark:hover:text-[--light-color] text-xs md:text-sm text-gray-500 uppercase tracking-wide">
-                            © {currentYear} {footerContent.brand.fullName}. All rights reserved.
+                            © {currentYear} {footerContent.brand.fullName}. All rights
+                            reserved.
                         </p>
                         <nav className="flex gap-6">
                             <a

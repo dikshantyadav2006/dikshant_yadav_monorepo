@@ -79,6 +79,14 @@
   src: url('@dikshant/assets/fonts/Bigger-Display.woff2');
 }
 
+@font-face {
+  font-family: "playground";
+  src: url("@dikshant/assets/fonts/682176431c679c24f703811d_PPPlayground-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 
 *::selection{
