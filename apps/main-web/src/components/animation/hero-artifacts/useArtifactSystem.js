@@ -1,8 +1,8 @@
 import { useRef, useCallback, useEffect } from 'react'
 
-const MAX_ARTIFACTS = 2
+const MAX_ARTIFACTS = 5
 const MIN_SPACING_PX = 150
-const SPAWN_COOLDOWN_MS = 5000
+const SPAWN_COOLDOWN_MS =3000
 const TOTAL_DURATION = 11000
 
 const ARTIFACT_POOL = [

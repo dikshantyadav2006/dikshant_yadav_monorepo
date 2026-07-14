@@ -27,11 +27,11 @@ const Artifact = ({ data, onRemove }) => {
   }
   12% {
     transform: translate(${positions.midX1}px, ${data.startY}px);
-    opacity: 0.85;
+    opacity: 1;
   }
   82% {
     transform: translate(${positions.midX2}px, ${data.endY}px);
-    opacity: 0.85;
+    opacity: 1;
   }
   100% {
     transform: translate(${data.exitX}px, ${data.endY}px);
@@ -125,7 +125,7 @@ const Artifact = ({ data, onRemove }) => {
         style={{
           pointerEvents: 'auto',
           cursor: data.clickable ? 'pointer' : 'default',
-          opacity: hovering ? 1 : 0.85,
+          opacity: hovering ? 1 : 1,
           transform: hovering && data.clickable ? 'scale(1.03)' : 'scale(1)',
           transitionProperty: 'opacity, transform',
           transitionDuration: '300ms',
