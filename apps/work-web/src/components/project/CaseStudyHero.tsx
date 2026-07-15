@@ -16,13 +16,13 @@ export default function CaseStudyHero({ image, title, subtitle }: CaseStudyHeroP
           src={image}
           alt={title}
           className="w-full h-auto object-cover"
-          initial={{ scale: 1.1, opacity: 0 }}
+          initial={{ scale: 1.05, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         />
       </div>
 
-      <div className="text-center pt-[60px] md:pt-[80px] pb-[40px]">
+      <div className="text-center pt-[40px] md:pt-[60px] pb-[20px]">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

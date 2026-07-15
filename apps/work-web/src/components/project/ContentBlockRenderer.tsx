@@ -49,7 +49,7 @@ function renderBlock(block: ContentBlock, index: number) {
 
 export default function ContentBlockRenderer({ blocks }: ContentBlockRendererProps) {
   return (
-    <div className="flex flex-col gap-[80px] md:gap-[120px]">
+    <div className="flex flex-col gap-[60px] md:gap-[80px]">
       {blocks.map((block, i) => renderBlock(block, i))}
     </div>
   );
