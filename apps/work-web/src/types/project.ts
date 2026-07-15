@@ -51,6 +51,17 @@ export interface ProjectCredit {
   value: string;
 }
 
+export interface ProjectBento {
+  story: string;
+  client: string;
+  year: string;
+  services: string[];
+  timeline: string;
+  role: string;
+  techStack: string[];
+  results: string;
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -62,6 +73,7 @@ export interface Project {
   image: string;
   overview: string;
   contentBlocks: ContentBlock[];
+  bento: ProjectBento;
   credits: ProjectCredit[];
   nextProject: {
     title: string;

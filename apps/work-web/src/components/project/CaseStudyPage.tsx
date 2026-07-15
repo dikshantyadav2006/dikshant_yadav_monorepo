@@ -5,6 +5,7 @@ import CaseStudyHero from './CaseStudyHero';
 import AboutSection from './AboutSection';
 import SectionHeading from './SectionHeading';
 import ContentBlockRenderer from './ContentBlockRenderer';
+import ProjectBento from './ProjectBento';
 import CreditsSection from './CreditsSection';
 import NextProjectSection from './NextProjectSection';
 
@@ -32,6 +33,8 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
       <div className="h-[1px] bg-border mx-1 my-[60px]" />
 
       <AboutSection overview={project.overview} title={project.title} />
+
+      {project.bento && <ProjectBento {...project.bento} />}
 
       {hasBranding && (
         <>
