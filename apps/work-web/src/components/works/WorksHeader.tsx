@@ -4,30 +4,26 @@ import { motion } from 'framer-motion';
 
 export default function WorksHeader() {
   return (
-    <section className="pt-[120px] pb-[60px] px-1">
-      <div className="flex items-end justify-between">
+    <section className="pt-[120px] pb-[10px] px-1">
+      <div className="grid grid-cols-[auto_1fr] items-end">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-baseline gap-4"
+          transition={{ duration: 0.8 }}
+          className="flex items-center gap-12 pb-4"
         >
-          <span className="font-sans text-[14px] tracking-[0.15em] uppercase opacity-40">
-            *
-          </span>
-          <span className="font-script text-[clamp(60px,8vw,170px)] leading-none italic">
+          <span className="text-[40px] leading-none opacity-80">*</span>
+          <span className="font-script italic leading-none text-[clamp(90px,8vw,180px)] font-light">
             All
           </span>
-          <span className="font-sans text-[14px] tracking-[0.15em] uppercase opacity-40">
-            *
-          </span>
+          <span className="text-[40px] leading-none opacity-80">*</span>
         </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-          className="font-display text-[clamp(80px,14vw,320px)] leading-[0.85] tracking-[-0.08em] uppercase"
+          transition={{ duration: 0.9, delay: 0.1 }}
+          className="justify-self-end font-condensed uppercase leading-[0.78] tracking-[-0.04em] font-black text-[clamp(160px,18vw,420px)]"
         >
           WORKS
         </motion.h1>

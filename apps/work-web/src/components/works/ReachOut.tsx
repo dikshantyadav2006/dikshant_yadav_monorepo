@@ -9,7 +9,7 @@ export default function ReachOut() {
         <p className="font-script text-[40px] md:text-[80px] lg:text-[120px] leading-none mb-2">
           Let&apos;s work together!
         </p>
-        <h2 className="font-display text-[80px] md:text-[140px] lg:text-[220px] leading-[0.85] tracking-[-0.05em] uppercase">
+        <h2 className="font-condensed text-[80px] md:text-[140px] lg:text-[220px] leading-[0.85] tracking-[-0.04em] uppercase">
           REACH OUT
         </h2>
       </AnimatedWrapper>

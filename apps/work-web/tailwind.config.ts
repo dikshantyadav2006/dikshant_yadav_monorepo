@@ -11,6 +11,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ['font-p-1', 'sans-serif'],
+        condensed: ['compact-dark', 'sans-serif'],
         script: ['playground', 'cursive'],
         sans: ['font-p-3', 'system-ui', 'sans-serif'],
         mono: ['font-p-2', 'monospace'],

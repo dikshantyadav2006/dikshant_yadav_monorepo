@@ -37,6 +37,13 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "compact-dark";
+  src: url("/fonts/PPRightGrotesk-CompactDark.woff") format("woff");
+  font-weight: 900;
+  font-display: swap;
+}
+
 :root {
   --bg: #F2F1ED;
   --text: #111111;
