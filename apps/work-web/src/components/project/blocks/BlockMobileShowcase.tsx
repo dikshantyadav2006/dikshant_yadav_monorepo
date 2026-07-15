@@ -29,7 +29,7 @@ export default function BlockMobileShowcase({ mobile, desktop }: BlockMobileShow
                 alt={`Desktop ${i + 1}`}
                 className="w-full object-cover"
                 style={{ height: '700px' }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.01 }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               />
             </motion.div>
@@ -55,7 +55,7 @@ export default function BlockMobileShowcase({ mobile, desktop }: BlockMobileShow
               alt={`Mobile ${i + 1}`}
               className="w-full object-cover"
               style={{ height: '600px' }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             />
           </motion.div>

@@ -28,7 +28,7 @@ export default function BlockPosters({ images, alts, height = '600px' }: BlockPo
             alt={alts[i]}
             className="w-full object-cover"
             style={{ height }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         </motion.div>
