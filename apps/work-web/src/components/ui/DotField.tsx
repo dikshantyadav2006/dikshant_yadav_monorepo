@@ -46,6 +46,7 @@ const DotField = memo(({
   glowColor = 'rgba(255, 120, 80, 0.15)',
   ...rest
 }: DotFieldProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const glowRef = useRef<SVGCircleElement>(null);
@@ -61,23 +62,21 @@ const DotField = memo(({
   const glowIdRef = useRef(`dot-field-glow-${Math.random().toString(36).slice(2, 9)}`);
 
   useEffect(() => {
+    const container = containerRef.current;
     const canvas = canvasRef.current;
     const glowEl = glowRef.current;
-    if (!canvas) return;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let resizeTimer: ReturnType<typeof setTimeout>;
 
-    function resize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(doResize, 100);
-    }
-
     function doResize() {
-      const rect = canvas!.parentElement!.getBoundingClientRect();
+      const rect = container!.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
+
+      if (w === 0 || h === 0) return;
 
       canvas!.width = w * dpr;
       canvas!.height = h * dpr;
@@ -234,7 +233,11 @@ const DotField = memo(({
     }
 
     doResize();
-    window.addEventListener('resize', resize);
+    const resizeObserver = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(doResize, 60);
+    });
+    resizeObserver.observe(container);
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     rafRef.current = requestAnimationFrame(tick);
 
@@ -247,7 +250,7 @@ const DotField = memo(({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       clearInterval(speedInterval);
       clearTimeout(resizeTimer);
-      window.removeEventListener('resize', resize);
+      resizeObserver.disconnect();
       window.removeEventListener('mousemove', onMouseMove);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -258,7 +261,7 @@ const DotField = memo(({
   }, [dotRadius, dotSpacing]);
 
   return (
-    <div className="w-full h-full relative" {...rest}>
+    <div ref={containerRef} className="w-full h-full relative" {...rest}>
       <canvas
         ref={canvasRef}
         style={{
