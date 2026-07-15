@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "font-p-1";
+  src: url("/fonts/font-portfolio-f1.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "font-p-2";
+  src: url("/fonts/font-portfolio-f2.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "font-p-3";
+  src: url("/fonts/font-portfolio-f3.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "font-p-4";
+  src: url("/fonts/font-portfolio-f4.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "playground";
+  src: url("/fonts/PPPlayground-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+
+:root {
+  --bg: #F2F1ED;
+  --text: #111111;
+  --border: #E2E0DA;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'font-p-3', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--text);
+  color: var(--bg);
+}
+
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
