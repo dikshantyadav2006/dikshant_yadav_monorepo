@@ -10,7 +10,7 @@ interface BlockDesktopShowcaseProps {
 export default function BlockDesktopShowcase({ desktop, mobile }: BlockDesktopShowcaseProps) {
   return (
     <div className="px-1">
-      <div className="flex flex-col gap-[4px] mb-[4px]">
+      <div className="flex flex-col gap-[10px] mb-[10px]">
         {desktop.map((src, i) => (
           <motion.div
             key={`desk-${i}`}
@@ -36,7 +36,7 @@ export default function BlockDesktopShowcase({ desktop, mobile }: BlockDesktopSh
       </div>
 
       {mobile && mobile.length > 0 && (
-        <div className="grid grid-cols-2 gap-[4px]">
+        <div className="grid grid-cols-2 gap-[10px]">
           {mobile.map((src, i) => (
             <motion.div
               key={`mob-${i}`}

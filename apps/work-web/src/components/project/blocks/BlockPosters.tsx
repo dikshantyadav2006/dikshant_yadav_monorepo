@@ -10,7 +10,7 @@ interface BlockPostersProps {
 
 export default function BlockPosters({ images, alts, height = '600px' }: BlockPostersProps) {
   return (
-    <div className="grid grid-cols-2 gap-[4px] px-1 max-w-[900px] mx-auto">
+    <div className="grid grid-cols-2 gap-[10px] px-1 max-w-[900px] mx-auto">
       {images.map((src, i) => (
         <motion.div
           key={i}

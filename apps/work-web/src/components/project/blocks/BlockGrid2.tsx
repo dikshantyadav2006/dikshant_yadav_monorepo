@@ -10,7 +10,7 @@ interface BlockGrid2Props {
 
 export default function BlockGrid2({ images, alts, height = '500px' }: BlockGrid2Props) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[4px] px-1">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] px-1">
       {images.map((src, i) => (
         <motion.div
           key={i}
