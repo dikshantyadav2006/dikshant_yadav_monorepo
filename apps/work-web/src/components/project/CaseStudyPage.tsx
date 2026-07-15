@@ -62,7 +62,7 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
         </>
       )}
 
-      <CreditsSection credits={project.credits} />
+      <CreditsSection credits={project.credits} year={project.year} />
 
       <NextProjectSection
         title={project.nextProject.title}
