@@ -18,7 +18,7 @@ export default function SectionHeading({ title, subtitle }: SectionHeadingProps)
     >
       <div className="flex items-center justify-center gap-6">
         <span className="w-2 h-2 rounded-full bg-[var(--text)]" />
-        <p className="font-script italic text-[48px] leading-none">
+        <p className="font-script italic text-[clamp(48px,8vw,100px)] leading-none">
           {title}
         </p>
         <span className="w-2 h-2 rounded-full bg-[var(--text)]" />

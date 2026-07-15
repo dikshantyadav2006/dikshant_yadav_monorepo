@@ -30,7 +30,7 @@ export default function CaseStudyHero({ image, title, subtitle }: CaseStudyHeroP
         >
           <div className="flex items-center justify-center gap-4 mb-4">
             <span className="text-[24px] opacity-60">*</span>
-            <span className="font-script italic text-[clamp(30px,4vw,60px)] leading-none">
+            <span className="font-script italic text-[clamp(36px,5vw,72px)] leading-none">
               {title}
             </span>
             <span className="text-[24px] opacity-60">*</span>
@@ -40,7 +40,7 @@ export default function CaseStudyHero({ image, title, subtitle }: CaseStudyHeroP
             Featured Work
           </p>
 
-          <h1 className="font-display text-[clamp(32px,5vw,72px)] leading-[0.9] uppercase tracking-[-0.03em] font-black">
+          <h1 className="font-display text-[clamp(40px,7vw,96px)] leading-[0.85] uppercase tracking-[-0.04em] font-black">
             {title}
           </h1>
 

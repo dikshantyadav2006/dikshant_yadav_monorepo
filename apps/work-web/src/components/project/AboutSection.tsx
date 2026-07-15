@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 
 interface AboutSectionProps {
   overview: string;
+  title: string;
 }
 
-export default function AboutSection({ overview }: AboutSectionProps) {
+export default function AboutSection({ overview, title }: AboutSectionProps) {
   return (
     <section className="py-[60px] md:py-[80px] px-1">
       <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-[40px]">
@@ -28,8 +29,11 @@ export default function AboutSection({ overview }: AboutSectionProps) {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className="flex flex-col justify-center"
         >
-          <p className="font-script italic text-[clamp(24px,3vw,40px)] mb-6">
+          <p className="font-script italic text-[clamp(28px,4vw,48px)] mb-3">
             The Project
+          </p>
+          <p className="font-display text-[clamp(24px,3.5vw,44px)] uppercase tracking-[-0.03em] font-black leading-[0.9] mb-6">
+            {title}
           </p>
           <p className="font-sans text-[15px] md:text-[17px] leading-[1.8] opacity-60 max-w-[500px]">
             {overview}

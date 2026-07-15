@@ -31,7 +31,7 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
       {/* Divider */}
       <div className="h-[1px] bg-border mx-1 my-[60px]" />
 
-      <AboutSection overview={project.overview} />
+      <AboutSection overview={project.overview} title={project.title} />
 
       {hasBranding && (
         <>

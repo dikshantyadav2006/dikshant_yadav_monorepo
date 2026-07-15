@@ -19,13 +19,13 @@ export default function CreditsSection({ credits }: CreditsSectionProps) {
       >
         <div className="flex items-center justify-center gap-6 mb-[60px]">
           <div className="h-[1px] w-[80px] bg-border" />
-          <p className="font-script italic text-[48px] leading-none">
+          <p className="font-script italic text-[clamp(48px,8vw,100px)] leading-none">
             Credits
           </p>
           <div className="h-[1px] w-[80px] bg-border" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[40px] max-w-[800px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-[40px] max-w-[900px] mx-auto">
           {credits.map((credit, i) => (
             <motion.div
               key={i}
@@ -39,10 +39,10 @@ export default function CreditsSection({ credits }: CreditsSectionProps) {
               }}
               className="text-center"
             >
-              <p className="font-sans text-[11px] uppercase tracking-[0.25em] opacity-40 mb-2">
+              <p className="font-sans text-[11px] uppercase tracking-[0.25em] opacity-40 mb-3">
                 {credit.role}
               </p>
-              <p className="font-sans text-[16px] md:text-[18px]">
+              <p className="font-display text-[clamp(18px,2.5vw,28px)] uppercase tracking-[-0.02em] font-bold">
                 {credit.value}
               </p>
             </motion.div>
