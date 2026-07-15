@@ -12,7 +12,7 @@ export default function MagnetLines({
   className = '',
   style = {}
 }) {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
