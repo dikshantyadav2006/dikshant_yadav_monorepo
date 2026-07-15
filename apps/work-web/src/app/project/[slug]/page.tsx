@@ -36,6 +36,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
+  const { prev, next } = getAdjacentProjects(slug);
+
   return (
     <main className="min-h-screen">
       <div className="max-w-[1800px] mx-auto px-1">
@@ -49,7 +51,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </Link>
         </div>
 
-        <CaseStudyPage project={project} />
+        <CaseStudyPage
+          project={project}
+          prevProject={prev ? { title: prev.title, image: prev.image, slug: prev.slug } : null}
+          nextProject={next ? { title: next.title, image: next.image, slug: next.slug } : null}
+        />
       </div>
 
       <ReachOut />

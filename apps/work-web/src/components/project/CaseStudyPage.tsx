@@ -9,11 +9,19 @@ import ProjectBento from './ProjectBento';
 import CreditsSection from './CreditsSection';
 import NextProjectSection from './NextProjectSection';
 
-interface CaseStudyPageProps {
-  project: Project;
+interface AdjacentProject {
+  title: string;
+  image: string;
+  slug: string;
 }
 
-export default function CaseStudyPage({ project }: CaseStudyPageProps) {
+interface CaseStudyPageProps {
+  project: Project;
+  prevProject: AdjacentProject | null;
+  nextProject: AdjacentProject | null;
+}
+
+export default function CaseStudyPage({ project, prevProject, nextProject }: CaseStudyPageProps) {
   const hasBranding = project.contentBlocks.some(
     (b) => b.type === 'large-image' || b.type === 'posters' || b.type === 'grid-2' || b.type === 'banner'
   );
@@ -65,9 +73,8 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
       <CreditsSection credits={project.credits} year={project.year} />
 
       <NextProjectSection
-        title={project.nextProject.title}
-        image={project.nextProject.image}
-        slug={project.nextProject.slug}
+        prevProject={prevProject}
+        nextProject={nextProject}
       />
     </div>
   );
