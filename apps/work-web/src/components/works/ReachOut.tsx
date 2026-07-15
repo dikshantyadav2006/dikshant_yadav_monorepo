@@ -1,22 +1,33 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedWrapper from '@/components/ui/AnimatedWrapper';
 import MagnetLines from '@/components/ui/MagnetLines';
+import { i } from 'framer-motion/client';
 
 export default function ReachOut() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* MagnetLines background */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
         <MagnetLines
-          rows={20}
-          columns={40}
+          rows={isMobile ? 25 : 40}
+          columns={isMobile ? 25 : 50}
           containerSize="100vw"
           lineColor="#111111"
           lineWidth="1px"
-          lineHeight="20px"
-          baseAngle={-10}
+          lineHeight="2vw"
+          baseAngle={-5}
         />
       </div>
 
@@ -27,7 +38,7 @@ export default function ReachOut() {
             Let&apos;s work together!
           </p>
           <motion.a
-            href="mailto:hello@dikshantyadav.com"
+            href="mailto:hello@dikshantyadav.in"
             initial="rest"
             whileHover="hover"
             animate="rest"
