@@ -17,13 +17,11 @@ export default function BlockBanner({ src, alt, height = '350px' }: BlockBannerP
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="w-full px-1"
     >
-      <motion.img
+      <img
         src={src}
         alt={alt}
-        className="w-full object-cover"
-        style={{ height }}
-        whileHover={{ scale: 1.01 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full h-auto object-contain md:h-[var(--banner-h)] md:object-cover"
+        style={{ '--banner-h': height } as React.CSSProperties}
       />
     </motion.div>
   );

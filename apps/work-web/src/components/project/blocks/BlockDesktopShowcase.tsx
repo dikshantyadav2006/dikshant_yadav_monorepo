@@ -23,13 +23,10 @@ export default function BlockDesktopShowcase({ desktop, mobile }: BlockDesktopSh
               delay: i * 0.1,
             }}
           >
-            <motion.img
+            <img
               src={src}
               alt={`Desktop ${i + 1}`}
-              className="w-full object-cover"
-              style={{ height: '700px' }}
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full h-auto object-contain md:h-[700px] md:object-cover"
             />
           </motion.div>
         ))}
@@ -49,13 +46,10 @@ export default function BlockDesktopShowcase({ desktop, mobile }: BlockDesktopSh
                 delay: i * 0.1,
               }}
             >
-              <motion.img
+              <img
                 src={src}
                 alt={`Mobile ${i + 1}`}
-                className="w-full object-cover"
-                style={{ height: '600px' }}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-auto object-contain md:h-[600px] md:object-cover"
               />
             </motion.div>
           ))}
