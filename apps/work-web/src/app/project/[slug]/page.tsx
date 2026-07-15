@@ -2,9 +2,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getProjectBySlug, getAdjacentProjects, projects } from '@/lib/projects';
-import ProjectHero from '@/components/project/ProjectHero';
-import ProjectInfo from '@/components/project/ProjectInfo';
-import ProjectNav from '@/components/project/ProjectNav';
+import CaseStudyPage from '@/components/project/CaseStudyPage';
+import ReachOut from '@/components/works/ReachOut';
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -37,8 +36,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const { prev, next } = getAdjacentProjects(slug);
-
   return (
     <main className="min-h-screen">
       <div className="max-w-[1800px] mx-auto px-1">
@@ -52,10 +49,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </Link>
         </div>
 
-        <ProjectHero image={project.image} title={project.title} />
-        <ProjectInfo project={project} />
-        <ProjectNav prev={prev} next={next} />
+        <CaseStudyPage project={project} />
       </div>
+
+      <ReachOut />
     </main>
   );
 }
