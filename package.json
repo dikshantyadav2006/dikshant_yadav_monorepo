@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "dev:main": "npm --workspace @dikshant/main-web run dev",
-    "dev": "concurrently -n admin,post,api,main -c yellow,cyan,green,magenta \"npm run dev:admin\" \"npm run dev:post\" \"npm run dev:api\" \"npm run dev:main\"",
+    "dev:work": "npm --workspace @dikshant/work-web run dev",
+    "dev": "concurrently -n admin,post,api,main,work -c yellow,cyan,green,magenta,blue \"npm run dev:admin\" \"npm run dev:post\" \"npm run dev:api\" \"npm run dev:main\" \"npm run dev:work\"",
     "dev:post": "npm --workspace @dikshant/post-web run dev",
     "dev:admin": "npm --workspace @dikshant/admin-web run dev",
     "dev:api": "npm --workspace @dikshant/api run dev",
