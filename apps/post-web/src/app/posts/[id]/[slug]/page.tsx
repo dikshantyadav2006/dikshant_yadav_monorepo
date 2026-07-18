@@ -83,9 +83,43 @@ export default async function PostPage({ params }: PageProps) {
     hasBlocks,
   });
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt || undefined,
+    author: {
+      '@type': 'Person',
+      name: post.author?.name || 'Abhay Singh Yadav',
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Intelligence Archive',
+      url: SITE_URL,
+    },
+    datePublished: post.publishedAt || undefined,
+    dateModified: post.updatedAt || undefined,
+    url: `${SITE_URL}${getPostPath(post)}`,
+    image: post.featuredImage?.publicUrl || undefined,
+    ...(post.category && {
+      articleSection: [post.category.name],
+    }),
+    ...(post.tags?.length && {
+      keywords: post.tags
+        .map((t) => ('tag' in t && t.tag ? t.tag.name : (t as { name: string }).name))
+        .join(', '),
+    }),
+  };
+
   return (
     <>
       <ReadingProgress />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <article className="relative article-enter">
         <ArticleHeader post={post} />

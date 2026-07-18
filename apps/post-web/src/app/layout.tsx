@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Newsreader, Special_Elite, JetBrains_Mono } from 'next/font/google';
 import Providers from '@/components/providers';
 import NavigationProvider from '@/components/ui/navigation-provider';
@@ -34,6 +34,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#091223',
+};
+
 export const metadata: Metadata = {
   title: {
     default: `${SITE_NAME} | Abhay Singh Yadav`,
@@ -41,6 +45,20 @@ export const metadata: Metadata = {
   },
   description: 'Reflections from the intersection of law, leadership, and social consciousness.',
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'manifest',
+        url: '/site.webmanifest',
+      },
+    ],
+  },
   openGraph: {
     title: SITE_NAME,
     description: 'Reflections from the intersection of law, leadership, and social consciousness.',
@@ -48,11 +66,28 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
   },
-  // twitter: {
-  //   card: 'summary_large_image',
-  //   creator: '@theabhayin',
-  // },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_NAME,
+    description: 'Reflections from the intersection of law, leadership, and social consciousness.',
+    images: [`${SITE_URL}/og-image.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
