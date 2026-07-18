@@ -1,0 +1,30 @@
+{
+  "name": "Dikshant Yadav | Frontend Developer & Electrical Engineer",
+  "short_name": "Dikshant Yadav",
+  "description": "Portfolio of Dikshant Yadav. Frontend Developer, React Developer, Next.js Developer, UI/UX Designer and Electrical Engineering Graduate.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#091223",
+  "theme_color": "#091223",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "categories": ["portfolio", "technology", "design"],
+  "lang": "en",
+  "dir": "ltr"
+}
