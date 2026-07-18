@@ -1,4 +1,26 @@
 User-agent: *
 Allow: /
+Disallow: /assets/
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
 
 Sitemap: https://www.dikshantyadav.in/sitemap.xml
+Sitemap: https://work.dikshantyadav.in/sitemap.xml
+Sitemap: https://post.dikshantyadav.in/sitemap.xml
