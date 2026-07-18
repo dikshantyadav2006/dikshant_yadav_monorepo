@@ -1,0 +1,30 @@
+{
+  "name": "Intelligence Archive | Abhay Singh Yadav",
+  "short_name": "Intelligence Archive",
+  "description": "Reflections from the intersection of law, leadership, and social consciousness.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#091223",
+  "theme_color": "#091223",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "categories": ["blog", "education", "news"],
+  "lang": "en",
+  "dir": "ltr"
+}
