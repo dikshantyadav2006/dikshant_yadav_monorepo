@@ -1,0 +1,27 @@
+# Dikshant Yadav
+
+Frontend Developer, React Developer, Next.js Developer, UI/UX Designer and Electrical Engineering Graduate based in Delhi, India.
+
+## Sites
+
+- Portfolio: https://www.dikshantyadav.in
+- Projects & Case Studies: https://work.dikshantyadav.in
+- Blog & Articles: https://post.dikshantyadav.in
+
+## About
+
+Dikshant Yadav is a creative frontend developer specializing in React, Next.js, and modern web technologies. He builds immersive digital experiences combining design and development.
+
+## Skills
+
+- React.js, Next.js, JavaScript, TypeScript
+- Tailwind CSS, GSAP, Framer Motion, Three.js
+- UI/UX Design, Responsive Design
+- Node.js, Fastify, Prisma, PostgreSQL
+
+## Contact
+
+- Email: hello@dikshantyadav.in
+- GitHub: https://github.com/dikshant-yadav
+- LinkedIn: https://linkedin.com/in/dikshant-yadav
+- Instagram: https://instagram.com/dikshantyadav.in

@@ -1,0 +1,24 @@
+# Dikshant Yadav — Works
+
+Project case studies and portfolio works by Dikshant Yadav, a Frontend Developer based in Delhi, India.
+
+## About
+
+This site showcases selected works and case studies by Dikshant Yadav. Each project demonstrates expertise in frontend development, UI/UX design, and modern web technologies.
+
+## Projects
+
+- Luxury Watch Brand — E-commerce experience with React, GSAP, Three.js
+- Bespoke Luxury Porsche — Custom car configurator with Next.js, Framer Motion, Tailwind
+- Naggy's — Restaurant identity and web design with React, GSAP, Prismic
+- PineGold IRA — Financial services platform with Next.js, Framer Motion, Sanity
+- Lori's Academy — Piano academy website with React, Tailwind, Contentful
+- Lightwaves — Creative agency portfolio with React, Three.js, GSAP
+
+## Main Portfolio
+
+https://www.dikshantyadav.in
+
+## Blog
+
+https://post.dikshantyadav.in
