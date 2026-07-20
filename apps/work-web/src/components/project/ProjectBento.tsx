@@ -71,13 +71,27 @@ function BentoCardItem({ card, index }: { card: BentoCard; index: number }) {
       exitPos.current = pos;
       if (bgRef.current) {
         const el = bgRef.current;
-        // Freeze at current state, then animate out from exit point
+
+        const distToLeft = pos.x;
+        const distToRight = 100 - pos.x;
+        const distToTop = pos.y;
+        const distToBottom = 100 - pos.y;
+        const minHorizontal = Math.min(distToLeft, distToRight);
+        const minVertical = Math.min(distToTop, distToBottom);
+
         el.style.transition = 'none';
         el.style.transform = 'scale(1)';
-        el.offsetHeight; // reflow
-        el.style.transformOrigin = `${pos.x}% ${pos.y}%`;
-        el.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
-        el.style.transform = 'scale(0)';
+        el.offsetHeight;
+
+        if (minHorizontal <= minVertical) {
+          el.style.transformOrigin = distToLeft <= distToRight ? '0% 50%' : '100% 50%';
+          el.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+          el.style.transform = 'scaleX(0)';
+        } else {
+          el.style.transformOrigin = distToTop <= distToBottom ? '50% 0%' : '50% 100%';
+          el.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+          el.style.transform = 'scaleY(0)';
+        }
       }
       isLeaving.current = true;
       rafId.current = requestAnimationFrame(() => {
@@ -126,7 +140,7 @@ function BentoCardItem({ card, index }: { card: BentoCard; index: number }) {
       {/* Animated background — enter from cursor, exit toward cursor */}
       <span
         ref={bgRef}
-        className="absolute inset-0 bg-[#EAE8E3] pointer-events-none"
+        className="absolute inset-0 bg-[#D2D8CB] pointer-events-none"
         style={{ transform: 'scale(0)', willChange: 'transform, transform-origin' }}
       />
 
@@ -163,7 +177,7 @@ export default function ProjectBento({
 
   return (
     <section className="py-[60px] md:py-[80px] px-1">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-[1px] bg-border">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-[1px] bg-[#C2CABB]">
         {cards.map((card, i) => (
           <BentoCardItem key={card.label} card={card} index={i} />
         ))}
