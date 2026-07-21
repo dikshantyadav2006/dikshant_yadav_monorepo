@@ -22,7 +22,7 @@ const MainHero = ({ addCursor, removeCursor, cursorModes, isDesktop }) => {
 
   return (
     <>
-      <div ref={ref} className="w-full relative min-h-[100vh] flex justify-between flex-col items-center bg-[#B5CFCF] overflow-hidden">
+      <div ref={ref} className="w-full relative min-h-[100vh] flex justify-between flex-col items-center bg-[#F8F4E9] overflow-hidden">
         <div
           className="absolute inset-0 bottom-0 scale-105 h-full bg-center bg-no-repeat"
           style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
