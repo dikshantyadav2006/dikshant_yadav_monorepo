@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import FooterBrand from "./FooterBrand";
 import FooterNav from "./FooterNav";
 import FooterContacts from "./FooterContacts";
+import EditorialContactForm from "./EditorialContactForm";
 import { footerContent } from "@/constants/footerLinks";
 import { ElasticString, ClockAnimation } from "@animation";
 
@@ -51,15 +52,21 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                 <ElasticString color="black" height={300} />
             </div>
 
-            {/* CTA Section - All screens */}
+            {/* CTA Section - Editorial Contact Form */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                className="py-10 sm:py-14 md:py-16 lg:py-0"
+                className="py-16 sm:py-20 md:py-24 lg:py-32"
             >
-                
+                <EditorialContactForm
+                    title="Let's work together!"
+                    budgets={["5K–10K", "10K–20K", "20K–50K", "Custom"]}
+                    onSubmit={(data) => {
+                        console.log("Form submitted:", data);
+                    }}
+                />
             </motion.div>
 
             <motion.footer

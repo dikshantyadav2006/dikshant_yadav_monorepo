@@ -3,3 +3,7 @@ export { default as FooterBrand } from './FooterBrand';
 export { default as FooterNav } from './FooterNav';
 export { default as FooterContacts } from './FooterContacts';
 export { default as FooterSocials } from './FooterSocials';
+export { default as EditorialContactForm } from './EditorialContactForm';
+export { default as EditorialField } from './EditorialField';
+export { default as EditorialTextarea } from './EditorialTextarea';
+export { default as EditorialBudgetSelector } from './EditorialBudgetSelector';
