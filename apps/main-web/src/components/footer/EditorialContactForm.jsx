@@ -254,13 +254,14 @@ const EditorialContactForm = ({
                 text-left
                 w-full
                 py-3
+                corsor-pointer
                 flex
                 items-center
                 gap-3
               "
             >
               {status === STATUS.SUBMITTING && (
-                <span className="inline-block w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />
+                <span className="inline-block cursor-pointer w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />
               )}
               <span>
                 {status === STATUS.SUBMITTING && 'SENDING...'}
@@ -301,6 +302,7 @@ const EditorialContactForm = ({
                 md:text-xs
                 uppercase
                 tracking-[0.08em]
+                corsor-pointer
                 ${status === STATUS.SUCCESS
                   ? 'text-green-600 dark:text-green-400'
                   : 'text-red-500 dark:text-red-400'
