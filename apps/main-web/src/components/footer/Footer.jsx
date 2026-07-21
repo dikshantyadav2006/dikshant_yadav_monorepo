@@ -59,14 +59,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                 viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                 className="py-10 sm:py-14 md:py-16 lg:py-0"
             >
-                <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 text-center">
-                    <h2
-                        className="font-['playground'] text-[10vw] sm:text-[9vw] md:text-[8vw] xl:text-[10vw] leading-none tracking-tight text-[var(--dark-color)] dark:text-[var(--light-color)] cursor-target whitespace-nowrap"
-                        style={{ fontWeight: 300 }}
-                    >
-                        Let's work together!
-                    </h2>
-                </div>
+                
             </motion.div>
 
             <motion.footer

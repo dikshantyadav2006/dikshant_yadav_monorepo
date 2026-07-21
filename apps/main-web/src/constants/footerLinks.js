@@ -16,13 +16,13 @@ export const footerContent = {
       label: 'About Me',
       href: 'about',
     },
-    {
-      label: 'Services',
-      href: 'services',
-    },
+    // {
+    //   label: 'Services',
+    //   href: 'services',
+    // },
     {
       label: 'Works',
-      href: 'works',
+      href: 'works', // FOR WORKS PAGE I HAVE NEW WEBSITE https://work.dikshantyadav.in/
     },
   ],
 

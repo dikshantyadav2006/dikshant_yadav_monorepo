@@ -27,7 +27,7 @@ const FooterBrand = ({ name }) => {
       >
         <ScrollFloat
           enter={{ y: '25%', opacity: 0.5 }}
-          to={{ y: '-5%', opacity: 1 }}
+          to={{ y: '-10%', opacity: .81 }}
           exit={{ y: '0%', opacity: 1 }}
         >
           {name}
