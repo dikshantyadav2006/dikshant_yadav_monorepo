@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import EditorialField from './EditorialField';
 import EditorialTextarea from './EditorialTextarea';
 import EditorialBudgetSelector from './EditorialBudgetSelector';
@@ -34,6 +34,13 @@ const validate = (data) => {
   return errors;
 };
 
+const STATUS = {
+  IDLE: 'idle',
+  SUBMITTING: 'submitting',
+  SUCCESS: 'success',
+  ERROR: 'error',
+};
+
 /**
  * EditorialContactForm Component
  * Premium editorial inquiry experience
@@ -60,7 +67,8 @@ const EditorialContactForm = ({
   });
 
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState(STATUS.IDLE);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -89,7 +97,7 @@ const EditorialContactForm = ({
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (status === STATUS.SUBMITTING) return;
 
       const validationErrors = validate(formData);
       if (Object.keys(validationErrors).length > 0) {
@@ -97,15 +105,31 @@ const EditorialContactForm = ({
         return;
       }
 
-      setIsSubmitting(true);
+      setStatus(STATUS.SUBMITTING);
+      setStatusMessage('');
+
       try {
         await onSubmit?.(formData);
-      } finally {
-        setIsSubmitting(false);
+        setStatus(STATUS.SUCCESS);
+        setStatusMessage('MESSAGE SENT');
+        setFormData({ name: '', phone: '', email: '', message: '', budget: '' });
+        setTimeout(() => {
+          setStatus(STATUS.IDLE);
+          setStatusMessage('');
+        }, 4000);
+      } catch (err) {
+        setStatus(STATUS.ERROR);
+        setStatusMessage('SOMETHING WENT WRONG');
+        setTimeout(() => {
+          setStatus(STATUS.IDLE);
+          setStatusMessage('');
+        }, 4000);
       }
     },
-    [formData, isSubmitting, onSubmit]
+    [formData, status, onSubmit]
   );
+
+  const isIdle = status === STATUS.IDLE;
 
   return (
     <section
@@ -152,6 +176,7 @@ const EditorialContactForm = ({
             required
             autoComplete="name"
             error={errors.name}
+            disabled={!isIdle}
           />
 
           <EditorialField
@@ -162,6 +187,7 @@ const EditorialContactForm = ({
             onChange={handleChange}
             autoComplete="tel"
             error={errors.phone}
+            disabled={!isIdle}
           />
 
           <EditorialField
@@ -173,6 +199,7 @@ const EditorialContactForm = ({
             required
             autoComplete="email"
             error={errors.email}
+            disabled={!isIdle}
           />
 
           <EditorialTextarea
@@ -183,6 +210,7 @@ const EditorialContactForm = ({
             rows={4}
             height={85}
             error={errors.message}
+            disabled={!isIdle}
           />
 
           <EditorialBudgetSelector
@@ -191,6 +219,7 @@ const EditorialContactForm = ({
             value={formData.budget}
             onChange={handleBudgetChange}
             error={errors.budget}
+            disabled={!isIdle}
           />
 
           {/* Submit CTA */}
@@ -203,7 +232,7 @@ const EditorialContactForm = ({
           >
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={!isIdle}
               className="
                 group
                 bg-transparent
@@ -230,22 +259,58 @@ const EditorialContactForm = ({
                 gap-3
               "
             >
-              <span>{isSubmitting ? 'SENDING...' : 'DISCUSS THE PROJECT'}</span>
-              <span
-                className="
-                  inline-block
-                  transition-transform
-                  duration-300
-                  ease-out
-                  group-hover:translate-x-1
-                  group-hover:-translate-y-1
-                "
-              >
-                ↗
+              {status === STATUS.SUBMITTING && (
+                <span className="inline-block w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />
+              )}
+              <span>
+                {status === STATUS.SUBMITTING && 'SENDING...'}
+                {status === STATUS.SUCCESS && 'SENT'}
+                {status === STATUS.ERROR && 'FAILED'}
+                {status === STATUS.IDLE && 'DISCUSS THE PROJECT'}
               </span>
+              {isIdle && (
+                <span
+                  className="
+                    inline-block
+                    transition-transform
+                    duration-300
+                    ease-out
+                    group-hover:translate-x-1
+                    group-hover:-translate-y-1
+                  "
+                >
+                  ↗
+                </span>
+              )}
             </button>
           </motion.div>
         </form>
+
+        {/* Status Message */}
+        <AnimatePresence>
+          {statusMessage && status !== STATUS.SUBMITTING && (
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+              className={`
+                mt-4
+                font-['IBM_Plex_Mono',_monospace]
+                text-[10px]
+                md:text-xs
+                uppercase
+                tracking-[0.08em]
+                ${status === STATUS.SUCCESS
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-red-500 dark:text-red-400'
+                }
+              `}
+            >
+              {statusMessage}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

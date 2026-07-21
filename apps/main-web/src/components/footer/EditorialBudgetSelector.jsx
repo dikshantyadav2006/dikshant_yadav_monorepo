@@ -17,6 +17,7 @@ const EditorialBudgetSelector = ({
   value,
   onChange,
   error,
+  disabled = false,
 }) => {
   return (
     <motion.div
@@ -52,6 +53,7 @@ const EditorialBudgetSelector = ({
               key={option}
               type="button"
               onClick={() => onChange(option)}
+              disabled={disabled}
               className={`
                 bg-transparent
                 border-none
@@ -66,6 +68,8 @@ const EditorialBudgetSelector = ({
                 duration-300
                 ease-out
                 py-0.5
+                disabled:opacity-30
+                disabled:cursor-not-allowed
                 ${
                   isSelected
                     ? 'font-semibold text-[var(--dark-color)] dark:text-[var(--light-color)] opacity-100'

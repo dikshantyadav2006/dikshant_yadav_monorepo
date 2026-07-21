@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
  * @param {boolean} [props.required] - Required field
  * @param {string} [props.autoComplete] - Autocomplete hint
  * @param {string} [props.error] - Validation error message
+ * @param {boolean} [props.disabled] - Disabled state
  */
 const EditorialField = ({
   label,
@@ -26,6 +27,7 @@ const EditorialField = ({
   required = false,
   autoComplete,
   error,
+  disabled = false,
 }) => {
   return (
     <motion.div
@@ -63,6 +65,7 @@ const EditorialField = ({
         placeholder={placeholder}
         required={required}
         autoComplete={autoComplete}
+        disabled={disabled}
         className="
           w-full
           bg-transparent
@@ -91,6 +94,8 @@ const EditorialField = ({
           cursor-none
           uppercase
           tracking-wide
+          disabled:opacity-40
+          disabled:cursor-not-allowed
         "
         style={{ borderBottomWidth: '0.5px' }}
       />

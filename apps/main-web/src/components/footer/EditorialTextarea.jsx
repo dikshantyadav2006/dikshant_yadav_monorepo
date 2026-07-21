@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
  * @param {number} [props.height] - Fixed height in px (optional)
  * @param {string} [props.placeholder] - Optional placeholder
  * @param {string} [props.error] - Validation error message
+ * @param {boolean} [props.disabled] - Disabled state
  */
 const EditorialTextarea = ({
   label,
@@ -24,6 +25,7 @@ const EditorialTextarea = ({
   height,
   placeholder,
   error,
+  disabled = false,
 }) => {
   return (
     <motion.div
@@ -58,6 +60,7 @@ const EditorialTextarea = ({
         onChange={onChange}
         rows={rows}
         placeholder={placeholder}
+        disabled={disabled}
         style={height ? { height: `${height}px`, borderBottomWidth: '0.5px' } : { borderBottomWidth: '0.5px' }}
         className="
           w-full
@@ -86,6 +89,8 @@ const EditorialTextarea = ({
           appearance-none
           rounded-none
           cursor-none
+          disabled:opacity-40
+          disabled:cursor-not-allowed
         "
       />
 
