@@ -29,7 +29,7 @@ const itemVariants = {
  * Displays navigation links with hover effects and underline animations
  *
  * @param {Object} props
- * @param {Array<{label: string, href: string, target?: string, rel?: string}>} props.links - Navigation links
+ * @param {Array<{label: string, href: string, target?: string, rel?: string, external?: boolean}>} props.links - Navigation links
  */
 const FooterNav = ({ links }) => {
     return (
@@ -45,8 +45,8 @@ const FooterNav = ({ links }) => {
                     key={link.href}
                     variants={itemVariants}
                     href={link.href}
-                    target={link.target}
-                    rel={link.rel}
+                    target={link.external ? '_blank' : link.target}
+                    rel={link.external ? 'noopener noreferrer' : link.rel}
                     className="
             group
             inline-block

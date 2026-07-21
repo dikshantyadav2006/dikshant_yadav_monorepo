@@ -16,58 +16,64 @@ export const footerContent = {
       label: 'About Me',
       href: 'about',
     },
-    // {
-    //   label: 'Services',
-    //   href: 'services',
-    // },
     {
       label: 'Works',
-      href: 'works', // FOR WORKS PAGE I HAVE NEW WEBSITE https://work.dikshantyadav.in/
+      href: 'https://work.dikshantyadav.in',
+      external: true,
     },
+    // {
+    //   label: 'Contact',
+    //   href: 'contact',
+    // },
   ],
 
   externalLinks: [
     {
-      label: 'Dribbble',
-      href: 'https://dribbble.com',
+      label: 'GitHub',
+      href: 'https://github.com/dikshantyadav2006',
       target: '_blank',
       rel: 'noopener noreferrer',
     },
-    {
-      label: 'Behance',
-      href: 'https://behance.net',
-      target: '_blank',
-      rel: 'noopener noreferrer',
-    },
-    {
-      label: 'LinkedIn',
-      href: 'https://linkedin.com',
-      target: '_blank',
-      rel: 'noopener noreferrer',
-    },
+    // {
+    //   label: 'LinkedIn',
+    //   href: 'https://linkedin.com/in/dikshant-yadav',
+    //   target: '_blank',
+    //   rel: 'noopener noreferrer',
+    // },
+    // {
+    //   label: 'Resume',
+    //   href: '/resume.pdf',
+    //   target: '_blank',
+    //   rel: 'noopener noreferrer',
+    // },
   ],
 
   socials: [
     {
-      platform: 'instagram',
-      href: 'https://instagram.com/dikshantyadav.in',
+      platform: 'Instagram',
       label: 'Instagram',
+      href: 'https://instagram.com/dikshantyadav.in',
     },
+    // {
+    //   platform: 'X',
+    //   label: 'X / Twitter',
+    //   href: 'https://x.com/dikshantyadav',
+    // },
     {
-      platform: 'telegram',
-      href: 'https://telegram.com',
-      label: 'Telegram',
+      platform: 'GitHub',
+      label: 'GitHub',
+      href: 'https://github.com/dikshantyadav2006',
     },
-    {
-      platform: 'facebook',
-      href: 'https://facebook.com',
-      label: 'Facebook',
-    },
+    // {
+    //   platform: 'LinkedIn',
+    //   label: 'LinkedIn',
+    //   href: 'https://linkedin.com/in/dikshant',
+    // },
   ],
 
   contact: {
     phone: '+91 70818 84742',
     email: 'hello@dikshantyadav.in',
-    address: 'Based in Delhi, India',
+    address: 'Delhi, India',
   },
 };
