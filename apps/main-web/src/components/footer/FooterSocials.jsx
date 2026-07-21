@@ -39,7 +39,7 @@ const FooterSocials = ({ links }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '0px 0px -100px 0px' }}
-      className="flex flex-col gap-3 md:gap-4"
+      className="flex flex-col lg:flex-row gap-3 md:gap-4"
     >
       {links.map((link) => (
         <motion.a
