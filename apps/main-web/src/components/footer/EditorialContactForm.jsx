@@ -4,6 +4,36 @@ import EditorialField from './EditorialField';
 import EditorialTextarea from './EditorialTextarea';
 import EditorialBudgetSelector from './EditorialBudgetSelector';
 
+const validate = (data) => {
+  const errors = {};
+
+  if (!data.name.trim()) {
+    errors.name = 'REQUIRED';
+  }
+
+  if (!data.phone.trim()) {
+    errors.phone = 'REQUIRED';
+  } else if (!/^[+\d\s()-]{7,20}$/.test(data.phone.trim())) {
+    errors.phone = 'INVALID PHONE';
+  }
+
+  if (!data.email.trim()) {
+    errors.email = 'REQUIRED';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
+    errors.email = 'INVALID EMAIL';
+  }
+
+  if (!data.message.trim()) {
+    errors.message = 'REQUIRED';
+  }
+
+  if (!data.budget) {
+    errors.budget = 'SELECT A BUDGET';
+  }
+
+  return errors;
+};
+
 /**
  * EditorialContactForm Component
  * Premium editorial inquiry experience
@@ -29,21 +59,43 @@ const EditorialContactForm = ({
     budget: '',
   });
 
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }, []);
+    const val = name === 'message' ? value : value.toUpperCase();
+    setFormData((prev) => ({ ...prev, [name]: val }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  }, [errors]);
 
   const handleBudgetChange = useCallback((budget) => {
     setFormData((prev) => ({ ...prev, budget }));
-  }, []);
+    if (errors.budget) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.budget;
+        return next;
+      });
+    }
+  }, [errors]);
 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
+
+      const validationErrors = validate(formData);
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
 
       setIsSubmitting(true);
       try {
@@ -67,29 +119,6 @@ const EditorialContactForm = ({
       "
     >
       <div style={{ width: 'min(90vw, 640px)' }}>
-        {/* Section Label */}
-        {/* <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          viewport={{ once: true, margin: '0px 0px -50px 0px' }}
-          className="
-            font-['IBM_Plex_Mono',_monospace]
-            text-xs
-            md:text-sm
-            font-normal
-            uppercase
-            tracking-[0.08em]
-            text-[var(--dark-color)]
-            dark:text-[var(--light-color)]
-            opacity-40
-            mb-8
-            md:mb-10
-          "
-        >
-          INQUIRY
-        </motion.p> */}
-
         {/* Form Heading */}
         <motion.h3
           initial={{ opacity: 0, y: 20 }}
@@ -114,7 +143,7 @@ const EditorialContactForm = ({
         </motion.h3>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-7 md:space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-7 md:space-y-8" noValidate>
           <EditorialField
             label="YOUR NAME"
             name="name"
@@ -122,6 +151,7 @@ const EditorialContactForm = ({
             onChange={handleChange}
             required
             autoComplete="name"
+            error={errors.name}
           />
 
           <EditorialField
@@ -131,6 +161,7 @@ const EditorialContactForm = ({
             value={formData.phone}
             onChange={handleChange}
             autoComplete="tel"
+            error={errors.phone}
           />
 
           <EditorialField
@@ -141,6 +172,7 @@ const EditorialContactForm = ({
             onChange={handleChange}
             required
             autoComplete="email"
+            error={errors.email}
           />
 
           <EditorialTextarea
@@ -150,6 +182,7 @@ const EditorialContactForm = ({
             onChange={handleChange}
             rows={4}
             height={85}
+            error={errors.message}
           />
 
           <EditorialBudgetSelector
@@ -157,6 +190,7 @@ const EditorialContactForm = ({
             options={budgets}
             value={formData.budget}
             onChange={handleBudgetChange}
+            error={errors.budget}
           />
 
           {/* Submit CTA */}

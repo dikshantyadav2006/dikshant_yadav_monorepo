@@ -16,6 +16,7 @@ const EditorialBudgetSelector = ({
   options = ['5K–10K', '10K–20K', '20K–50K', 'Custom'],
   value,
   onChange,
+  error,
 }) => {
   return (
     <motion.div
@@ -77,6 +78,20 @@ const EditorialBudgetSelector = ({
           );
         })}
       </div>
+
+      {error && (
+        <p className="
+          mt-1
+          font-['IBM_Plex_Mono',_monospace]
+          text-[9px]
+          md:text-[10px]
+          text-red-500
+          dark:text-red-400
+          tracking-wide
+        ">
+          {error}
+        </p>
+      )}
     </motion.div>
   );
 };

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 /**
  * EditorialField Component
  * Minimal input field with single bottom border
- * Monospace label, clean sans-serif input
+ * Monospace label, clean sans-serif input, uppercase text
  *
  * @param {Object} props
  * @param {string} props.label - Field label (displayed uppercase)
@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
  * @param {string} [props.placeholder] - Optional placeholder
  * @param {boolean} [props.required] - Required field
  * @param {string} [props.autoComplete] - Autocomplete hint
+ * @param {string} [props.error] - Validation error message
  */
 const EditorialField = ({
   label,
@@ -24,6 +25,7 @@ const EditorialField = ({
   placeholder,
   required = false,
   autoComplete,
+  error,
 }) => {
   return (
     <motion.div
@@ -66,13 +68,13 @@ const EditorialField = ({
           bg-transparent
           border-0
           border-b
-          border-b-gray-300
-          dark:border-b-white/15
+          border-b-gray-500
+          dark:border-b-white/30
           py-0.5
           md:py-0.5
           font-['Inter',_sans-serif]
-          text-base
-          md:text-lg
+          text-[15px]
+          md:text-base
           font-normal
           text-[var(--dark-color)]
           dark:text-[var(--light-color)]
@@ -87,8 +89,25 @@ const EditorialField = ({
           appearance-none
           rounded-none
           cursor-none
+          uppercase
+          tracking-wide
         "
+        style={{ borderBottomWidth: '0.5px' }}
       />
+
+      {error && (
+        <p className="
+          mt-1
+          font-['IBM_Plex_Mono',_monospace]
+          text-[9px]
+          md:text-[10px]
+          text-red-500
+          dark:text-red-400
+          tracking-wide
+        ">
+          {error}
+        </p>
+      )}
     </motion.div>
   );
 };

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 /**
  * EditorialTextarea Component
  * Minimal textarea with single bottom border
- * Monospace label, clean sans-serif body
+ * Monospace label, clean sans-serif body (no uppercase)
  *
  * @param {Object} props
  * @param {string} props.label - Field label
@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
  * @param {number} [props.rows] - Number of rows (default: 4)
  * @param {number} [props.height] - Fixed height in px (optional)
  * @param {string} [props.placeholder] - Optional placeholder
+ * @param {string} [props.error] - Validation error message
  */
 const EditorialTextarea = ({
   label,
@@ -22,6 +23,7 @@ const EditorialTextarea = ({
   rows = 4,
   height,
   placeholder,
+  error,
 }) => {
   return (
     <motion.div
@@ -56,19 +58,19 @@ const EditorialTextarea = ({
         onChange={onChange}
         rows={rows}
         placeholder={placeholder}
-        style={height ? { height: `${height}px` } : undefined}
+        style={height ? { height: `${height}px`, borderBottomWidth: '0.5px' } : { borderBottomWidth: '0.5px' }}
         className="
           w-full
           bg-transparent
           border-0
           border-b
-          border-b-gray-300
-          dark:border-b-white/15
+          border-b-gray-500
+          dark:border-b-white/30
           py-2
           md:py-0.5
           font-['Inter',_sans-serif]
-          text-base
-          md:text-lg
+          text-[15px]
+          md:text-base
           font-normal
           text-[var(--dark-color)]
           dark:text-[var(--light-color)]
@@ -86,6 +88,20 @@ const EditorialTextarea = ({
           cursor-none
         "
       />
+
+      {error && (
+        <p className="
+          mt-1
+          font-['IBM_Plex_Mono',_monospace]
+          text-[9px]
+          md:text-[10px]
+          text-red-500
+          dark:text-red-400
+          tracking-wide
+        ">
+          {error}
+        </p>
+      )}
     </motion.div>
   );
 };
