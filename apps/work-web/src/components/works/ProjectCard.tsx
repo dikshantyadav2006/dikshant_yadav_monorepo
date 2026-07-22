@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import TransitionLink from '@/components/ui/transition/TransitionLink';
 import { motion } from 'framer-motion';
 import { Project } from '@/types/project';
 
@@ -28,7 +28,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       style={{ cursor: 'none' }}
     >
-      <Link href={`/project/${project.slug}`} className="block w-full h-full">
+      <TransitionLink href={`/project/${project.slug}`} className="block w-full h-full">
         {/* Project Number */}
         <span className="absolute top-4 right-6 z-10 font-display text-[60px] md:text-[80px] leading-none text-white/15 select-none pointer-events-none">
           {project.id}
@@ -73,7 +73,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             </p>
           )}
         </motion.div>
-      </Link>
+      </TransitionLink>
     </motion.div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import TransitionLink from '@/components/ui/transition/TransitionLink';
 import { motion } from 'framer-motion';
 
 interface AdjacentProject {
@@ -22,7 +22,7 @@ function ProjectLink({
   label: string;
 }) {
   return (
-    <Link
+    <TransitionLink
       href={`/project/${project.slug}`}
       className="group relative block overflow-hidden"
     >
@@ -106,7 +106,7 @@ function ProjectLink({
           {project.title}
         </h2>
       </div>
-    </Link>
+    </TransitionLink>
   );
 }
 
@@ -126,7 +126,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
             <ProjectLink project={prevProject} label="Previous Project" />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
-              <Link
+              <TransitionLink
                 href="/"
                 className="
                   text-[11px]
@@ -139,7 +139,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
                 "
               >
                 Back to Works
-              </Link>
+              </TransitionLink>
             </div>
           )}
 
@@ -147,7 +147,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
             <ProjectLink project={nextProject} label="Next Project" />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
-              <Link
+              <TransitionLink
                 href="/"
                 className="
                   text-[11px]
@@ -160,7 +160,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
                 "
               >
                 Back to Works
-              </Link>
+              </TransitionLink>
             </div>
           )}
         </div>

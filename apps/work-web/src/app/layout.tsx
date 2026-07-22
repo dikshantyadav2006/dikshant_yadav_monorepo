@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import SmoothScrollProvider from '@/components/ui/SmoothScrollProvider';
+import TransitionShell from '@/components/ui/transition/TransitionShell';
 import './globals.css';
 
 const SITE_URL = 'https://work.dikshantyadav.in';
@@ -74,7 +75,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <TransitionShell>
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </TransitionShell>
       </body>
     </html>
   );

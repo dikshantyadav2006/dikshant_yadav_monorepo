@@ -97,3 +97,13 @@ body {
 *::-webkit-scrollbar {
   display: none;
 }
+
+.no-scroll {
+  overflow: hidden !important;
+}
+
+.no-scroll body,
+.no-scroll html {
+  overflow: hidden !important;
+  height: 100% !important;
+}

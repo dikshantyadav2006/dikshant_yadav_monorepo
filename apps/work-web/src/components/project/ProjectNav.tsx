@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import TransitionLink from '@/components/ui/transition/TransitionLink';
 import { motion } from 'framer-motion';
 import { Project } from '@/types/project';
 
@@ -14,7 +14,7 @@ export default function ProjectNav({ prev, next }: ProjectNavProps) {
     <section className="px-1 py-[80px] md:py-[120px] border-t border-border">
       <div className="grid grid-cols-2 gap-[4px]">
         {prev ? (
-          <Link href={`/project/${prev.slug}`} className="group block p-6 md:p-10">
+          <TransitionLink href={`/project/${prev.slug}`} className="group block p-6 md:p-10">
             <motion.div
               whileHover={{ x: -4 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -26,13 +26,13 @@ export default function ProjectNav({ prev, next }: ProjectNavProps) {
                 {prev.title}
               </p>
             </motion.div>
-          </Link>
+          </TransitionLink>
         ) : (
           <div />
         )}
 
         {next ? (
-          <Link
+          <TransitionLink
             href={`/project/${next.slug}`}
             className="group block p-6 md:p-10 text-right"
           >
@@ -47,7 +47,7 @@ export default function ProjectNav({ prev, next }: ProjectNavProps) {
                 {next.title}
               </p>
             </motion.div>
-          </Link>
+          </TransitionLink>
         ) : (
           <div />
         )}
