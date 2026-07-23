@@ -22,11 +22,13 @@ function ProjectLink({
   label,
   onEnter,
   onLeave,
+  onClick,
 }: {
   project: AdjacentProject;
   label: string;
   onEnter: () => void;
   onLeave: () => void;
+  onClick?: () => void;
 }) {
   return (
     <TransitionLink
@@ -34,6 +36,7 @@ function ProjectLink({
       className="group relative block overflow-hidden"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      onClick={onClick}
     >
       {/* Image */}
       <motion.img
@@ -123,6 +126,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
   const sectionRef = useRef<HTMLElement>(null);
   const [hoverSide, setHoverSide] = useState<HoverSide>('down');
   const [isActive, setIsActive] = useState(false);
+  const [hasClicked, setHasClicked] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -147,6 +151,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
   const handlePrevEnter = useCallback(() => setHoverSide('left'), []);
   const handleNextEnter = useCallback(() => setHoverSide('right'), []);
   const handleProjectLeave = useCallback(() => setHoverSide('down'), []);
+  const handleProjectClick = useCallback(() => setHasClicked(true), []);
 
   if (!prevProject && !nextProject) return null;
 
@@ -187,8 +192,8 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
             origin-center
           "
           animate={{
-            opacity: isActive ? 1 : 0,
-            scale: hoverSide === 'down' ? 1 : 1.1,
+            opacity: isActive && !hasClicked ? 1 : 0,
+            scale: hasClicked ? 0 : hoverSide === 'down' ? 1 : 1.1,
             rotate: hoverSide === 'left' ? 90 : hoverSide === 'right' ? -90 : 0,
           }}
           transition={{
@@ -242,6 +247,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
               label="Previous Project"
               onEnter={handlePrevEnter}
               onLeave={handleProjectLeave}
+              onClick={handleProjectClick}
             />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
@@ -268,6 +274,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
               label="Next Project"
               onEnter={handleNextEnter}
               onLeave={handleProjectLeave}
+              onClick={handleProjectClick}
             />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
