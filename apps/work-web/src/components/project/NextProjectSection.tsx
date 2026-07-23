@@ -184,11 +184,12 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
             border
             border-white/20
             bg-white
+            origin-center
           "
           animate={{
             opacity: isActive ? 1 : 0,
             scale: hoverSide === 'down' ? 1 : 1.1,
-            rotate: hoverSide === 'left' ? -90 : hoverSide === 'right' ? 90 : 0,
+            rotate: hoverSide === 'left' ? 90 : hoverSide === 'right' ? -90 : 0,
           }}
           transition={{
             type: 'spring',

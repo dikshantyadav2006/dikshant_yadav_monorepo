@@ -9,6 +9,8 @@ interface TransitionLinkProps {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   target?: string;
   rel?: string;
 }
@@ -18,6 +20,8 @@ export default function TransitionLink({
   children,
   className,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   target,
   rel,
 }: TransitionLinkProps) {
@@ -45,6 +49,8 @@ export default function TransitionLink({
       href={href}
       className={className}
       onClick={handleClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       target={target}
       rel={rel}
     >
