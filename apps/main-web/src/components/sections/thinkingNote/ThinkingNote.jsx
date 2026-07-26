@@ -63,18 +63,18 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
 
     const width = useTransform(
         scrollYProgress,
-        [0, 0.4, 1],
-        ["80vw", "100vw", "100vw"]
+        [0, 0.3, 1],
+        ["70vw", "100vw", "100vw"]
     )
 
     return (
-        <div ref={ref} className="w-full overflow-x-hidden ">
+        <div ref={ref} className="w-full overflow-hidden ">
             <motion.div
                 ref={ref}
                 style={{ width }}
                 className="relative mx-auto rounded-md overflow-hidden p-[2vw] py-[5vh]"
             >
-                <div className="absolute top-[0%] scale-75 right-[0%] -translate-x-1/5 w-[400px] h-[400px] pointer-events-none select-none opacity-80">
+                <div className="absolute  -top-[11%] scale-75 -right-[40%] md:right-0 md:top-0 md:-translate-x-1/5 w-[400px] h-[400px] pointer-events-none select-none opacity-80">
                     <ClockAnimation />
                 </div>
                 <div className="absolute inset-0 z-[9999] pointer-events-none">
