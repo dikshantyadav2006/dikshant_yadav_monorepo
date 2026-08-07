@@ -1,4 +1,12 @@
 @font-face {
+  font-family: "Geist";
+  src: url("@dikshant/assets/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "font-p-1";
   src: url("@dikshant/assets/fonts/font-portfolio-f1.woff2") format("woff2");
   font-weight: 700;

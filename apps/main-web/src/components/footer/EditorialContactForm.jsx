@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import EditorialField from './EditorialField';
 import EditorialTextarea from './EditorialTextarea';
 import EditorialBudgetSelector from './EditorialBudgetSelector';
+import { TextSwap } from '@dikshant/ui';
 
 const validate = (data) => {
   const errors = {};
@@ -263,12 +264,15 @@ const EditorialContactForm = ({
               {status === STATUS.SUBMITTING && (
                 <span className="inline-block cursor-pointer w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />
               )}
-              <span>
-                {status === STATUS.SUBMITTING && 'SENDING...'}
-                {status === STATUS.SUCCESS && 'SENT'}
-                {status === STATUS.ERROR && 'FAILED'}
-                {status === STATUS.IDLE && 'DISCUSS THE PROJECT'}
-              </span>
+              {status === STATUS.IDLE ? (
+                <TextSwap text="DISCUSS THE PROJECT" stagger={0.03} />
+              ) : (
+                <span>
+                  {status === STATUS.SUBMITTING && 'SENDING...'}
+                  {status === STATUS.SUCCESS && 'SENT'}
+                  {status === STATUS.ERROR && 'FAILED'}
+                </span>
+              )}
               {isIdle && (
                 <span
                   className="

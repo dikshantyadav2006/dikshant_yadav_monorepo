@@ -1,7 +1,10 @@
 import Button from './Button.jsx';
 export { Button };
 
+export { default as TextSwap } from './TextSwap.jsx';
+
 export { default as ContentRenderer } from './blocks/ContentRenderer.jsx';
+export { DomainNetwork, defaultDomains } from './domainNetwork/index.js';
 export {
   HeadingBlock,
   TextBlock,

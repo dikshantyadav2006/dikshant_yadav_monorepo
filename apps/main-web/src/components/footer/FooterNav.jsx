@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { TextSwap } from '@dikshant/ui';
 
 /**
  * Framer Motion variants for container and items
@@ -63,7 +64,7 @@ const FooterNav = ({ links }) => {
           "
                 >
                     <span className="relative">
-                        {link.label}
+                        <TextSwap text={link.label} />
                         <motion.span
                             className="
                 absolute

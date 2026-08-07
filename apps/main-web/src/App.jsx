@@ -5,6 +5,7 @@ import useNavbarAnimations from "./components/navbar/NavbarAnimations";
 import { Footer } from '@components/footer';
 import { BackgroundLayers } from '@layout';
 import { OutroMarquee, ThinkingNote, LogoMarquee } from '@sections';
+import { DomainNetwork } from '@dikshant/ui';
 import { useLocomotiveScroll, useScrollLock, useDarkMode, useCustomCursorHook } from '@hooks';
 import { ElasticString, LandingAnimation ,AnimationCircularText2 } from '@animation';
 
@@ -85,6 +86,9 @@ function App() {
             <ThinkingNote addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
             <LogoMarquee isDarkMode={isDarkMode} />
           </div>
+          <DomainNetwork
+            cursorEvents={{ addCursor, removeCursor, cursorModes }}
+          />
           <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
         </div>
       </div>
