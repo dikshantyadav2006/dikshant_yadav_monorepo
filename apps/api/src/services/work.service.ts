@@ -37,9 +37,8 @@ interface CreateWorkInput {
   description?: string | null;
   techStack?: string[] | null;
   link?: string | null;
-  bento?: any;
+  swatchColor?: string | null;
   credits?: any;
-  nextProject?: any;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   featured?: boolean;
   featuredPinned?: boolean;
@@ -102,9 +101,8 @@ export class WorkService {
         description: input.description ?? undefined,
         techStack: input.techStack ? (input.techStack as any) : undefined,
         link: input.link ?? undefined,
-        bento: input.bento ? (input.bento as any) : undefined,
+        swatchColor: input.swatchColor ?? undefined,
         credits: input.credits ? (input.credits as any) : undefined,
-        nextProject: input.nextProject ? (input.nextProject as any) : undefined,
         status,
         featured,
         featuredPinned,
@@ -148,13 +146,31 @@ export class WorkService {
 
     if (!work) return null;
 
+    // Automatic adjacent navigation in the canonical public ordering.
+    const ordered = await prisma.work.findMany({
+      where: isAdmin ? {} : { status: 'PUBLISHED' as const },
+      select: {
+        slug: true,
+        title: true,
+        subtitle: true,
+        imageUrl: true,
+        heroImageUrl: true,
+        swatchColor: true,
+      },
+      orderBy: [{ publishedAt: 'desc' as const }, { updatedAt: 'desc' as const }],
+    });
+
+    const index = ordered.findIndex((candidate) => candidate.slug === work.slug);
+    const prev = index > 0 ? ordered[index - 1] : null;
+    const next = index >= 0 && index < ordered.length - 1 ? ordered[index + 1] : null;
+
     const contentBlocks = toContentBlocks(work.canvasData);
     const posts = work.postLinks
       .map((link: any) => link.post)
       .filter((post: any) => isAdmin || post.status === 'PUBLISHED');
 
     const { postLinks, ...rest } = work as any;
-    return { ...rest, contentBlocks, posts };
+    return { ...rest, contentBlocks, posts, prev, next };
   }
 
   // Update a Work
@@ -185,6 +201,7 @@ export class WorkService {
       overview: input.overview,
       description: input.description,
       link: input.link,
+      swatchColor: input.swatchColor,
       seoTitle: input.seoTitle,
       seoDescription: input.seoDescription,
       featured: nextFeatured,
@@ -194,14 +211,8 @@ export class WorkService {
     if (input.techStack !== undefined) {
       data.techStack = input.techStack ? (input.techStack as any) : undefined;
     }
-    if (input.bento !== undefined) {
-      data.bento = input.bento ? (input.bento as any) : undefined;
-    }
     if (input.credits !== undefined) {
       data.credits = input.credits ? (input.credits as any) : undefined;
-    }
-    if (input.nextProject !== undefined) {
-      data.nextProject = input.nextProject ? (input.nextProject as any) : undefined;
     }
 
     if (input.status) {
@@ -293,6 +304,7 @@ export class WorkService {
           heroImageUrl: true,
           overview: true,
           description: true,
+          swatchColor: true,
           status: true,
           featured: true,
           featuredPinned: true,
