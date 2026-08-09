@@ -135,9 +135,8 @@ model Work {
   description   String?
   techStack     Json?
   link          String?
-  bento         Json?
   credits       Json?
-  nextProject   Json?
+  swatchColor   String?
   status        WorkStatus @default(DRAFT)
   featured      Boolean    @default(false)
   featuredPinned Boolean   @default(false) @map("featured_pinned")

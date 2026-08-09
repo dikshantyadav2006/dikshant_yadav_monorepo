@@ -304,6 +304,41 @@ export type WorkContentBlock =
       type: 'desktop-showcase';
       desktop: string[];
       mobile?: string[];
+    }
+  | {
+      type: 'bento';
+      story: string;
+      client: string;
+      year: string;
+      services: string[];
+      timeline: string;
+      role: string;
+      techStack: string[];
+      results: string;
+    }
+  | {
+      type: 'video';
+      src: string;
+      title?: string;
+      poster?: string;
+    }
+  | {
+      type: 'embed';
+      url: string;
+      aspectRatio?: string;
+    }
+  | {
+      type: 'metrics';
+      items: {
+        value: string;
+        label: string;
+      }[];
+    }
+  | {
+      type: 'link';
+      label: string;
+      href: string;
+      description?: string;
     };
 
 export interface ProjectCredit {
@@ -320,12 +355,6 @@ export interface ProjectBento {
   role: string;
   techStack: string[];
   results: string;
-}
-
-export interface NextProjectLink {
-  title: string;
-  image: string;
-  slug: string;
 }
 
 export interface WorkLink {
@@ -359,9 +388,8 @@ export interface Work {
   description?: string | null;
   techStack?: string[] | null;
   link?: string | null;
-  bento?: ProjectBento | null;
+  swatchColor?: string | null;
   credits?: ProjectCredit[] | null;
-  nextProject?: NextProjectLink | null;
   status: WorkStatus;
   featured: boolean;
   featuredPinned: boolean;

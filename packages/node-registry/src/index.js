@@ -180,6 +180,45 @@ export const builtInWorkNodes = [
     category: 'Portfolio',
     defaultData: { desktop: [], mobile: [] },
   },
+  {
+    type: 'bento',
+    label: 'Project Bento',
+    category: 'Portfolio',
+    defaultData: {
+      story: '',
+      client: '',
+      year: '',
+      services: [],
+      timeline: '',
+      role: '',
+      techStack: [],
+      results: '',
+    },
+  },
+  {
+    type: 'video',
+    label: 'Video',
+    category: 'Portfolio',
+    defaultData: { src: '', title: '', poster: '' },
+  },
+  {
+    type: 'embed',
+    label: 'Embed',
+    category: 'Portfolio',
+    defaultData: { url: '', aspectRatio: '16/9' },
+  },
+  {
+    type: 'metrics',
+    label: 'Metrics',
+    category: 'Portfolio',
+    defaultData: { items: [] },
+  },
+  {
+    type: 'link',
+    label: 'Link / CTA',
+    category: 'Portfolio',
+    defaultData: { label: '', href: '', description: '' },
+  },
 ];
 
 export const workNodeRegistry = new NodeRegistry().registerMany(builtInWorkNodes);
