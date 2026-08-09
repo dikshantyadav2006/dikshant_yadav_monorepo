@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useCallback, useEffect, useRef, useId } from 'react';
 import { defaultDomains } from './data.js';
 import { CurvedSelector } from './CurvedSelector.jsx';

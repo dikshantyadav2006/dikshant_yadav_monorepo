@@ -1,3 +1,4 @@
+'use client';
 import { useRef, useState, useLayoutEffect, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
