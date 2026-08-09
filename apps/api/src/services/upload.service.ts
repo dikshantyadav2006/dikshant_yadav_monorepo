@@ -21,6 +21,19 @@ function externalKey(url: string): string {
   return `external-${crypto.createHash('sha256').update(url).digest('hex').slice(0, 32)}`;
 }
 
+// Level-1 duplicate detection: match on size + fileName + contentType only.
+// Zero CPU cost and retroactively works against existing Media rows (no hashing).
+async function findDuplicateUpload(fileName: string, contentType: string, size: number) {
+  return prisma.media.findFirst({
+    where: {
+      fileName: fileName.toLowerCase(),
+      contentType,
+      size,
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+}
+
 export class UploadService {
   static async uploadFile(
     fileBuffer: Buffer,
@@ -32,6 +45,11 @@ export class UploadService {
       throw new Error('Cloudinary is not configured. Set CLOUDINARY_* environment variables.');
     }
 
+    const existing = await findDuplicateUpload(fileName, mimeType, fileBuffer.length);
+    if (existing) {
+      return { ...existing, deduplicated: true };
+    }
+
     const result = await uploadBufferToCloudinary(fileBuffer, {
       folder: UPLOAD_FOLDER,
       fileName,
@@ -39,9 +57,9 @@ export class UploadService {
     });
 
     const key = result.public_id;
-    const existing = await prisma.media.findUnique({ where: { key } });
-    if (existing) {
-      return existing;
+    const existingByKey = await prisma.media.findUnique({ where: { key } });
+    if (existingByKey) {
+      return existingByKey;
     }
 
     return prisma.media.create({
