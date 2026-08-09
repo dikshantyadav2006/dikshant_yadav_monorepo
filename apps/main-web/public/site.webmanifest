@@ -4,8 +4,8 @@
   "description": "Portfolio of Dikshant Yadav. Frontend Developer, React Developer, Next.js Developer, UI/UX Designer and Electrical Engineering Graduate.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#091223",
-  "theme_color": "#091223",
+  "background_color": "#c9e7e7",
+  "theme_color": "#c9e7e7",
   "orientation": "any",
   "icons": [
     {
