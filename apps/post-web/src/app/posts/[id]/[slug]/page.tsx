@@ -8,6 +8,7 @@ import SmartImage from '@/components/ui/smart-image';
 import ArticleHeader from '@/components/article/article-header';
 import MetadataBar from '@/components/article/metadata-bar';
 import RelatedArticles from '@/components/article/related-articles';
+import RelatedProjects from '@/components/article/related-projects';
 import ReactionBoard from '@/components/article/reaction-board';
 import ShareButtons from '@/components/article/share-buttons';
 import ContentRenderer from '@/components/content/content-renderer';
@@ -16,6 +17,7 @@ import { RelatedArticlesSkeleton } from '@/components/ui/article-skeleton';
 import {
   getPostByPath,
   getRelatedPosts,
+  getLinkedWorks,
   getPostPath,
   getPosts,
 } from '@/lib/posts';
@@ -62,6 +64,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 async function RelatedArticlesSection({ postId }: { postId: string }) {
   const relatedPosts = await getRelatedPosts(postId);
   return <RelatedArticles posts={relatedPosts} />;
+}
+
+async function RelatedProjectsSection({ postId }: { postId: string }) {
+  const works = await getLinkedWorks(postId);
+  return <RelatedProjects works={works} />;
 }
 
 export default async function PostPage({ params }: PageProps) {
@@ -168,6 +175,10 @@ export default async function PostPage({ params }: PageProps) {
 
         <Suspense fallback={<RelatedArticlesSkeleton />}>
           <RelatedArticlesSection postId={post.id} />
+        </Suspense>
+
+        <Suspense fallback={<RelatedArticlesSkeleton />}>
+          <RelatedProjectsSection postId={post.id} />
         </Suspense>
       </article>
     </>

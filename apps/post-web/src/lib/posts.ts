@@ -109,6 +109,27 @@ export async function getRelatedPosts(postId: string, limit = 3): Promise<Post[]
   return data ?? [];
 }
 
+export interface LinkedWork {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle?: string | null;
+  category?: string | null;
+  year?: string | null;
+  imageUrl?: string | null;
+  heroImageUrl?: string | null;
+  overview?: string | null;
+  description?: string | null;
+  publishedAt?: string | null;
+}
+
+export async function getLinkedWorks(postId: string, limit = 3): Promise<LinkedWork[]> {
+  const data = await serverFetch<{ works: LinkedWork[] }>(`/posts/${postId}/works`, {
+    tags: ['works', `post-works-${postId}`],
+  });
+  return (data?.works ?? []).slice(0, limit);
+}
+
 export async function getCategories(): Promise<Category[]> {
   const data = await serverFetch<Category[]>('/categories', { tags: ['categories'] });
   return data ?? [];
