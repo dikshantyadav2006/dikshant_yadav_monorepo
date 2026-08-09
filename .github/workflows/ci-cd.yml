@@ -76,6 +76,7 @@ jobs:
         run: |
           curl -fsS -X POST "${{ secrets.VERCEL_MAIN_WEB_DEPLOY_HOOK }}"
           curl -fsS -X POST "${{ secrets.VERCEL_POST_WEB_DEPLOY_HOOK }}"
+          curl -fsS -X POST "${{ secrets.VERCEL_WORK_WEB_DEPLOY_HOOK }}"
           curl -fsS -X POST "${{ secrets.VERCEL_ADMIN_WEB_DEPLOY_HOOK }}"
 
       - name: Trigger Render backend deployment

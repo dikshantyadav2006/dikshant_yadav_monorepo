@@ -15,8 +15,9 @@
     "dev:api": "npm --workspace @dikshant/api run dev",
     "build:api": "npm run generate:prisma && npm --workspace @dikshant/types run build && npm --workspace @dikshant/api run build",
     "start:api": "npm --workspace @dikshant/api run start",
-    "build": "npm --workspace @dikshant/ui run build && npm --workspace @dikshant/shared run build && npm --workspace @dikshant/types run build && npm --workspace @dikshant/admin-web run build && npm --workspace @dikshant/post-web run build && npm --workspace @dikshant/api run build",
+    "build": "npm --workspace @dikshant/ui run build && npm --workspace @dikshant/shared run build && npm --workspace @dikshant/types run build && npm --workspace @dikshant/admin-web run build && npm --workspace @dikshant/post-web run build && npm --workspace @dikshant/work-web run build && npm --workspace @dikshant/api run build",
     "lint": "npm --workspace @dikshant/admin-web run lint && npm --workspace @dikshant/post-web run lint",
+    "seed:works": "npm --workspace @dikshant/api run seed:works",
     "generate:prisma": "npm --workspace @dikshant/database run generate",
     "db:push": "npm --workspace @dikshant/database run db:push"
   },
