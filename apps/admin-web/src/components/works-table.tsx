@@ -153,7 +153,7 @@ export function WorksTable() {
                   {new Date(work.updatedAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-4 hidden md:table-cell text-muted-foreground">
-                  {work._count?.posts ?? 0}
+                  {work._count?.postLinks ?? 0}
                 </td>
                 <td className="px-4 py-4">
                   <div className="flex items-center justify-end gap-1">
