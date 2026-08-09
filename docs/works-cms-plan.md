@@ -118,6 +118,25 @@ Parallel work editor; post editor untouched.
 
 - generate:prisma, db:push, seed:works, lint, build, manual dev checks.
 
+## Status
+
+- [x] 1. Database — `WorkStatus`, `Work`, `WorkVersion`, `WorkBuilderNode`,
+      `WorkBuilderEdge`, `PostWorkLink`; `generate:prisma` + `db:push` done.
+- [x] 2. Shared types — `WorkContentBlock` union, work + canvas API types.
+- [x] 3. Shared block ordering — `orderNodes` moved to `packages/shared`.
+- [x] 4. Node registry — 6 original work nodes + `bento`/`video`/`embed`/`metrics`/`link`.
+- [x] 5. API — works, works-builder, work-links routes + services + app.ts registration.
+- [x] 6. Admin-web — works list/new/edit, work editor, canvas blocks, swatch picker.
+- [x] 7. work-web — API-driven (`lib/api.ts`), blocks, color tracker, related case studies.
+- [x] 8. post-web — `getLinkedWorks` + "Related Projects" section.
+- [x] 9. Seed script — `apps/api/src/scripts/seed-works.ts` + `seed:works`
+      (verified: 6 PUBLISHED works upserted).
+- [x] 10. Root scripts & CI — work-web added to root `build`; `seed:works` root
+      script; `VERCEL_WORK_WEB_DEPLOY_HOOK` added to CI deploy job. (work-web
+      excluded from root `lint`: it has no eslint config / `eslint-config-next`.)
+- [x] 11. Docs rewrite — `docs/works-platform-architecture.md` added.
+- [~] 12. Verification — per-app tsc, root build, manual dev checks (in progress).
+
 ## Ordering
 
 work-web stays functional throughout: it is migrated last, after the DB + seed +

@@ -125,6 +125,19 @@ Upgrade the work-web portfolio site and the Works CMS:
 - Note: work-web SSG build needs the API running so `generateStaticParams` resolves;
   `getWorks()` degrades to `[]` (logged) if unreachable.
 
+## Status
+
+- [x] 1. Data model — `bento`/`nextProject` removed from `Work`, `swatchColor`
+      added; 5 new block types in node-registry.
+- [x] 2. API — prev/next neighbors computed (`publishedAt desc`), `swatchColor`
+      passthrough, `bento`/`nextProject` dropped from inputs.
+- [x] 3. Admin-web — swatch picker, new block inspectors, `bento` block, metadata
+      cleanup.
+- [x] 4. work-web — API-driven site, `ContentBlockRenderer` incl. new blocks,
+      `useAccentColor` + `ColorTracker`, prev/next via API, related case studies.
+- [~] 5. Verification — per-app tsc + builds passing; final manual dev check
+      pending.
+
 ## Notes / risks
 
 - Block type names must match across node-registry → `WorkContentBlock` →
