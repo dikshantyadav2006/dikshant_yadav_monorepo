@@ -142,3 +142,98 @@ export class NodeRegistry {
 
 export const nodeRegistry = new NodeRegistry().registerMany(builtInNodes);
 export const builtInNodeDefinitions = builtInNodes;
+
+export const builtInWorkNodes = [
+  {
+    type: 'large-image',
+    label: 'Large Image',
+    category: 'Portfolio',
+    defaultData: { src: '', alt: '', height: '' },
+  },
+  {
+    type: 'grid-2',
+    label: '2-Column Grid',
+    category: 'Portfolio',
+    defaultData: { images: ['', ''], alts: ['', ''], height: '' },
+  },
+  {
+    type: 'banner',
+    label: 'Banner',
+    category: 'Portfolio',
+    defaultData: { src: '', alt: '', height: '' },
+  },
+  {
+    type: 'posters',
+    label: 'Posters',
+    category: 'Portfolio',
+    defaultData: { images: ['', ''], alts: ['', ''], height: '' },
+  },
+  {
+    type: 'mobile-showcase',
+    label: 'Mobile Showcase',
+    category: 'Portfolio',
+    defaultData: { mobile: [], desktop: [] },
+  },
+  {
+    type: 'desktop-showcase',
+    label: 'Desktop Showcase',
+    category: 'Portfolio',
+    defaultData: { desktop: [], mobile: [] },
+  },
+];
+
+export const workNodeRegistry = new NodeRegistry().registerMany(builtInWorkNodes);
+export const builtInWorkNodeDefinitions = builtInWorkNodes;
+
+export const workTemplates = [
+  {
+    id: 'showcase',
+    name: 'Showcase',
+    description: 'Large hero image, 2-column grid, banner and desktop screenshots.',
+    nodes: [
+      { id: 'tpl-large-1', type: 'large-image', position: { x: 0, y: 0 }, data: { src: '', alt: '', height: '' } },
+      { id: 'tpl-grid-1', type: 'grid-2', position: { x: 0, y: 160 }, data: { images: ['', ''], alts: ['', ''], height: '' } },
+      { id: 'tpl-banner-1', type: 'banner', position: { x: 0, y: 320 }, data: { src: '', alt: '', height: '' } },
+      { id: 'tpl-desk-1', type: 'desktop-showcase', position: { x: 0, y: 480 }, data: { desktop: [], mobile: [] } },
+    ],
+    edges: [
+      { id: 'tpl-e-1', source: 'tpl-large-1', target: 'tpl-grid-1' },
+      { id: 'tpl-e-2', source: 'tpl-grid-1', target: 'tpl-banner-1' },
+      { id: 'tpl-e-3', source: 'tpl-banner-1', target: 'tpl-desk-1' },
+    ],
+  },
+  {
+    id: 'brand-identity',
+    name: 'Brand Identity',
+    description: 'Poster-led layout for branding and art direction projects.',
+    nodes: [
+      { id: 'tpl-large-1', type: 'large-image', position: { x: 0, y: 0 }, data: { src: '', alt: '', height: '' } },
+      { id: 'tpl-poster-1', type: 'posters', position: { x: 0, y: 160 }, data: { images: ['', ''], alts: ['', ''], height: '' } },
+      { id: 'tpl-grid-1', type: 'grid-2', position: { x: 0, y: 320 }, data: { images: ['', ''], alts: ['', ''], height: '' } },
+      { id: 'tpl-banner-1', type: 'banner', position: { x: 0, y: 480 }, data: { src: '', alt: '', height: '' } },
+      { id: 'tpl-mob-1', type: 'mobile-showcase', position: { x: 0, y: 640 }, data: { mobile: [], desktop: [] } },
+    ],
+    edges: [
+      { id: 'tpl-e-1', source: 'tpl-large-1', target: 'tpl-poster-1' },
+      { id: 'tpl-e-2', source: 'tpl-poster-1', target: 'tpl-grid-1' },
+      { id: 'tpl-e-3', source: 'tpl-grid-1', target: 'tpl-banner-1' },
+      { id: 'tpl-e-4', source: 'tpl-banner-1', target: 'tpl-mob-1' },
+    ],
+  },
+  {
+    id: 'website-case-study',
+    name: 'Website Case Study',
+    description: 'Desktop-first layout for web design projects.',
+    nodes: [
+      { id: 'tpl-large-1', type: 'large-image', position: { x: 0, y: 0 }, data: { src: '', alt: '', height: '' } },
+      { id: 'tpl-desk-1', type: 'desktop-showcase', position: { x: 0, y: 160 }, data: { desktop: [], mobile: [] } },
+      { id: 'tpl-grid-1', type: 'grid-2', position: { x: 0, y: 320 }, data: { images: ['', ''], alts: ['', ''], height: '' } },
+      { id: 'tpl-banner-1', type: 'banner', position: { x: 0, y: 480 }, data: { src: '', alt: '', height: '' } },
+    ],
+    edges: [
+      { id: 'tpl-e-1', source: 'tpl-large-1', target: 'tpl-desk-1' },
+      { id: 'tpl-e-2', source: 'tpl-desk-1', target: 'tpl-grid-1' },
+      { id: 'tpl-e-3', source: 'tpl-grid-1', target: 'tpl-banner-1' },
+    ],
+  },
+];

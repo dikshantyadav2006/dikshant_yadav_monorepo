@@ -22,3 +22,30 @@ export declare class NodeRegistry {
 
 export declare const nodeRegistry: NodeRegistry;
 export declare const builtInNodeDefinitions: NodeDefinition[];
+
+export declare const builtInWorkNodes: NodeDefinition[];
+export declare const workNodeRegistry: NodeRegistry;
+export declare const builtInWorkNodeDefinitions: NodeDefinition[];
+
+export interface WorkTemplateNode {
+  id: string;
+  type: string;
+  position: CanvasPosition;
+  data: Record<string, any>;
+}
+
+export interface WorkTemplateEdge {
+  id: string;
+  source: string;
+  target: string;
+}
+
+export interface WorkTemplate {
+  id: string;
+  name: string;
+  description: string;
+  nodes: WorkTemplateNode[];
+  edges: WorkTemplateEdge[];
+}
+
+export declare const workTemplates: WorkTemplate[];
