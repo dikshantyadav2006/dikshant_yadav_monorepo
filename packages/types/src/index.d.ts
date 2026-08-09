@@ -2,6 +2,8 @@ export type Role = 'ADMIN';
 
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'SCHEDULED' | 'ARCHIVED';
 
+export type WorkStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+
 export type ContentFormat = 'MARKDOWN' | 'MDX';
 
 export type ReactionType = 'LIKE' | 'LOVE' | 'INSIGHTFUL' | 'FIRE';
@@ -266,4 +268,122 @@ export interface UserPreferences {
   defaultHeroImageStyle?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type WorkContentBlock =
+  | {
+      type: 'large-image';
+      src: string;
+      alt: string;
+      height?: string;
+    }
+  | {
+      type: 'grid-2';
+      images: [string, string];
+      alts: [string, string];
+      height?: string;
+    }
+  | {
+      type: 'banner';
+      src: string;
+      alt: string;
+      height?: string;
+    }
+  | {
+      type: 'posters';
+      images: [string, string];
+      alts: [string, string];
+      height?: string;
+    }
+  | {
+      type: 'mobile-showcase';
+      mobile: string[];
+      desktop?: string[];
+    }
+  | {
+      type: 'desktop-showcase';
+      desktop: string[];
+      mobile?: string[];
+    };
+
+export interface ProjectCredit {
+  role: string;
+  value: string;
+}
+
+export interface ProjectBento {
+  story: string;
+  client: string;
+  year: string;
+  services: string[];
+  timeline: string;
+  role: string;
+  techStack: string[];
+  results: string;
+}
+
+export interface NextProjectLink {
+  title: string;
+  image: string;
+  slug: string;
+}
+
+export interface WorkLink {
+  postId: string;
+  workId: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface WorkVersion {
+  id: string;
+  workId: string;
+  version: number;
+  canvasData: CanvasData;
+  savedById?: string | null;
+  changeLabel?: string | null;
+  createdAt: string;
+}
+
+export interface Work {
+  id: string;
+  authorId: string;
+  slug: string;
+  title: string;
+  subtitle?: string | null;
+  category?: string | null;
+  year?: string | null;
+  heroImageUrl?: string | null;
+  imageUrl?: string | null;
+  overview?: string | null;
+  description?: string | null;
+  techStack?: string[] | null;
+  link?: string | null;
+  bento?: ProjectBento | null;
+  credits?: ProjectCredit[] | null;
+  nextProject?: NextProjectLink | null;
+  status: WorkStatus;
+  featured: boolean;
+  featuredPinned: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  noIndex: boolean;
+  canvasData?: CanvasData | null;
+  currentVersion: number;
+  publishedAt?: string | null;
+  archivedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+
+  // Derived / populated
+  contentBlocks?: WorkContentBlock[] | null;
+
+  // Relations (optional/populated)
+  author?: User;
+  posts?: Post[];
+  workLinks?: WorkLink[];
+
+  _count?: {
+    posts?: number;
+  };
 }
