@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import type { CanvasData, CanvasEdge, CanvasNode, ProjectBento, ProjectCredit, NextProjectLink, WorkStatus } from '@dikshant/types';
+import type { CanvasData, CanvasEdge, CanvasNode, ProjectCredit, WorkStatus } from '@dikshant/types';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -21,14 +21,13 @@ export interface WorkMetadata {
   description: string;
   techStack: string[];
   link: string;
+  swatchColor: string;
   status: WorkStatus;
   featured: boolean;
   featuredPinned: boolean;
   seoTitle: string;
   seoDescription: string;
-  bento: ProjectBento | null;
   credits: ProjectCredit[];
-  nextProject: NextProjectLink | null;
 }
 
 interface WorkBuilderState {

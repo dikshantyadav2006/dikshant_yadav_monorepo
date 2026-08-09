@@ -1,27 +1,30 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Link2, Loader2, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Link2, Loader2, ChevronDown, Monitor, Smartphone } from 'lucide-react';
 import { useWorkBuilderStore } from '../../features/work-builder/store';
-import type { ProjectBento, Post } from '@dikshant/types';
+import type { WorkContentBlock, Post } from '@dikshant/types';
 import apiFetch from '../../lib/api';
 import MediaField from '../editor/MediaField';
 import { getWorkPosts, setWorkPosts } from '../../features/work-builder/api';
+import { BlockPreview } from './BlockPreview';
 
 interface WorkInspectorProps {
   workId: string;
 }
 
-const EMPTY_BENTO: ProjectBento = {
-  story: '',
-  client: '',
-  year: '',
-  services: [],
-  timeline: '',
-  role: '',
-  techStack: [],
-  results: '',
-};
+type PreviewDevice = 'desktop' | 'mobile';
+
+const SWATCH_PRESETS = [
+  '#D2D8CB',
+  '#E8C4A2',
+  '#A8C5D6',
+  '#D9B8C4',
+  '#C9D4A5',
+  '#E6D3A3',
+  '#B8C9B8',
+  '#C4B8D9',
+];
 
 interface PostsResponse {
   posts: Post[];
@@ -133,11 +136,10 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
   const workMetadata = useWorkBuilderStore((state) => state.workMetadata);
   const updateWorkMetadata = useWorkBuilderStore((state) => state.updateWorkMetadata);
 
-  const [isBentoOpen, setIsBentoOpen] = useState(false);
   const [isCreditsOpen, setIsCreditsOpen] = useState(true);
-  const [isNextProjectOpen, setIsNextProjectOpen] = useState(false);
   const [isSeoOpen, setIsSeoOpen] = useState(false);
   const [isLinkedPostsOpen, setIsLinkedPostsOpen] = useState(true);
+  const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
 
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [linkedPostIds, setLinkedPostIds] = useState<string[]>([]);
@@ -186,12 +188,6 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
     updateWorkMetadata({ [key]: value });
   };
 
-  const updateBento = (key: keyof ProjectBento, value: any) => {
-    updateWorkMetadata({
-      bento: { ...EMPTY_BENTO, ...(workMetadata?.bento ?? {}), [key]: value },
-    });
-  };
-
   const handleDelete = () => {
     if (!selectedNode) return;
     setNodes(canvasData.nodes.filter((node) => node.id !== selectedNode.id));
@@ -199,9 +195,7 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
   };
 
   if (!selectedNode) {
-    const bento = workMetadata?.bento ?? EMPTY_BENTO;
     const credits = workMetadata?.credits ?? [];
-    const nextProject = workMetadata?.nextProject;
 
     return (
       <aside className="w-80 border-l border-border bg-card flex flex-col h-full flex-shrink-0 select-none">
@@ -285,6 +279,46 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
                 accept="image/*"
                 placeholder="Upload or paste card image URL"
               />
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase font-sans">
+                  Accent Color
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={workMetadata.swatchColor || '#D2D8CB'}
+                    onChange={(e) => updateMetadataField('swatchColor', e.target.value)}
+                    className="h-8 w-10 shrink-0 cursor-pointer rounded-lg border border-input bg-background p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={workMetadata.swatchColor || ''}
+                    onChange={(e) => updateMetadataField('swatchColor', e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary font-mono"
+                    placeholder="#RRGGBB"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {SWATCH_PRESETS.map((swatch) => (
+                    <button
+                      key={swatch}
+                      type="button"
+                      onClick={() => updateMetadataField('swatchColor', swatch)}
+                      className={`h-6 w-6 rounded-full border transition ${
+                        workMetadata.swatchColor?.toLowerCase() === swatch
+                          ? 'ring-2 ring-primary ring-offset-1 ring-offset-card'
+                          : 'border-border'
+                      }`}
+                      style={{ backgroundColor: swatch }}
+                      aria-label={`Set accent color ${swatch}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-[9px] text-muted-foreground/70">
+                  Used for next/prev cards, transitions and the color tracker.
+                </p>
+              </div>
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase font-sans">Overview</label>
@@ -423,82 +457,6 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
                 )}
               </div>
 
-              {/* Bento */}
-              <div className="rounded-2xl border border-border/60 bg-muted/10 p-3 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setIsBentoOpen(!isBentoOpen)}
-                  className="w-full flex items-center justify-between text-[10px] font-bold uppercase text-muted-foreground"
-                >
-                  <span>Project Bento</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${isBentoOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isBentoOpen && (
-                  <div className="space-y-2">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Story</label>
-                      <textarea
-                        rows={3}
-                        value={bento.story || ''}
-                        onChange={(e) => updateBento('story', e.target.value)}
-                        className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        placeholder="The project story…"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase">Client</label>
-                        <input
-                          type="text"
-                          value={bento.client || ''}
-                          onChange={(e) => updateBento('client', e.target.value)}
-                          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase">Timeline</label>
-                        <input
-                          type="text"
-                          value={bento.timeline || ''}
-                          onChange={(e) => updateBento('timeline', e.target.value)}
-                          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase">Role</label>
-                        <input
-                          type="text"
-                          value={bento.role || ''}
-                          onChange={(e) => updateBento('role', e.target.value)}
-                          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase">Results</label>
-                        <input
-                          type="text"
-                          value={bento.results || ''}
-                          onChange={(e) => updateBento('results', e.target.value)}
-                          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                        />
-                      </div>
-                    </div>
-                    <ArrayFieldEditor
-                      label="Services"
-                      values={bento.services || []}
-                      placeholder="e.g. Web Design"
-                      onChange={(next) => updateBento('services', next)}
-                    />
-                    <ArrayFieldEditor
-                      label="Bento Tech Stack"
-                      values={bento.techStack || []}
-                      placeholder="e.g. Next.js"
-                      onChange={(next) => updateBento('techStack', next)}
-                    />
-                  </div>
-                )}
-              </div>
-
               {/* Credits */}
               <div className="rounded-2xl border border-border/60 bg-muted/10 p-3 space-y-2">
                 <button
@@ -555,57 +513,6 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
                 )}
               </div>
 
-              {/* Next project */}
-              <div className="rounded-2xl border border-border/60 bg-muted/10 p-3 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setIsNextProjectOpen(!isNextProjectOpen)}
-                  className="w-full flex items-center justify-between text-[10px] font-bold uppercase text-muted-foreground"
-                >
-                  <span>Next Project</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${isNextProjectOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isNextProjectOpen && (
-                  <div className="space-y-1.5">
-                    <input
-                      type="text"
-                      value={nextProject?.title || ''}
-                      onChange={(e) =>
-                        updateMetadataField('nextProject', {
-                          ...(workMetadata?.nextProject ?? { title: '', image: '', slug: '' }),
-                          title: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                      placeholder="Next project title"
-                    />
-                    <input
-                      type="text"
-                      value={nextProject?.slug || ''}
-                      onChange={(e) =>
-                        updateMetadataField('nextProject', {
-                          ...(workMetadata?.nextProject ?? { title: '', image: '', slug: '' }),
-                          slug: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-                      placeholder="Next project slug"
-                    />
-                    <MediaField
-                      label="Next Project Image"
-                      value={nextProject?.image || ''}
-                      onChange={(url) =>
-                        updateMetadataField('nextProject', {
-                          ...(workMetadata?.nextProject ?? { title: '', image: '', slug: '' }),
-                          image: url,
-                        })
-                      }
-                      accept="image/*"
-                    />
-                  </div>
-                )}
-              </div>
-
               {/* SEO */}
               <div className="rounded-2xl border border-border/60 bg-muted/10 p-3 space-y-2">
                 <button
@@ -654,11 +561,54 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
     updateNodeData(selectedNode.id, { [key]: value });
   };
 
+  const previewBlock = { type, ...data } as unknown as WorkContentBlock;
+
   return (
     <aside className="w-80 border-l border-border bg-card flex flex-col h-full flex-shrink-0 select-none">
       <div className="px-4 py-3 border-b border-border/60 bg-muted/10">
         <div className="text-xs font-bold text-foreground capitalize">{type} Settings</div>
         <div className="text-[10px] text-muted-foreground mt-0.5 truncate">ID: {selectedNode.id}</div>
+      </div>
+
+      {/* Mobile / Desktop preview */}
+      <div className="px-4 pt-3 pb-1 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase text-muted-foreground">Preview</span>
+          <div className="flex items-center rounded-lg border border-border bg-muted/30 p-0.5">
+            <button
+              type="button"
+              onClick={() => setPreviewDevice('desktop')}
+              className={`flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-md transition ${
+                previewDevice === 'desktop'
+                  ? 'bg-background shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Monitor className="w-3 h-3" /> Desktop
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewDevice('mobile')}
+              className={`flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-md transition ${
+                previewDevice === 'mobile'
+                  ? 'bg-background shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Smartphone className="w-3 h-3" /> Mobile
+            </button>
+          </div>
+        </div>
+        <div
+          className={`rounded-xl border border-border/60 bg-muted/10 p-2 ${
+            previewDevice === 'mobile' ? 'max-w-[220px] mx-auto' : ''
+          }`}
+        >
+          <BlockPreview block={previewBlock} />
+        </div>
+        <p className="text-[9px] text-muted-foreground/70">
+          Same block data — layout adapts to each device.
+        </p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
@@ -737,6 +687,221 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
                 updateField(type === 'mobile-showcase' ? 'desktop' : 'mobile', next)
               }
             />
+          </>
+        )}
+
+        {type === 'bento' && (
+          <>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Story</label>
+              <textarea
+                rows={3}
+                value={data.story || ''}
+                onChange={(e) => updateField('story', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="The project story…"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">Client</label>
+                <input
+                  type="text"
+                  value={data.client || ''}
+                  onChange={(e) => updateField('client', e.target.value)}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">Year</label>
+                <input
+                  type="text"
+                  value={data.year || ''}
+                  onChange={(e) => updateField('year', e.target.value)}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="2026"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">Timeline</label>
+                <input
+                  type="text"
+                  value={data.timeline || ''}
+                  onChange={(e) => updateField('timeline', e.target.value)}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">Role</label>
+                <input
+                  type="text"
+                  value={data.role || ''}
+                  onChange={(e) => updateField('role', e.target.value)}
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Results</label>
+              <input
+                type="text"
+                value={data.results || ''}
+                onChange={(e) => updateField('results', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="e.g. 40% increase in engagement"
+              />
+            </div>
+            <ArrayFieldEditor
+              label="Services"
+              values={data.services || []}
+              placeholder="e.g. Web Design"
+              onChange={(next) => updateField('services', next)}
+            />
+            <ArrayFieldEditor
+              label="Tech Stack"
+              values={data.techStack || []}
+              placeholder="e.g. Next.js"
+              onChange={(next) => updateField('techStack', next)}
+            />
+          </>
+        )}
+
+        {type === 'video' && (
+          <>
+            <MediaField
+              label="Video Source"
+              value={data.src || ''}
+              onChange={(src) => updateField('src', src)}
+              placeholder="Upload or paste video URL"
+            />
+            <MediaField
+              label="Poster"
+              value={data.poster || ''}
+              onChange={(poster) => updateField('poster', poster)}
+              accept="image/*"
+              placeholder="Upload or paste poster image URL"
+            />
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Title</label>
+              <input
+                type="text"
+                value={data.title || ''}
+                onChange={(e) => updateField('title', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Video title"
+              />
+            </div>
+          </>
+        )}
+
+        {type === 'embed' && (
+          <>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">URL</label>
+              <input
+                type="text"
+                value={data.url || ''}
+                onChange={(e) => updateField('url', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="https://www.youtube.com/watch?v=…"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Aspect Ratio</label>
+              <select
+                value={data.aspectRatio || '16/9'}
+                onChange={(e) => updateField('aspectRatio', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="16/9">16 / 9</option>
+                <option value="4/3">4 / 3</option>
+                <option value="1/1">1 / 1</option>
+                <option value="9/16">9 / 16</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        {type === 'metrics' && (
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-muted-foreground uppercase">Stats</label>
+            {(data.items || []).map((item: { value: string; label: string }, index: number) => (
+              <div key={index} className="flex gap-1.5 items-center">
+                <input
+                  type="text"
+                  value={item.value}
+                  onChange={(e) => {
+                    const next = [...(data.items || [])];
+                    next[index] = { ...next[index], value: e.target.value };
+                    updateField('items', next);
+                  }}
+                  className="flex-1 rounded-xl border border-input bg-background px-2 py-1.5 text-[11px] outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Value (e.g. 40%)"
+                />
+                <input
+                  type="text"
+                  value={item.label}
+                  onChange={(e) => {
+                    const next = [...(data.items || [])];
+                    next[index] = { ...next[index], label: e.target.value };
+                    updateField('items', next);
+                  }}
+                  className="flex-1 rounded-xl border border-input bg-background px-2 py-1.5 text-[11px] outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Label"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateField('items', (data.items || []).filter((_: unknown, i: number) => i !== index))
+                  }
+                  className="text-muted-foreground/60 hover:text-destructive p-1.5 rounded hover:bg-muted"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => updateField('items', [...(data.items || []), { value: '', label: '' }])}
+              className="w-full text-[10px] flex items-center justify-center gap-0.5 text-primary hover:underline font-semibold py-1"
+            >
+              <Plus className="w-3 h-3" /> Add Stat
+            </button>
+          </div>
+        )}
+
+        {type === 'link' && (
+          <>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Label</label>
+              <input
+                type="text"
+                value={data.label || ''}
+                onChange={(e) => updateField('label', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="e.g. Visit Live Site"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">URL</label>
+              <input
+                type="text"
+                value={data.href || ''}
+                onChange={(e) => updateField('href', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="https://…"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Description</label>
+              <textarea
+                rows={2}
+                value={data.description || ''}
+                onChange={(e) => updateField('description', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Optional supporting text…"
+              />
+            </div>
           </>
         )}
 

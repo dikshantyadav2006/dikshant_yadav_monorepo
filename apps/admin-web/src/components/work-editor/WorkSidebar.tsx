@@ -9,6 +9,10 @@ import {
   Smartphone,
   Sparkles,
   Loader2,
+  Blocks,
+  Play,
+  Link2,
+  BarChart3,
 } from 'lucide-react';
 import { workTemplates, builtInWorkNodeDefinitions } from '@dikshant/node-registry';
 import { useWorkBuilderStore } from '../../features/work-builder/store';
@@ -20,6 +24,11 @@ const NODE_ICONS: Record<string, React.ReactNode> = {
   posters: <LayoutGrid className="w-4 h-4 text-pink-500" />,
   'mobile-showcase': <Smartphone className="w-4 h-4 text-emerald-500" />,
   'desktop-showcase': <Monitor className="w-4 h-4 text-violet-500" />,
+  bento: <Blocks className="w-4 h-4 text-orange-500" />,
+  video: <Play className="w-4 h-4 text-rose-500" />,
+  embed: <Link2 className="w-4 h-4 text-cyan-500" />,
+  metrics: <BarChart3 className="w-4 h-4 text-lime-500" />,
+  link: <Link2 className="w-4 h-4 text-blue-500" />,
 };
 
 export function WorkSidebar() {

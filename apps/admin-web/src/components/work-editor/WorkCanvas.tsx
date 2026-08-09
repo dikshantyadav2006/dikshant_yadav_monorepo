@@ -34,6 +34,11 @@ import {
   PostersNode,
   MobileShowcaseNode,
   DesktopShowcaseNode,
+  BentoNode,
+  VideoNode,
+  EmbedNode,
+  MetricsNode,
+  LinkNode,
 } from './nodes/WorkNodes';
 import WorkPreviewPanel from './WorkPreviewPanel';
 
@@ -44,6 +49,11 @@ const workNodeTypes = {
   posters: PostersNode,
   'mobile-showcase': MobileShowcaseNode,
   'desktop-showcase': DesktopShowcaseNode,
+  bento: BentoNode,
+  video: VideoNode,
+  embed: EmbedNode,
+  metrics: MetricsNode,
+  link: LinkNode,
 };
 
 export interface WorkCanvasProps {
@@ -100,14 +110,13 @@ function WorkCanvasInner({ workId, initialWork, onBack }: WorkCanvasProps) {
             description: initialWork.description || '',
             techStack: initialWork.techStack ?? [],
             link: initialWork.link || '',
+            swatchColor: initialWork.swatchColor || '',
             status: initialWork.status || 'DRAFT',
             featured: initialWork.featured || false,
             featuredPinned: initialWork.featuredPinned || false,
             seoTitle: initialWork.seoTitle || initialWork.title || '',
             seoDescription: initialWork.seoDescription || '',
-            bento: initialWork.bento ?? null,
             credits: initialWork.credits ?? [],
-            nextProject: initialWork.nextProject ?? null,
           });
         } else {
           setWorkMetadata({
@@ -121,14 +130,13 @@ function WorkCanvasInner({ workId, initialWork, onBack }: WorkCanvasProps) {
             description: '',
             techStack: [],
             link: '',
+            swatchColor: '',
             status: 'DRAFT',
             featured: false,
             featuredPinned: false,
             seoTitle: '',
             seoDescription: '',
-            bento: null,
             credits: [],
-            nextProject: null,
           });
         }
 

@@ -2,7 +2,18 @@
 
 import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Image as ImageIcon, LayoutGrid, Monitor, Smartphone, Trash2, Square } from 'lucide-react';
+import {
+  Image as ImageIcon,
+  LayoutGrid,
+  Monitor,
+  Smartphone,
+  Trash2,
+  Square,
+  Play,
+  Link2,
+  BarChart3,
+  Blocks,
+} from 'lucide-react';
 import { useWorkBuilderStore } from '../../../features/work-builder/store';
 
 interface BaseNodeProps {
@@ -217,6 +228,130 @@ export function DesktopShowcaseNode({ id, data, selected }: NodeProps) {
       selected={selected}
     >
       <ShowcasePreview items={data.desktop || []} variant="desktop" />
+    </BaseNode>
+  );
+}
+
+export function BentoNode({ id, data, selected }: NodeProps) {
+  const cards = [
+    data.story ? 'Story' : null,
+    data.client ? 'Client' : null,
+    data.services?.length ? 'Services' : null,
+    data.results ? 'Results' : null,
+  ].filter(Boolean);
+  return (
+    <BaseNode
+      id={id}
+      title="Project Bento"
+      icon={<Blocks className="w-3.5 h-3.5 text-orange-500" />}
+      selected={selected}
+    >
+      <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5 space-y-1.5">
+        {cards.length === 0 ? (
+          <div className="text-[9px] text-muted-foreground/60">No bento fields filled yet.</div>
+        ) : (
+          cards.map((card) => (
+            <div key={card} className="flex items-center justify-between text-[10px]">
+              <span className="text-muted-foreground">{card}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+            </div>
+          ))
+        )}
+      </div>
+    </BaseNode>
+  );
+}
+
+export function VideoNode({ id, data, selected }: NodeProps) {
+  return (
+    <BaseNode
+      id={id}
+      title="Video"
+      icon={<Play className="w-3.5 h-3.5 text-rose-500" />}
+      selected={selected}
+    >
+      {data.poster || data.src ? (
+        <div className="relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={data.poster || data.src}
+            alt={data.title || 'Video preview'}
+            className="w-full aspect-video object-cover rounded-lg border border-border/50 bg-muted/40"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center">
+              <Play className="w-3.5 h-3.5 text-white fill-white" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground/60">
+          <Play className="w-5 h-5" />
+        </div>
+      )}
+    </BaseNode>
+  );
+}
+
+export function EmbedNode({ id, data, selected }: NodeProps) {
+  return (
+    <BaseNode
+      id={id}
+      title="Embed"
+      icon={<Link2 className="w-3.5 h-3.5 text-cyan-500" />}
+      selected={selected}
+    >
+      <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5">
+        <div className="text-[9px] text-muted-foreground">aspect {data.aspectRatio || '16/9'}</div>
+        <div className="text-[10px] font-medium truncate mt-0.5">
+          {data.url || 'Paste a YouTube / Vimeo URL'}
+        </div>
+      </div>
+    </BaseNode>
+  );
+}
+
+export function MetricsNode({ id, data, selected }: NodeProps) {
+  const items = Array.isArray(data.items) ? data.items : [];
+  return (
+    <BaseNode
+      id={id}
+      title="Metrics"
+      icon={<BarChart3 className="w-3.5 h-3.5 text-lime-500" />}
+      selected={selected}
+    >
+      <div className="grid grid-cols-2 gap-1.5">
+        {items.length === 0 && (
+          <div className="col-span-2 flex aspect-[3/1] items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground/60">
+            <BarChart3 className="w-4 h-4" />
+          </div>
+        )}
+        {items.slice(0, 4).map((item: { value?: string; label?: string }, i: number) => (
+          <div key={i} className="rounded-lg border border-border/50 bg-muted/20 p-2">
+            <div className="text-[11px] font-bold truncate">{item.value || '—'}</div>
+            <div className="text-[9px] text-muted-foreground truncate">{item.label || 'Label'}</div>
+          </div>
+        ))}
+      </div>
+    </BaseNode>
+  );
+}
+
+export function LinkNode({ id, data, selected }: NodeProps) {
+  return (
+    <BaseNode
+      id={id}
+      title="Link / CTA"
+      icon={<Link2 className="w-3.5 h-3.5 text-blue-500" />}
+      selected={selected}
+    >
+      <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5 space-y-1">
+        <div className="text-[11px] font-bold truncate">{data.label || 'Link label'}</div>
+        <div className="text-[9px] text-muted-foreground truncate">{data.href || 'https://…'}</div>
+        {data.description && (
+          <div className="text-[9px] text-muted-foreground/70 line-clamp-2">{data.description}</div>
+        )}
+      </div>
     </BaseNode>
   );
 }
