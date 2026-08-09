@@ -384,6 +384,6 @@ export interface Work {
   workLinks?: WorkLink[];
 
   _count?: {
-    posts?: number;
+    postLinks?: number;
   };
 }
