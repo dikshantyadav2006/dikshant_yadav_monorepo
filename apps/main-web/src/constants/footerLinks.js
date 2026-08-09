@@ -13,8 +13,12 @@ export const footerContent = {
 
   navigation: [
     {
-      label: 'About Me',
-      href: 'about',
+      label: 'Home',
+      href: '/',
+    },
+    {
+      label: 'Connect',
+      href: '/connect',
     },
     {
       label: 'Works',

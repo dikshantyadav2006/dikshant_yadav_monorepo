@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { Nav, TopScroller } from '@components/navbar';
-import MainHero from "./components/landing/MainHero";
 import useNavbarAnimations from "./components/navbar/NavbarAnimations";
-import { Footer } from '@components/footer';
-import { BackgroundLayers } from '@layout';
-import { OutroMarquee, ThinkingNote, LogoMarquee } from '@sections';
-import { DomainNetwork } from '@dikshant/ui';
+import { SectionBackgroundProvider } from '@layout';
 import { useLocomotiveScroll, useScrollLock, useDarkMode, useCustomCursorHook } from '@hooks';
-import { ElasticString, LandingAnimation ,AnimationCircularText2 } from '@animation';
+import { LandingAnimation } from '@animation';
+import Home from "./pages/Home";
+import Connect from "./pages/Connect";
+import NotFound from "./pages/NotFound";
 
 
 
@@ -24,8 +24,9 @@ function useIsDesktop() {
 
 function App() {
   const isDesktop = useIsDesktop();
+  const location = useLocation();
 
-  const { scrollRef } = useLocomotiveScroll();
+  const { scrollRef } = useLocomotiveScroll([location.pathname]);
 
   const [showNav, setShowNav] = useState(false);
   const { navCardRef, spanRefs, navCardToggleButton } =
@@ -37,6 +38,8 @@ function App() {
 
   const { CursorRenderer, addCursor, removeCursor, cursorModes } = useCustomCursorHook()
 
+  const cursorProps = { addCursor, removeCursor, cursorModes }
+
   return (
     <>
       {/* CRITICAL: CursorRenderer at TOP LEVEL, OUTSIDE all state and blend-mode divs */}
@@ -47,9 +50,6 @@ function App() {
       <div className="mix-blend-difference z-[9999] pointer-events-none fixed top-0 left-0 w-full h-full">
         <CursorRenderer />
       </div >
-      <div className="sticky top-0 left-0 w-full h-[100vh] z-0">
-        <MainHero addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} isDesktop={isDesktop} />
-      </div>
       <nav className="fixed top-0 left-0 w-screen z-[999]">
         <TopScroller />
         <Nav
@@ -65,32 +65,35 @@ function App() {
         />
       </nav>
       <div className="relative dark:selection:bg-[--light-color] dark:selection:text-[--dark-color] z-0 w-screen transition-colors duration-500 text-[--dark-color] dark:text-[--light-color]">
-        <BackgroundLayers isDarkMode={isDarkMode} />
-        {/* {isDesktop && (
-          <div className="relative" style={{ width: "100vw", paddingTop: "30px", overflowX: "hidden", overflowY: "visible" }}>
-            <div className="absolute top-[-60%] lg:top-[-40%] left-[15%] lg:left-[-15%] w-full h-full pointer-events-none mix-blend-difference text-white">
-              <AnimationCircularText2 items={[
-                { text: "CREATE •", radius: 100, fontSize: 20 },
-                { text: "INNOVATE • INSPIRE • ", radius: 150, fontSize: 20 },
-                { text: "DEPLOY • ", radius: 180, fontSize: 20 },
-                { text: "DESIGN • DEVELOP • ", radius: 200, fontSize: 16 }
-              ]}
-              />
-            </div>
-            <ElasticString height={300} />
-          </div>
-        )} */}
-        <div className="w-screen" data-scroll-container>
-          {/* <OutroMarquee /> */}
-          <div>
-            <ThinkingNote addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
-            <LogoMarquee isDarkMode={isDarkMode} />
-          </div>
-          <DomainNetwork
-            cursorEvents={{ addCursor, removeCursor, cursorModes }}
-          />
-          <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
-        </div>
+        <SectionBackgroundProvider isDarkMode={isDarkMode}>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  {...cursorProps}
+                  isDarkMode={isDarkMode}
+                  isDesktop={isDesktop}
+                />
+              }
+            />
+            <Route
+              path="/connect"
+              element={
+                <Connect
+                  {...cursorProps}
+                  isDarkMode={isDarkMode}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <NotFound {...cursorProps} />
+              }
+            />
+          </Routes>
+        </SectionBackgroundProvider>
       </div>
     </>
   );

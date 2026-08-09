@@ -4,10 +4,13 @@ import LocomotiveScroll from 'locomotive-scroll';
 /**
  * useLocomotiveScroll Hook
  * Manages Locomotive Scroll initialization and cleanup
- * 
+ *
+ * @param {Array} deps - Dependencies that trigger re-initialization (e.g. route pathname).
+ *                       When the active page changes the old container is destroyed and a
+ *                       fresh LocomotiveScroll instance is bound to the new [data-scroll-container].
  * @returns {object} { scrollRef } - Reference to Locomotive Scroll instance
  */
-const useLocomotiveScroll = () => {
+const useLocomotiveScroll = (deps = []) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -47,7 +50,8 @@ const useLocomotiveScroll = () => {
     return () => {
       if (scrollRef.current) scrollRef.current.destroy();
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 
   return { scrollRef };
 };

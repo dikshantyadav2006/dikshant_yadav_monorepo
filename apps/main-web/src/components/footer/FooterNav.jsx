@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { TextSwap } from '@dikshant/ui';
 
 /**
@@ -41,11 +42,14 @@ const FooterNav = ({ links }) => {
             viewport={{ once: true, margin: '0px 0px -100px 0px' }}
             className="flex flex-col gap-4 md:gap-6"
         >
-            {links.map((link) => (
-                <motion.a
+            {links.map((link) => {
+                const MotionEl = link.external ? motion.a : motion(Link);
+                return (
+                <MotionEl
                     key={link.href}
                     variants={itemVariants}
-                    href={link.href}
+                    href={link.external ? link.href : undefined}
+                    to={link.external ? undefined : link.href}
                     target={link.external ? '_blank' : link.target}
                     rel={link.external ? 'noopener noreferrer' : link.rel}
                     className="
@@ -81,8 +85,9 @@ const FooterNav = ({ links }) => {
                             style={{ width: '100%' }}
                         />
                     </span>
-                </motion.a>
-            ))}
+                </MotionEl>
+                );
+            })}
         </motion.nav>
     );
 };

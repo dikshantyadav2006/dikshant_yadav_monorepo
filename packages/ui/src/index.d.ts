@@ -30,6 +30,19 @@ export declare const Button: React.FC<{ children?: React.ReactNode; onClick?: ()
 
 export declare const TextSwap: React.FC<{ text: string; stagger?: number; className?: string }>;
 
+interface NotFoundPageProps {
+  LinkComponent?: React.ElementType;
+  linkProp?: 'href' | 'to';
+  homeHref?: string;
+  connectHref?: string;
+  code?: string;
+  title?: string;
+  description?: string;
+  cursorEvents?: CursorEvents | null;
+}
+
+export declare const NotFoundPage: React.FC<NotFoundPageProps>;
+
 interface DomainItem {
   id?: string;
   prefix: string;
