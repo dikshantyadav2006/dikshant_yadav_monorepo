@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AlertCircle, Check, Loader2 } from 'lucide-react';
 import apiFetch from '../../../lib/api';
-import type { SiteConfig } from '@dikshant/types';
+import type { SiteConfig, SocialLink } from '@dikshant/types';
 
 const AUTOSAVE_INTERVAL_OPTIONS = [
   { value: 30000, label: '30 seconds' },
@@ -11,11 +12,158 @@ const AUTOSAVE_INTERVAL_OPTIONS = [
   { value: 300000, label: '5 minutes' },
 ];
 
+const SOCIAL_PRESETS: SocialLink[] = [
+  { platform: 'instagram', label: 'Instagram', url: 'https://instagram.com/' },
+  { platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/' },
+  { platform: 'github', label: 'GitHub', url: 'https://github.com/' },
+  { platform: 'twitter', label: 'Twitter / X', url: 'https://x.com/' },
+  { platform: 'email', label: 'Email', url: 'mailto:' },
+  { platform: 'phone', label: 'Phone', url: 'tel:' },
+];
+
+const SAVE_DELAY_MS = 600;
+
+type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
+interface SocialRow {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+}
+
+function toSocialRow(link: SocialLink): SocialRow {
+  return {
+    id: crypto.randomUUID(),
+    platform: link.platform ?? '',
+    label: link.label ?? '',
+    url: link.url ?? '',
+  };
+}
+
+function isComplete(row: SocialRow) {
+  return row.platform.trim() !== '' && row.label.trim() !== '' && row.url.trim() !== '';
+}
+
+function SaveStatus({ state, idle, onRetry }: { state: SaveState; idle?: string; onRetry?: () => void }) {
+  if (state === 'saving') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        Saving…
+      </span>
+    );
+  }
+  if (state === 'saved') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+        <Check className="h-3.5 w-3.5" />
+        Saved
+      </span>
+    );
+  }
+  if (state === 'error') {
+    return (
+      <button
+        type="button"
+        onClick={onRetry}
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive hover:underline"
+      >
+        <AlertCircle className="h-3.5 w-3.5" />
+        Save failed — click to retry
+      </button>
+    );
+  }
+  if (idle) return <span className="text-xs text-muted-foreground">{idle}</span>;
+  return null;
+}
+
 export default function SettingsPage() {
-  const [config, setConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [status, setStatus] = useState<Record<string, SaveState>>({});
+  const [featuredCountStr, setFeaturedCountStr] = useState('1');
+  const [form, setForm] = useState<{
+    homepageFeaturedCount: number;
+    autosaveEnabled: boolean;
+    autosaveIntervalMs: number;
+  } | null>(null);
+  const [socialRows, setSocialRows] = useState<SocialRow[]>([]);
+
+  const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const seq = useRef<Record<string, number>>({});
+  const formRef = useRef(form);
+  formRef.current = form;
+  const lastSentSocial = useRef('');
+
+  const setStatusFor = (key: string, state: SaveState) => {
+    setStatus((prev) => ({ ...prev, [key]: state }));
+  };
+
+  const clearTimer = (key: string) => {
+    if (timers.current[key]) {
+      clearTimeout(timers.current[key]);
+      delete timers.current[key];
+    }
+  };
+
+  const flushSave = useCallback(async (key: string, payload: Partial<SiteConfig>) => {
+    const current = (seq.current[key] = (seq.current[key] || 0) + 1);
+    setStatusFor(key, 'saving');
+
+    try {
+      const saved = await apiFetch<SiteConfig>('/settings', {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      // Ignore stale responses (a newer request was issued meanwhile).
+      if (seq.current[key] !== current) return;
+
+      const latest = formRef.current;
+      if (latest) {
+        const next = { ...latest };
+        let changed = false;
+        for (const k of Object.keys(payload) as Array<keyof SiteConfig>) {
+          const pv = (payload as any)[k];
+          const fv = (latest as any)[k];
+          // Only apply the server's normalized value if the field wasn't edited again
+          // while the request was in flight.
+          if (JSON.stringify(fv) === JSON.stringify(pv) && (saved as any)[k] !== undefined) {
+            (next as any)[k] = (saved as any)[k];
+            changed = true;
+          }
+        }
+        if (changed) setForm(next);
+
+        if (
+          key === 'homepageFeaturedCount' &&
+          JSON.stringify(latest.homepageFeaturedCount) === JSON.stringify(payload.homepageFeaturedCount)
+        ) {
+          setFeaturedCountStr(String(saved.homepageFeaturedCount));
+        }
+      }
+
+      setError('');
+      setStatusFor(key, 'saved');
+      timers.current[key] = setTimeout(() => setStatusFor(key, 'idle'), 2000);
+    } catch (err) {
+      if (seq.current[key] !== current) return;
+      setStatusFor(key, 'error');
+      setError(err instanceof Error ? err.message : 'Failed to save settings');
+    }
+  }, []);
+
+  const scheduleSave = useCallback(
+    (key: string, payload: Partial<SiteConfig>, delay = SAVE_DELAY_MS) => {
+      clearTimer(key);
+      setStatusFor(key, 'idle');
+      timers.current[key] = setTimeout(() => {
+        delete timers.current[key];
+        flushSave(key, payload);
+      }, delay);
+    },
+    [flushSave],
+  );
 
   useEffect(() => {
     let active = true;
@@ -24,7 +172,13 @@ export default function SettingsPage() {
       try {
         const data = await apiFetch<SiteConfig>('/settings');
         if (!active) return;
-        setConfig(data);
+        setForm({
+          homepageFeaturedCount: data.homepageFeaturedCount,
+          autosaveEnabled: data.autosaveEnabled,
+          autosaveIntervalMs: data.autosaveIntervalMs,
+        });
+        setFeaturedCountStr(String(data.homepageFeaturedCount));
+        setSocialRows((data.socialLinks ?? []).map(toSocialRow));
       } catch (err) {
         if (!active) return;
         setError(err instanceof Error ? err.message : 'Failed to load settings');
@@ -35,32 +189,82 @@ export default function SettingsPage() {
     }
 
     load();
+
     return () => {
       active = false;
+      Object.values(timers.current).forEach(clearTimeout);
+      timers.current = {};
     };
   }, []);
 
-  const patchConfig = async (patch: Partial<SiteConfig>, key: string) => {
-    if (!config) return;
-    setError('');
-    setSavingKey(key);
+  const scheduleSocialSave = useCallback(
+    (rows: SocialRow[]) => {
+      const complete = rows
+        .filter(isComplete)
+        .map(({ platform, label, url }) => ({ platform, label, url }));
+      const serialized = JSON.stringify(complete);
+      if (serialized === lastSentSocial.current) {
+        setStatusFor('socialLinks', 'idle');
+        return;
+      }
+      lastSentSocial.current = serialized;
+      scheduleSave('socialLinks', { socialLinks: complete });
+    },
+    [scheduleSave],
+  );
 
-    const prev = config;
-    const next = { ...config, ...patch };
-    setConfig(next);
+  const updateRow = (id: string, patch: Partial<Pick<SocialRow, 'platform' | 'label' | 'url'>>) => {
+    const next = socialRows.map((row) => (row.id === id ? { ...row, ...patch } : row));
+    setSocialRows(next);
+    scheduleSocialSave(next);
+  };
 
-    try {
-      const saved = await apiFetch<SiteConfig>('/settings', {
-        method: 'PATCH',
-        body: JSON.stringify(patch),
-      });
-      setConfig(saved);
-    } catch (err) {
-      setConfig(prev);
-      setError(err instanceof Error ? err.message : 'Failed to save settings');
-    } finally {
-      setSavingKey(null);
+  const removeRow = (id: string) => {
+    const next = socialRows.filter((row) => row.id !== id);
+    setSocialRows(next);
+    scheduleSocialSave(next);
+  };
+
+  const addRow = (preset?: SocialLink) => {
+    const next = [...socialRows, preset ? toSocialRow(preset) : { id: crypto.randomUUID(), platform: '', label: '', url: '' }];
+    setSocialRows(next);
+    scheduleSocialSave(next);
+  };
+
+  const retrySocial = () => {
+    const complete = socialRows
+      .filter(isComplete)
+      .map(({ platform, label, url }) => ({ platform, label, url }));
+    flushSave('socialLinks', { socialLinks: complete });
+  };
+
+  const handleCountChange = (value: string) => {
+    setFeaturedCountStr(value);
+    if (value.trim() === '') return;
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 1 || n > 5) {
+      setStatusFor('homepageFeaturedCount', 'idle');
+      return;
     }
+    scheduleSave('homepageFeaturedCount', { homepageFeaturedCount: n });
+  };
+
+  const handleCountBlur = () => {
+    if (!form) return;
+    const n = Number(featuredCountStr);
+    if (featuredCountStr.trim() === '' || !Number.isFinite(n) || n < 1 || n > 5) {
+      setFeaturedCountStr(String(form.homepageFeaturedCount));
+    }
+  };
+
+  const handleAutosaveToggle = (checked: boolean) => {
+    setForm((f) => (f ? { ...f, autosaveEnabled: checked } : f));
+    scheduleSave('autosaveEnabled', { autosaveEnabled: checked }, 0);
+  };
+
+  const handleIntervalChange = (value: number) => {
+    setForm((f) => (f ? { ...f, autosaveIntervalMs: value } : f));
+    scheduleSave('autosaveIntervalMs', { autosaveIntervalMs: value }, 0);
   };
 
   if (loading) {
@@ -71,7 +275,7 @@ export default function SettingsPage() {
     );
   }
 
-  if (!config) {
+  if (!form) {
     return (
       <div className="space-y-6">
         <div>
@@ -86,6 +290,8 @@ export default function SettingsPage() {
       </div>
     );
   }
+
+  const countOutOfRange = featuredCountStr.trim() !== '' && (Number(featuredCountStr) < 1 || Number(featuredCountStr) > 5);
 
   return (
     <div className="space-y-10">
@@ -112,22 +318,26 @@ export default function SettingsPage() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Featured Posts Count (1–5)</label>
+            <label htmlFor="featured-count" className="text-sm font-medium">
+              Featured Posts Count (1–5)
+            </label>
             <input
+              id="featured-count"
               type="number"
               min={1}
               max={5}
-              value={config.homepageFeaturedCount}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                if (!Number.isFinite(value)) return;
-                patchConfig({ homepageFeaturedCount: value }, 'homepageFeaturedCount');
-              }}
+              step={1}
+              value={featuredCountStr}
+              onChange={(e) => handleCountChange(e.target.value)}
+              onBlur={handleCountBlur}
+              aria-invalid={countOutOfRange}
               className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30"
             />
-            <p className="text-xs text-muted-foreground">
-              {savingKey === 'homepageFeaturedCount' ? 'Saving…' : 'Saves instantly'}
-            </p>
+            {countOutOfRange ? (
+              <p className="text-xs text-destructive">Enter a number between 1 and 5.</p>
+            ) : (
+              <SaveStatus state={status['homepageFeaturedCount'] ?? 'idle'} idle="Auto-saves when you stop typing" />
+            )}
           </div>
         </div>
       </section>
@@ -141,22 +351,28 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-5">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={config.autosaveEnabled}
-              onChange={(e) => patchConfig({ autosaveEnabled: e.target.checked }, 'autosaveEnabled')}
-              className="rounded border-input"
-            />
-            Autosave enabled
-          </label>
+          <div className="flex items-center justify-between gap-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.autosaveEnabled}
+                onChange={(e) => handleAutosaveToggle(e.target.checked)}
+                className="rounded border-input"
+              />
+              Autosave enabled
+            </label>
+            <SaveStatus state={status['autosaveEnabled'] ?? 'idle'} />
+          </div>
 
           <div className="space-y-2 max-w-sm">
-            <label className="text-sm font-medium">Autosave Interval</label>
+            <label htmlFor="autosave-interval" className="text-sm font-medium">
+              Autosave Interval
+            </label>
             <select
-              value={config.autosaveIntervalMs}
-              onChange={(e) => patchConfig({ autosaveIntervalMs: Number(e.target.value) }, 'autosaveIntervalMs')}
-              disabled={!config.autosaveEnabled}
+              id="autosave-interval"
+              value={form.autosaveIntervalMs}
+              onChange={(e) => handleIntervalChange(Number(e.target.value))}
+              disabled={!form.autosaveEnabled}
               className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60"
             >
               {AUTOSAVE_INTERVAL_OPTIONS.map((opt) => (
@@ -165,9 +381,7 @@ export default function SettingsPage() {
                 </option>
               ))}
             </select>
-            <p className="text-xs text-muted-foreground">
-              {savingKey === 'autosaveEnabled' || savingKey === 'autosaveIntervalMs' ? 'Saving…' : 'Saves instantly'}
-            </p>
+            <SaveStatus state={status['autosaveIntervalMs'] ?? 'idle'} />
           </div>
         </div>
       </section>
@@ -176,88 +390,88 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-lg font-bold">Social Links</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage social and contact links displayed in the site footer. Saves instantly.
+            Manage social and contact links displayed in the site footer. Rows are auto-saved once
+            platform, label, and URL are all filled in.
           </p>
         </div>
 
         <div className="space-y-3">
-          {(config.socialLinks || []).map((link, index) => (
-            <div key={index} className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/20 p-3">
+          {socialRows.map((row) => (
+            <div key={row.id} className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/20 p-3">
               <div className="flex-1 grid grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  value={link.platform}
-                  onChange={(e) => {
-                    const updated = [...(config.socialLinks || [])];
-                    updated[index] = { ...updated[index], platform: e.target.value };
-                    patchConfig({ socialLinks: updated }, 'socialLinks');
-                  }}
-                  placeholder="Platform (e.g. instagram)"
-                  className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
-                />
-                <input
-                  type="text"
-                  value={link.label}
-                  onChange={(e) => {
-                    const updated = [...(config.socialLinks || [])];
-                    updated[index] = { ...updated[index], label: e.target.value };
-                    patchConfig({ socialLinks: updated }, 'socialLinks');
-                  }}
-                  placeholder="Label (e.g. Instagram)"
-                  className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
-                />
-                <input
-                  type="text"
-                  value={link.url}
-                  onChange={(e) => {
-                    const updated = [...(config.socialLinks || [])];
-                    updated[index] = { ...updated[index], url: e.target.value };
-                    patchConfig({ socialLinks: updated }, 'socialLinks');
-                  }}
-                  placeholder="URL (e.g. https://...)"
-                  className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
-                />
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    value={row.platform}
+                    onChange={(e) => updateRow(row.id, { platform: e.target.value })}
+                    placeholder="Platform (e.g. instagram)"
+                    aria-label="Platform"
+                    className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    value={row.label}
+                    onChange={(e) => updateRow(row.id, { label: e.target.value })}
+                    placeholder="Label (e.g. Instagram)"
+                    aria-label="Label"
+                    className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    value={row.url}
+                    onChange={(e) => updateRow(row.id, { url: e.target.value })}
+                    placeholder="URL (e.g. https://...)"
+                    aria-label="URL"
+                    className="rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-accent/30"
+                  />
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  const updated = (config.socialLinks || []).filter((_, i) => i !== index);
-                  patchConfig({ socialLinks: updated }, 'socialLinks');
-                }}
-                className="shrink-0 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                Remove
-              </button>
+              <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                {!isComplete(row) && (
+                  <span className="hidden sm:inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                    Incomplete
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeRow(row.id)}
+                  className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
+          {socialRows.length === 0 && (
+            <p className="rounded-xl border border-dashed border-border/60 px-4 py-6 text-center text-xs text-muted-foreground">
+              No social links yet — add one below.
+            </p>
+          )}
         </div>
 
-        <button
-          onClick={() => {
-            const updated = [...(config.socialLinks || []), { platform: '', label: '', url: '' }];
-            patchConfig({ socialLinks: updated }, 'socialLinks');
-          }}
-          className="rounded-xl border border-dashed border-border/60 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-border transition-colors w-full"
-        >
-          + Add Social Link
-        </button>
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => addRow()}
+            className="rounded-xl border border-dashed border-border/60 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-border transition-colors w-full"
+          >
+            + Add Social Link
+          </button>
+          <SaveStatus state={status['socialLinks'] ?? 'idle'} onRetry={retrySocial} />
+        </div>
 
         <details className="text-xs text-muted-foreground">
           <summary className="cursor-pointer hover:text-foreground font-medium">Quick add defaults</summary>
           <div className="mt-2 flex flex-wrap gap-2">
-            {[
-              { platform: 'instagram', label: 'Instagram', url: 'https://instagram.com/' },
-              { platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/' },
-              { platform: 'github', label: 'GitHub', url: 'https://github.com/' },
-              { platform: 'twitter', label: 'Twitter / X', url: 'https://x.com/' },
-              { platform: 'email', label: 'Email', url: 'mailto:' },
-              { platform: 'phone', label: 'Phone', url: 'tel:' },
-            ].map((preset) => (
+            {SOCIAL_PRESETS.map((preset) => (
               <button
                 key={preset.platform}
-                onClick={() => {
-                  const updated = [...(config.socialLinks || []), preset];
-                  patchConfig({ socialLinks: updated }, 'socialLinks');
-                }}
+                type="button"
+                onClick={() => addRow(preset)}
                 className="rounded-full border border-border/60 px-3 py-1.5 text-xs hover:border-foreground hover:text-foreground transition-colors"
               >
                 + {preset.label}
@@ -269,4 +483,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
