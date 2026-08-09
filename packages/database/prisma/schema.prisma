@@ -19,6 +19,12 @@ enum PostStatus {
   ARCHIVED
 }
 
+enum WorkStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 enum ContentFormat {
   MARKDOWN
   MDX
@@ -53,6 +59,8 @@ model User {
   media     Media[]
   bookmarks Bookmark[]
   versions  PostVersion[]
+  works     Work[]
+  workVersions WorkVersion[]
   preferences UserPreferences?
 
   @@map("users")
@@ -98,8 +106,9 @@ model Post {
   bookmarks     Bookmark[]
   versions      PostVersion[]
   builderNodes  BuilderNode[]
-  builderEdges BuilderEdge[]
+  builderEdges  BuilderEdge[]
   shareLinks    ShareLink[]
+  workLinks     PostWorkLink[]
 
   @@index([status, publishedAt])
   @@index([status])
@@ -110,6 +119,120 @@ model Post {
   @@index([authorId])
   @@index([scheduledAt])
   @@map("posts")
+}
+
+model Work {
+  id            String     @id @default(uuid()) @db.Uuid
+  authorId      String     @db.Uuid
+  slug          String     @unique
+  title         String
+  subtitle      String?
+  category      String?
+  year          String?
+  heroImageUrl  String?
+  imageUrl      String?
+  overview      String?
+  description   String?
+  techStack     Json?
+  link          String?
+  bento         Json?
+  credits       Json?
+  nextProject   Json?
+  status        WorkStatus @default(DRAFT)
+  featured      Boolean    @default(false)
+  featuredPinned Boolean   @default(false) @map("featured_pinned")
+  seoTitle      String?
+  seoDescription String?
+  noIndex       Boolean    @default(false)
+  canvasData    Json?      @map("canvas_data")
+  currentVersion Int       @default(0) @map("current_version")
+  publishedAt   DateTime?
+  archivedAt    DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  author        User              @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  versions      WorkVersion[]
+  builderNodes  WorkBuilderNode[]
+  builderEdges  WorkBuilderEdge[]
+  postLinks     PostWorkLink[]
+
+  @@index([status, publishedAt])
+  @@index([status])
+  @@index([featured, status])
+  @@index([featuredPinned, status, publishedAt])
+  @@index([publishedAt])
+  @@index([category, status])
+  @@index([authorId])
+  @@map("works")
+}
+
+model WorkVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  workId      String   @map("work_id") @db.Uuid
+  version     Int
+  canvasData  Json     @map("canvas_data")
+  savedById   String?  @map("saved_by_id") @db.Uuid
+  changeLabel String?  @map("change_label")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  work    Work  @relation(fields: [workId], references: [id], onDelete: Cascade)
+  savedBy User? @relation(fields: [savedById], references: [id], onDelete: SetNull)
+
+  @@unique([workId, version])
+  @@index([workId, createdAt])
+  @@map("work_versions")
+}
+
+model WorkBuilderNode {
+  id        String   @id
+  workId    String   @map("work_id") @db.Uuid
+  type      String
+  data      Json
+  position  Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  work     Work                @relation(fields: [workId], references: [id], onDelete: Cascade)
+  outgoing WorkBuilderEdge[]   @relation("WorkBuilderEdgeSource")
+  incoming WorkBuilderEdge[]   @relation("WorkBuilderEdgeTarget")
+
+  @@index([workId, type])
+  @@map("work_builder_nodes")
+}
+
+model WorkBuilderEdge {
+  id        String   @id
+  workId    String   @map("work_id") @db.Uuid
+  sourceId  String   @map("source_id")
+  targetId  String   @map("target_id")
+  condition Json?
+  data      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  work   Work            @relation(fields: [workId], references: [id], onDelete: Cascade)
+  source WorkBuilderNode @relation("WorkBuilderEdgeSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  target WorkBuilderNode @relation("WorkBuilderEdgeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([workId, sourceId])
+  @@index([workId, targetId])
+  @@map("work_builder_edges")
+}
+
+model PostWorkLink {
+  postId    String   @db.Uuid
+  workId    String   @db.Uuid
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  work Work @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@id([postId, workId])
+  @@index([workId, sortOrder])
+  @@index([postId, sortOrder])
+  @@map("post_work_links")
 }
 
 model SiteConfig {
