@@ -3,13 +3,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, LayoutDashboard, LogOut, Plus, Settings } from 'lucide-react';
+import { FileText, LayoutDashboard, LogOut, Plus, Settings, Briefcase } from 'lucide-react';
 import ThemeSelector from '../app/theme-selector';
 import { useAuth } from '../context/auth-provider';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/posts/new', label: 'New Post', icon: Plus },
+  { href: '/works', label: 'Works', icon: Briefcase },
+  { href: '/works/new', label: 'New Work', icon: Plus },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -76,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border/40 py-4 text-center text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4">
           <FileText className="h-3.5 w-3.5" />
-          <span>Post CMS · connected to dikshant API</span>
+          <span>Post + Works CMS · connected to dikshant API</span>
         </div>
       </footer>
     </div>
