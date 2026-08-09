@@ -41,9 +41,10 @@ export function buildApp() {
   });
 
   // Register Multipart for uploads
+  // Cap must cover the largest allowed per-type limit (100MB video)
   app.register(multipart, {
     limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB limit
+      fileSize: 100 * 1024 * 1024, // 100MB cap; per-type limits enforced in routes/upload.ts
     },
   });
 

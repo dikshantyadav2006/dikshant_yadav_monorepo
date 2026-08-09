@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { UploadService } from '../services/upload.service.js';
+import { UploadService, UPLOAD_LIMITS, uploadKindFor } from '../services/upload.service.js';
 import { requireAdmin } from '../middlewares/auth.js';
 
 export async function uploadRoutes(fastify: FastifyInstance) {
@@ -26,8 +26,13 @@ export async function uploadRoutes(fastify: FastifyInstance) {
       });
     }
 
-    if (buffer.length > 500 * 1024 * 1024) {
-      return reply.status(400).send({ error: 'Bad Request', message: 'File exceeds 500MB limit' });
+    const kind = uploadKindFor(mimeType);
+    const maxBytes = UPLOAD_LIMITS[kind];
+    if (buffer.length > maxBytes) {
+      return reply.status(400).send({
+        error: 'Bad Request',
+        message: `File exceeds ${Math.round(maxBytes / (1024 * 1024))}MB limit for ${kind}s`,
+      });
     }
 
     try {

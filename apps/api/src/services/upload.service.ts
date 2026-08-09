@@ -9,6 +9,21 @@ import {
 
 const UPLOAD_FOLDER = 'dikshant-posts';
 
+// Per-type upload limits. Keep in sync with apps/admin-web/src/components/editor/MediaField.tsx
+export const UPLOAD_LIMITS = {
+  image: 5 * 1024 * 1024,
+  video: 100 * 1024 * 1024,
+  pdf: 25 * 1024 * 1024,
+} as const;
+
+export type UploadKind = keyof typeof UPLOAD_LIMITS;
+
+export function uploadKindFor(mimeType: string): UploadKind {
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('video/')) return 'video';
+  return 'pdf';
+}
+
 type MediaRecordType = 'IMAGE' | 'VIDEO' | 'RAW';
 
 function toMediaType(resourceType: string, contentType: string): MediaRecordType {
