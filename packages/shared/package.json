@@ -2,12 +2,13 @@
   "name": "@dikshant/shared",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"]
-  ,
+  "files": ["dist"],
   "scripts": {
-    "build": "npx esbuild src/index.js --bundle --outdir=dist --format=esm --target=es2017 --sourcemap"
+    "build": "node build.js",
+    "postinstall": "node build.js"
   }
 }
