@@ -249,8 +249,8 @@ export class PostService {
 
     return timed(
       'db:getPostBySlugOrId',
-      () =>
-        prisma.post.findFirst({
+      async () => {
+        const post = await prisma.post.findFirst({
           where,
           include: {
             author: {
@@ -279,8 +279,40 @@ export class PostService {
                 bookmarks: true,
               },
             },
+            workLinks: {
+              orderBy: { sortOrder: 'asc' as const },
+              select: {
+                work: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    subtitle: true,
+                    category: true,
+                    year: true,
+                    imageUrl: true,
+                    heroImageUrl: true,
+                    overview: true,
+                    description: true,
+                    status: true,
+                    featured: true,
+                    publishedAt: true,
+                  },
+                },
+              },
+            },
           },
-        }),
+        });
+
+        if (!post) return null;
+
+        const works = (post as any).workLinks
+          .map((link: any) => link.work)
+          .filter((work: any) => isAdmin || work.status === 'PUBLISHED');
+
+        const { workLinks, ...rest } = post as any;
+        return { ...rest, works };
+      },
       { identifier, isAdmin },
     );
   }

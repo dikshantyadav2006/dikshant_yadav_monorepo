@@ -15,6 +15,9 @@ import { relatedRoutes } from './routes/related.js';
 import { visualBuilderRoutes } from './routes/visual-builder.js';
 import { settingsRoutes } from './routes/settings.js';
 import { shareLinkRoutes } from './routes/share-links.js';
+import { workRoutes } from './routes/works.js';
+import { workBuilderRoutes } from './routes/works-builder.js';
+import { workLinkRoutes } from './routes/work-links.js';
 
 export function buildApp() {
   const app = Fastify({
@@ -76,6 +79,9 @@ export function buildApp() {
   app.register(visualBuilderRoutes);
   app.register(settingsRoutes);
   app.register(shareLinkRoutes);
+  app.register(workRoutes);
+  app.register(workBuilderRoutes);
+  app.register(workLinkRoutes);
 
   // Global Error Handler
 app.setErrorHandler((error: any, request, reply) => {
