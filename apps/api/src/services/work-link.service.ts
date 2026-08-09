@@ -41,7 +41,12 @@ export class WorkLinkService {
     const existing = await prisma.work.findUnique({ where: { id: workId }, select: { id: true } });
     if (!existing) throw new Error('Work not found');
 
-    const validLinks = Array.isArray(links) ? links : [];
+    const seen = new Set<string>();
+    const validLinks = (Array.isArray(links) ? links : []).filter((link) => {
+      if (!link?.postId || seen.has(link.postId)) return false;
+      seen.add(link.postId);
+      return true;
+    });
 
     await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.postWorkLink.deleteMany({ where: { workId } });
