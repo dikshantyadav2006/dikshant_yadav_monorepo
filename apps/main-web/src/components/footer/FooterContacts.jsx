@@ -119,8 +119,8 @@ const FooterContacts = ({ contact, socials }) => {
                     pt-4
                     border-t
                     border-gray-200
-                    hover:text-white
-                    dark:hover:text-[--primary-light-color]
+                    hover:text-[--dark-color]
+                    dark:hover:text-[--light-color]
                 "
             >
                 India (GMT +5:30) — {indiaTime}

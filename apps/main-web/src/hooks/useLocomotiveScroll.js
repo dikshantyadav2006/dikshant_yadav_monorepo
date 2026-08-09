@@ -14,8 +14,11 @@ const useLocomotiveScroll = (deps = []) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
+    const el = document.querySelector("[data-scroll-container]");
+    if (!el) return; // Route has no scroll container (e.g. 404 page)
+
     scrollRef.current = new LocomotiveScroll({
-      el: document.querySelector("[data-scroll-container]"),
+      el,
       smooth: true,
       smoothMobile: true,
       multiplier: .8,
@@ -48,7 +51,10 @@ const useLocomotiveScroll = (deps = []) => {
     });
 
     return () => {
-      if (scrollRef.current) scrollRef.current.destroy();
+      if (scrollRef.current) {
+        scrollRef.current.destroy();
+        scrollRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

@@ -68,7 +68,7 @@ const ThinkingNote = ({ addCursor, removeCursor, cursorModes }) => {
     )
 
     return (
-        <div ref={ref} className="w-full overflow-hidden ">
+        <div className="w-full overflow-hidden ">
             <motion.div
                 ref={ref}
                 style={{ width }}

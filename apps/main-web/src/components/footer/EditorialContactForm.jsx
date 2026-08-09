@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditorialField from './EditorialField';
 import EditorialTextarea from './EditorialTextarea';
@@ -70,6 +70,21 @@ const EditorialContactForm = ({
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(STATUS.IDLE);
   const [statusMessage, setStatusMessage] = useState('');
+  const resetTimers = useRef([]);
+
+  useEffect(() => {
+    const timers = resetTimers.current;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+      timers.length = 0;
+    };
+  }, []);
+
+  const scheduleReset = useCallback((fn, delay) => {
+    resetTimers.current.forEach((t) => clearTimeout(t));
+    resetTimers.current.length = 0;
+    resetTimers.current.push(setTimeout(fn, delay));
+  }, []);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -114,20 +129,20 @@ const EditorialContactForm = ({
         setStatus(STATUS.SUCCESS);
         setStatusMessage('MESSAGE SENT');
         setFormData({ name: '', phone: '', email: '', message: '', budget: '' });
-        setTimeout(() => {
+        scheduleReset(() => {
           setStatus(STATUS.IDLE);
           setStatusMessage('');
         }, 4000);
       } catch (err) {
         setStatus(STATUS.ERROR);
         setStatusMessage('SOMETHING WENT WRONG');
-        setTimeout(() => {
+        scheduleReset(() => {
           setStatus(STATUS.IDLE);
           setStatusMessage('');
         }, 4000);
       }
     },
-    [formData, status, onSubmit]
+    [formData, status, onSubmit, scheduleReset]
   );
 
   const isIdle = status === STATUS.IDLE;

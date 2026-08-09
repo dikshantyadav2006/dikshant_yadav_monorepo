@@ -128,20 +128,20 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                         viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                         className="    border-gray-200    flex     flex-col      font-['font-p-2']     md:flex-row     md:items-center     md:justify-between      border-t      gap-4"
                     >
-                        <p className="  hover:text-white  cursor-target cursor-nonedark:hover:text-[--light-color] text-xs md:text-sm text-gray-500 uppercase tracking-wide">
+                        <p className="  hover:text-[--dark-color]  cursor-target cursor-none dark:hover:text-[--light-color] text-xs md:text-sm text-gray-500 uppercase tracking-wide">
                             © {currentYear} {footerContent.brand.fullName}. All rights
                             reserved.
                         </p>
                         <nav className="flex gap-6">
                             <a
                                 href="#privacy"
-                                className="  text-xs md:text-sm   text-gray-500   uppercase   tracking-wide  transition-colors  duration-300  hover:text-white dark:hover:text-[--light-color]            cursor-target cursor-none "
+                                className="  text-xs md:text-sm   text-gray-500   uppercase   tracking-wide  transition-colors  duration-300  hover:text-[--dark-color] dark:hover:text-[--light-color]            cursor-target cursor-none "
                             >
                                 Privacy
                             </a>
                             <a
                                 href="#terms"
-                                className="    uppercase    text-gray-500    tracking-wide    transition-colors    duration-300    hover:text-white    dark:hover:text-[--light-color]    cursor-target    text-xs md:text-sm   cursor-none "
+                                className="    uppercase    text-gray-500    tracking-wide    transition-colors    duration-300    hover:text-[--dark-color]    dark:hover:text-[--light-color]    cursor-target    text-xs md:text-sm   cursor-none "
                             >
                                 Terms
                             </a>
