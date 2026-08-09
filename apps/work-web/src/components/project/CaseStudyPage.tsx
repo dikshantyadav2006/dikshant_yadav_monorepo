@@ -5,6 +5,7 @@ import CaseStudyHero from './CaseStudyHero';
 import AboutSection from './AboutSection';
 import ContentBlockRenderer from './ContentBlockRenderer';
 import CreditsSection from './CreditsSection';
+import RelatedCaseStudies from './RelatedCaseStudies';
 import NextProjectSection from './NextProjectSection';
 
 interface CaseStudyPageProps {
@@ -30,6 +31,8 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
       {blocks.length > 0 && <ContentBlockRenderer blocks={blocks} />}
 
       <CreditsSection credits={project.credits ?? []} year={project.year ?? ''} />
+
+      <RelatedCaseStudies posts={project.posts ?? []} />
 
       <NextProjectSection prevProject={project.prev ?? null} nextProject={project.next ?? null} />
     </div>
