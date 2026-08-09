@@ -26,7 +26,10 @@ export default function ReactionBoard({ postId }: ReactionBoardProps) {
 
   const mutation = useMutation({
     mutationFn: (type: string) =>
-      apiFetch('/reactions', { method: 'POST', body: JSON.stringify({ postId, type }) }),
+      apiFetch<{ counts: Record<string, number>; userReactions: string[] }>('/reactions', {
+        method: 'POST',
+        body: JSON.stringify({ postId, type }),
+      }),
     onSuccess: (data) => {
       queryClient.setQueryData(['reactions', postId], {
         counts: data.counts,

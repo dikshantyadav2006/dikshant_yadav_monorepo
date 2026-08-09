@@ -1,6 +1,6 @@
 import { API_URL } from './constants';
 
-export async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_URL}${path}`;
   
   const headers = new Headers(options.headers);
@@ -34,7 +34,7 @@ export async function apiFetch<T = any>(path: string, options: RequestInit = {})
   }
 
   if (response.status === 204) {
-    return null as any;
+    return null as unknown as T;
   }
 
   return response.json();

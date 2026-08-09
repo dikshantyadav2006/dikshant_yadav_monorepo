@@ -293,7 +293,6 @@ function VideoBlock({ data }: { data: Record<string, unknown> }) {
 
 function GalleryBlock({ data }: { data: Record<string, unknown> }) {
   const items = (data.items as string[]) || [];
-  if (!items.length) return null;
 
   const masonryItems = useMemo(
     () =>
@@ -304,6 +303,8 @@ function GalleryBlock({ data }: { data: Record<string, unknown> }) {
       })),
     [items]
   );
+
+  if (!items.length) return null;
 
   return (
     <div className="my-8 border-2 border-foreground bg-card p-2" style={{ boxShadow: '4px 4px 0 hsl(var(--foreground))' }}>
