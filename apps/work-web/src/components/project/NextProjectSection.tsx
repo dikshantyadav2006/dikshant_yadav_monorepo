@@ -3,19 +3,19 @@
 import { useRef, useState, useCallback } from 'react';
 import TransitionLink from '@/components/ui/transition/TransitionLink';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-
-interface AdjacentProject {
-  title: string;
-  image: string;
-  slug: string;
-}
+import { AdjacentWork } from '@/types/project';
+import { useAccent } from './AccentContext';
 
 interface NextProjectProps {
-  prevProject: AdjacentProject | null;
-  nextProject: AdjacentProject | null;
+  prevProject: AdjacentWork | null;
+  nextProject: AdjacentWork | null;
 }
 
 type HoverSide = 'down' | 'left' | 'right';
+
+function projectImage(project: AdjacentWork): string | null {
+  return project.imageUrl ?? project.heroImageUrl ?? null;
+}
 
 function ProjectLink({
   project,
@@ -24,12 +24,16 @@ function ProjectLink({
   onLeave,
   onClick,
 }: {
-  project: AdjacentProject;
+  project: AdjacentWork;
   label: string;
   onEnter: () => void;
   onLeave: () => void;
   onClick?: () => void;
 }) {
+  const { accent } = useAccent();
+  const image = projectImage(project);
+  const fallback = project.swatchColor || accent;
+
   return (
     <TransitionLink
       href={`/project/${project.slug}`}
@@ -38,25 +42,30 @@ function ProjectLink({
       onMouseLeave={onLeave}
       onClick={onClick}
     >
+      {/* Accent base — used as the tile color when no image exists */}
+      <span className="absolute inset-0" style={{ backgroundColor: fallback }} />
+
       {/* Image */}
-      <motion.img
-        src={project.image}
-        alt={project.title}
-        className="
-          absolute
-          inset-0
-          h-full
-          w-full
-          object-cover
-          opacity-0
-          scale-105
-          group-hover:opacity-100
-          group-hover:scale-100
-          transition-all
-          duration-700
-          ease-[cubic-bezier(0.22,1,0.36,1)]
-        "
-      />
+      {image && (
+        <motion.img
+          src={image}
+          alt={project.title}
+          className="
+            absolute
+            inset-0
+            h-full
+            w-full
+            object-cover
+            opacity-0
+            scale-105
+            group-hover:opacity-100
+            group-hover:scale-100
+            transition-all
+            duration-700
+            ease-[cubic-bezier(0.22,1,0.36,1)]
+          "
+        />
+      )}
 
       {/* Dark overlay */}
       <div

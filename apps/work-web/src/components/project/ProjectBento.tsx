@@ -19,9 +19,18 @@ interface ProjectBentoProps {
   role: string;
   techStack: string[];
   results: string;
+  accentColor?: string;
 }
 
-function BentoCardItem({ card, index }: { card: BentoCard; index: number }) {
+function BentoCardItem({
+  card,
+  index,
+  accentColor = '#D2D8CB',
+}: {
+  card: BentoCard;
+  index: number;
+  accentColor?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLSpanElement>(null);
   const exitPos = useRef({ x: 50, y: 50 });
@@ -140,8 +149,8 @@ function BentoCardItem({ card, index }: { card: BentoCard; index: number }) {
       {/* Animated background — enter from cursor, exit toward cursor */}
       <span
         ref={bgRef}
-        className="absolute inset-0 bg-[#D2D8CB] pointer-events-none"
-        style={{ transform: 'scale(0)', willChange: 'transform, transform-origin' }}
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundColor: accentColor, transform: 'scale(0)', willChange: 'transform, transform-origin' }}
       />
 
       <p className="font-sans text-[11px] uppercase tracking-[0.25em] opacity-40 mb-4 relative z-10">
@@ -163,6 +172,7 @@ export default function ProjectBento({
   role,
   techStack,
   results,
+  accentColor = '#D2D8CB',
 }: ProjectBentoProps) {
   const cards: BentoCard[] = [
     { label: 'Project Story', value: story, span: 8 },
@@ -179,7 +189,7 @@ export default function ProjectBento({
     <section className="py-[60px] md:py-[80px] px-1">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-[1px] bg-[#C2CABB]">
         {cards.map((card, i) => (
-          <BentoCardItem key={card.label} card={card} index={i} />
+          <BentoCardItem key={card.label} card={card} index={i} accentColor={accentColor} />
         ))}
       </div>
     </section>

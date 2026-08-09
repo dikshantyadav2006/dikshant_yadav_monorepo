@@ -12,6 +12,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const accent = project.swatchColor || '#D2D8CB';
 
   return (
     <motion.div
@@ -31,12 +32,12 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
       <TransitionLink href={`/project/${project.slug}`} className="block w-full h-full">
         {/* Project Number */}
         <span className="absolute top-4 right-6 z-10 font-display text-[60px] md:text-[80px] leading-none text-white/15 select-none pointer-events-none">
-          {project.id}
+          {String(index + 1).padStart(2, '0')}
         </span>
 
         {/* Image */}
         <motion.img
-          src={project.image}
+          src={project.imageUrl ?? undefined}
           alt={project.title}
           className="absolute inset-0 w-full h-full object-cover"
           animate={{
@@ -45,10 +46,11 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
           transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
         />
 
-        {/* Hover Overlay */}
+        {/* Hover Overlay — tinted by work accent */}
         <motion.div
-          className="absolute inset-0 bg-black pointer-events-none"
-          animate={{ opacity: isHovered ? 0.05 : 0 }}
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundColor: accent }}
+          animate={{ opacity: isHovered ? 0.12 : 0 }}
           transition={{ duration: 0.4 }}
         />
 
@@ -61,6 +63,10 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
           }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
+          <span
+            className="inline-block w-2 h-2 rounded-full mb-2"
+            style={{ backgroundColor: accent }}
+          />
           <h3 className="font-display text-white text-[18px] md:text-[22px] uppercase tracking-[0.05em] mb-1">
             {project.title}
           </h3>

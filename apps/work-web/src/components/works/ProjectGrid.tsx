@@ -12,7 +12,7 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
     <section className="px-1">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[4px]">
         {projects.map((project, index) => (
-          <ProjectCard key={project.id} project={project} index={index} />
+          <ProjectCard key={project.slug} project={project} index={index} />
         ))}
       </div>
     </section>

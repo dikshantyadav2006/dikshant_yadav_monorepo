@@ -5,6 +5,11 @@ import BlockBanner from './blocks/BlockBanner';
 import BlockPosters from './blocks/BlockPosters';
 import BlockMobileShowcase from './blocks/BlockMobileShowcase';
 import BlockDesktopShowcase from './blocks/BlockDesktopShowcase';
+import BlockBento from './blocks/BlockBento';
+import BlockVideo from './blocks/BlockVideo';
+import BlockEmbed from './blocks/BlockEmbed';
+import BlockMetrics from './blocks/BlockMetrics';
+import BlockLink from './blocks/BlockLink';
 
 interface ContentBlockRendererProps {
   blocks: ContentBlock[];
@@ -41,6 +46,35 @@ function renderBlock(block: ContentBlock, index: number) {
     case 'desktop-showcase':
       return (
         <BlockDesktopShowcase key={index} desktop={block.desktop} mobile={block.mobile} />
+      );
+    case 'bento':
+      return (
+        <BlockBento
+          key={index}
+          story={block.story}
+          client={block.client}
+          year={block.year}
+          services={block.services}
+          timeline={block.timeline}
+          role={block.role}
+          techStack={block.techStack}
+          results={block.results}
+        />
+      );
+    case 'video':
+      return <BlockVideo key={index} src={block.src} title={block.title} poster={block.poster} />;
+    case 'embed':
+      return <BlockEmbed key={index} url={block.url} aspectRatio={block.aspectRatio} />;
+    case 'metrics':
+      return <BlockMetrics key={index} items={block.items} />;
+    case 'link':
+      return (
+        <BlockLink
+          key={index}
+          label={block.label}
+          href={block.href}
+          description={block.description}
+        />
       );
     default:
       return null;

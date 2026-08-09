@@ -1,9 +1,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getProjectBySlug, getAdjacentProjects, projects } from '@/lib/projects';
+import { getWorks, getWork } from '@/lib/api';
 import CaseStudyPage from '@/components/project/CaseStudyPage';
+import { AccentProvider } from '@/components/project/AccentContext';
+import ColorTracker from '@/components/ui/ColorTracker';
 import ReachOut from '@/components/works/ReachOut';
+
+export const revalidate = 60;
 
 const SITE_URL = 'https://work.dikshantyadav.in';
 
@@ -12,8 +16,9 @@ interface ProjectPageProps {
 }
 
 export async function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
+  const works = await getWorks();
+  return works.map((work) => ({
+    slug: work.slug,
   }));
 }
 
@@ -21,23 +26,23 @@ export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getWork(slug);
   if (!project) return { title: 'Not Found' };
 
   const canonical = `${SITE_URL}/project/${slug}`;
 
   return {
     title: project.title,
-    description: project.description,
+    description: project.description ?? undefined,
     openGraph: {
       title: `${project.title} — Dikshant Yadav`,
-      description: project.description,
+      description: project.description ?? undefined,
       type: 'website',
       url: canonical,
-      images: project.heroImage
+      images: project.heroImageUrl
         ? [
             {
-              url: project.heroImage,
+              url: project.heroImageUrl,
               width: 1400,
               height: 900,
               alt: project.title,
@@ -48,8 +53,8 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: `${project.title} — Dikshant Yadav`,
-      description: project.description,
-      images: project.heroImage ? [project.heroImage] : undefined,
+      description: project.description ?? undefined,
+      images: project.heroImageUrl ? [project.heroImageUrl] : undefined,
     },
     alternates: {
       canonical,
@@ -63,14 +68,16 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getWork(slug);
 
   if (!project) {
     notFound();
   }
 
-  const { prev, next } = getAdjacentProjects(slug);
   const canonical = `${SITE_URL}/project/${slug}`;
+
+  const bentoBlock = project.contentBlocks?.find((block) => block.type === 'bento');
+  const about = bentoBlock?.type === 'bento' ? bentoBlock.services.join(', ') : undefined;
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -85,9 +92,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     },
     dateCreated: project.year,
     keywords: project.techStack?.join(', '),
-    ...(project.bento?.services && {
-      about: project.bento.services.join(', '),
-    }),
+    ...(about && { about }),
   };
 
   return (
@@ -108,11 +113,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </Link>
         </div>
 
-        <CaseStudyPage
-          project={project}
-          prevProject={prev ? { title: prev.title, image: prev.image, slug: prev.slug } : null}
-          nextProject={next ? { title: next.title, image: next.image, slug: next.slug } : null}
-        />
+        <AccentProvider swatchColor={project.swatchColor} heroImageUrl={project.heroImageUrl}>
+          <CaseStudyPage project={project} />
+          <ColorTracker />
+        </AccentProvider>
       </div>
 
       <ReachOut />

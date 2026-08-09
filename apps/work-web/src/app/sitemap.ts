@@ -1,12 +1,15 @@
 import { MetadataRoute } from 'next';
-import { projects } from '@/lib/projects';
+import { getWorks } from '@/lib/api';
+
+export const revalidate = 60;
 
 const SITE_URL = 'https://work.dikshantyadav.in';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const projectUrls = projects.map((project) => ({
-    url: `${SITE_URL}/project/${project.slug}`,
-    lastModified: new Date(),
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const works = await getWorks();
+  const projectUrls = works.map((work) => ({
+    url: `${SITE_URL}/project/${work.slug}`,
+    lastModified: work.updatedAt ? new Date(work.updatedAt) : new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
   }));
