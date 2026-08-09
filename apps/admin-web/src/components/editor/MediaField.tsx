@@ -4,6 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 import { Link2, Loader2, Upload } from 'lucide-react';
 import { uploadFile, registerMediaUrl, type UploadResponse } from '@/lib/upload';
 
+// Per-type upload limits. Keep in sync with apps/api/src/services/upload.service.ts
+const UPLOAD_LIMITS = {
+  image: 5 * 1024 * 1024,
+  video: 100 * 1024 * 1024,
+  pdf: 25 * 1024 * 1024,
+} as const;
+
+function sizeLimitFor(file: File): { kind: string; limit: number } {
+  if (file.type.startsWith('image/')) return { kind: 'image', limit: UPLOAD_LIMITS.image };
+  if (file.type.startsWith('video/')) return { kind: 'video', limit: UPLOAD_LIMITS.video };
+  return { kind: 'pdf', limit: UPLOAD_LIMITS.pdf };
+}
+
 interface MediaFieldProps {
   label?: string;
   value: string;
@@ -35,6 +48,11 @@ export default function MediaField({
 
   const handleFile = async (file: File | null) => {
     if (!file) return;
+    const { kind, limit } = sizeLimitFor(file);
+    if (file.size > limit) {
+      setError(`File exceeds ${Math.round(limit / (1024 * 1024))}MB limit for ${kind}s`);
+      return;
+    }
     setLoading(true);
     setError('');
     try {

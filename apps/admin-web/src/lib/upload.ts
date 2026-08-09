@@ -14,6 +14,7 @@ export interface UploadResponse {
   dominantColor?: string | null;
   responsiveMeta?: Record<string, unknown> | null;
   size: number;
+  deduplicated?: boolean;
 }
 
 export async function uploadFile(file: File): Promise<UploadResponse> {
