@@ -23,4 +23,6 @@ export {
   AIBlock,
 } from './blocks/ContentRenderer.jsx';
 
+export { CodeBlockInteractive } from './blocks/CodeBlockInteractive.jsx';
+
 export default Button;

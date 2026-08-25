@@ -340,6 +340,17 @@ export type WorkContentBlock =
       label: string;
       href: string;
       description?: string;
+    }
+  | {
+      type: 'code-block-interactive';
+      title?: string;
+      description?: string;
+      runtime: 'react' | 'html';
+      code: string;
+      props?: Record<string, any>;
+      previewHeight?: number;
+      renderMode?: 'preview' | 'component' | 'hidden';
+      version?: number;
     };
 
 export interface ProjectCredit {

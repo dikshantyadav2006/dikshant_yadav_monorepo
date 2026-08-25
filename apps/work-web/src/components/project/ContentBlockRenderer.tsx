@@ -1,4 +1,5 @@
 import { ContentBlock } from '@/types/project';
+import { CodeBlockInteractive } from '@dikshant/ui';
 import BlockLargeImage from './blocks/BlockLargeImage';
 import BlockGrid2 from './blocks/BlockGrid2';
 import BlockBanner from './blocks/BlockBanner';
@@ -76,6 +77,8 @@ function renderBlock(block: ContentBlock, index: number) {
           description={block.description}
         />
       );
+    case 'code-block-interactive':
+      return <CodeBlockInteractive key={index} data={block as any} />;
     default:
       return null;
   }

@@ -26,6 +26,8 @@ export declare const PollBlock: React.FC<{ data: Record<string, unknown> }>;
 export declare const ButtonBlock: React.FC<{ data: Record<string, unknown> }>;
 export declare const AIBlock: React.FC<{ data: Record<string, unknown> }>;
 
+export declare const CodeBlockInteractive: React.FC<{ data: Record<string, unknown> }>;
+
 export declare const Button: React.FC<{ children?: React.ReactNode; onClick?: () => void }>;
 
 export declare const TextSwap: React.FC<{ text: string; stagger?: number; className?: string }>;

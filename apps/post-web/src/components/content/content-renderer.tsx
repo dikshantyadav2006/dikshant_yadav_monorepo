@@ -13,6 +13,7 @@ import {
   Check,
 } from 'lucide-react';
 import type { Block, ImageLayout, ImageNodeData } from '@dikshant/types';
+import { CodeBlockInteractive } from '@dikshant/ui';
 import { cn, slugify } from '@/lib/utils';
 
 interface ContentRendererProps {
@@ -170,6 +171,12 @@ export default function ContentRenderer({ blocks }: ContentRendererProps) {
             return (
               <div key={key} style={styles.style} className={styles.className}>
                 <AIBlock data={block.data} />
+              </div>
+            );
+          case 'code-block-interactive':
+            return (
+              <div key={key} style={styles.style} className={styles.className}>
+                <CodeBlockInteractive data={block.data} />
               </div>
             );
           default:
