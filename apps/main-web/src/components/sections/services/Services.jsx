@@ -48,13 +48,13 @@ function Services({ isDesktop }) {
 
   return (
     <div
-      className="w-full h-[85vh] flex flex-col overflow-hidden"
+      className="w-full min-h-[85vh] flex flex-col"
       onMouseLeave={handleSectionLeave}
     >
       <ServicesHeader />
 
       {isDesktop ? (
-        <div className="flex-1 flex min-h-0 overflow-hidden">
+        <div className="flex-1 flex min-h-[55vh] overflow-hidden">
           {services.map((service, i) => {
             const isExpanded = expandedIndex === i;
             return (
@@ -85,7 +85,7 @@ function Services({ isDesktop }) {
           })}
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto">
+        <div className="w-full">
           {services.map((service, i) => (
             <ServiceAccordion
               key={service.id}
