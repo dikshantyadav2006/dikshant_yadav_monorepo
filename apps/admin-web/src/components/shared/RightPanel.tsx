@@ -55,7 +55,7 @@ export function RightPanel({
       {/* Tab Bar */}
       <div className="flex border-b border-border/40">
         {([
-          { key: 'preview', icon: <Eye className="w-3.5 h-3.5" />, label: 'Preview' },
+          { key: 'preview', icon: <Eye className="w-3.5 h-3.5" />, label: 'Preview', badge: 0 },
           { key: 'errors', icon: <AlertTriangle className="w-3.5 h-3.5" />, label: 'Errors', badge: compileError ? 1 : 0 },
           { key: 'props', icon: <Sliders className="w-3.5 h-3.5" />, label: 'Props', badge: propKeys.length },
         ] as const).map((tab) => (
