@@ -89,6 +89,23 @@ const builtInNodes = [
     category: 'AI',
     defaultData: { prompt: '', outputType: 'text' },
   },
+  {
+    type: 'code-block-interactive',
+    label: 'Code Block',
+    category: 'Code',
+    defaultData: {
+      title: '',
+      runtime: 'react',
+      code: '',
+      props: {},
+      previewHeight: 400,
+      renderMode: 'preview',
+      dependencies: [],
+      libraryId: null,
+      versionId: '',
+      version: 1,
+    },
+  },
 ];
 
 export class NodeRegistry {
@@ -218,6 +235,23 @@ export const builtInWorkNodes = [
     label: 'Link / CTA',
     category: 'Portfolio',
     defaultData: { label: '', href: '', description: '' },
+  },
+  {
+    type: 'code-block-interactive',
+    label: 'Code Block',
+    category: 'Code',
+    defaultData: {
+      title: '',
+      runtime: 'react',
+      code: '',
+      props: {},
+      previewHeight: 400,
+      renderMode: 'preview',
+      dependencies: [],
+      libraryId: null,
+      versionId: '',
+      version: 1,
+    },
   },
 ];
 

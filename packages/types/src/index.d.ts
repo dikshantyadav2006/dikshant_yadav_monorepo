@@ -23,7 +23,8 @@ export type CanvasNodeType =
   | 'poll'
   | 'embed'
   | 'button'
-  | 'ai-block';
+  | 'ai-block'
+  | 'code-block-interactive';
 
 export type EdgeConditionType = 'equals' | 'contains' | 'truthy' | 'falsy';
 
