@@ -1,21 +1,9 @@
 import { motion, useReducedMotion } from 'framer-motion';
 
-const EASING = [0.16, 1, 0.3, 1];
+const ENTER_EASING = [0.22, 1, 0.36, 1];
+const EXIT_EASING = [0.4, 0, 0.2, 1];
 
-/**
- * CutReveal
- *
- * A masked/clip animation that reveals content from a clipped region.
- * Content slides up from behind a mask — not a simple fade.
- *
- * @param {Object}  props
- * @param {boolean} props.isVisible - whether to reveal
- * @param {number}  [props.delay=0] - animation delay in seconds
- * @param {number}  [props.duration=0.6] - animation duration
- * @param {string}  [props.className] - additional classes
- * @param {React.ReactNode} props.children
- */
-function CutReveal({ isVisible, delay = 0, duration = 0.6, className = '', children }) {
+function CutReveal({ isVisible, delay = 0, duration = 0.5, className = '', children }) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
@@ -26,32 +14,32 @@ function CutReveal({ isVisible, delay = 0, duration = 0.6, className = '', child
     );
   }
 
+  // Exit is quicker and has no stagger delay — hides before container shrinks
+  const exitDuration = Math.min(duration * 0.45, 0.2);
+
   return (
     <motion.div
       className={className}
-      initial={{
-        clipPath: 'inset(100% 0 0 0)',
-        y: -16,
-        opacity: 0,
-      }}
+      style={{ willChange: 'clip-path, transform, opacity' }}
+      initial={{ clipPath: 'inset(0 0 100% 0)', y: -8, opacity: 0 }}
       animate={
         isVisible
+          ? { clipPath: 'inset(0 0 0% 0)', y: 0, opacity: 1 }
+          : { clipPath: 'inset(0 0 100% 0)', y: -8, opacity: 0 }
+      }
+      transition={
+        isVisible
           ? {
-              clipPath: 'inset(0% 0 0 0)',
-              y: 0,
-              opacity: 1,
+              clipPath: { duration, delay, ease: ENTER_EASING },
+              y: { duration, delay, ease: ENTER_EASING },
+              opacity: { duration: duration * 0.65, delay, ease: ENTER_EASING },
             }
           : {
-              clipPath: 'inset(100% 0 0 0)',
-              y: -16,
-              opacity: 0,
+              clipPath: { duration: exitDuration, delay: 0, ease: EXIT_EASING },
+              y: { duration: exitDuration, delay: 0, ease: EXIT_EASING },
+              opacity: { duration: exitDuration * 0.7, delay: 0, ease: EXIT_EASING },
             }
       }
-      transition={{
-        clipPath: { duration, delay, ease: EASING },
-        y: { duration, delay, ease: EASING },
-        opacity: { duration: duration * 0.6, delay, ease: EASING },
-      }}
     >
       {children}
     </motion.div>

@@ -1,89 +1,91 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import ServicesHeader from './ServicesHeader';
 import ServiceCard from './ServiceCard';
 import ServiceAccordion from './ServiceAccordion';
 import services from './servicesData';
 
-const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
-
-/**
- * Computes desktop grid-template-columns based on which service is active.
- *
- * Default:  five equal columns  → 1fr 1fr 1fr 1fr 1fr
- * Expanded: one wide + four thin → 0.6fr 0.6fr 2.2fr 0.6fr 0.6fr
- */
-function getGridColumns(activeIndex) {
-  if (activeIndex === -1) {
-    return 'repeat(5, 1fr)';
-  }
-  return services
-    .map((_, i) => (i === activeIndex ? '2.2fr' : '0.6fr'))
-    .join(' ');
-}
-
-/**
- * Services — Main orchestrator
- *
- * Desktop: 5-column interactive grid with hover/active expansion
- * Mobile:  vertical accordion with click-to-expand
- *
- * @param {Object} props
- * @param {boolean} props.isDesktop - whether to use desktop grid layout
- */
 function Services({ isDesktop }) {
   const [hoveredService, setHoveredService] = useState(-1);
   const [activeService, setActiveService] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(null);
   const shouldReduceMotion = useReducedMotion();
+  const hoverTimer = useRef(null);
 
   const expandedIndex = hoveredService !== -1 ? hoveredService : activeService;
 
-  const handleMouseLeave = useCallback(() => {
+  useEffect(() => {
+    return () => clearTimeout(hoverTimer.current);
+  }, []);
+
+  const scheduleHover = useCallback((index) => {
+    clearTimeout(hoverTimer.current);
+    // 60ms debounce — just enough to prevent flicker when crossing borders,
+    // but feels immediate to the user
+    hoverTimer.current = setTimeout(() => {
+      setHoveredService(index);
+    }, 60);
+  }, []);
+
+  const cancelHover = useCallback(() => {
+    clearTimeout(hoverTimer.current);
+  }, []);
+
+  const handleSectionLeave = useCallback(() => {
+    clearTimeout(hoverTimer.current);
     setHoveredService(-1);
   }, []);
 
-  const handleCardClick = useCallback(
-    (index) => {
-      setActiveService((prev) => (prev === index ? -1 : index));
-    },
-    [],
-  );
+  const handleCardClick = useCallback((index) => {
+    clearTimeout(hoverTimer.current);
+    setActiveService((prev) => (prev === index ? -1 : index));
+    setHoveredService(-1);
+  }, []);
 
   const handleAccordionToggle = useCallback((index) => {
     setMobileOpen((prev) => (prev === index ? null : index));
   }, []);
 
   return (
-    <div className="w-full">
+    <div
+      className="w-full h-[85vh] flex flex-col overflow-hidden"
+      onMouseLeave={handleSectionLeave}
+    >
       <ServicesHeader />
 
-      {/* DESKTOP: 5-column interactive grid */}
       {isDesktop ? (
-        <div
-          className="w-full grid min-h-[65vh]"
-          onMouseLeave={handleMouseLeave}
-          style={{
-            gridTemplateColumns: getGridColumns(expandedIndex),
-            transition: shouldReduceMotion
-              ? 'none'
-              : `grid-template-columns 0.6s ${EASING}`,
-          }}
-        >
-          {services.map((service, i) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              index={i}
-              isExpanded={expandedIndex === i}
-              onHover={() => setHoveredService(i)}
-              onClick={() => handleCardClick(i)}
-            />
-          ))}
+        <div className="flex-1 flex min-h-0 overflow-hidden">
+          {services.map((service, i) => {
+            const isExpanded = expandedIndex === i;
+            return (
+              <div
+                key={service.id}
+                className="min-w-0 flex flex-col overflow-hidden"
+                style={{
+                  flexGrow: isExpanded ? 1.45 : 1,
+                  flexShrink: 1,
+                  flexBasis: '0%',
+                  minWidth: 0,
+                  willChange: 'flex-grow',
+                  transition: shouldReduceMotion
+                    ? 'none'
+                    : 'flex-grow 0.75s cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+                onMouseEnter={() => scheduleHover(i)}
+                onMouseLeave={cancelHover}
+              >
+                <ServiceCard
+                  service={service}
+                  index={i}
+                  isExpanded={isExpanded}
+                  onClick={() => handleCardClick(i)}
+                />
+              </div>
+            );
+          })}
         </div>
       ) : (
-        /* MOBILE: vertical accordion */
-        <div className="w-full">
+        <div className="flex-1 overflow-y-auto">
           {services.map((service, i) => (
             <ServiceAccordion
               key={service.id}
