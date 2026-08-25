@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Handle, Position, type NodeProps } from 'reactflow';
-import { Code, Pencil, Trash2, Blocks, Clock, FileCode2 } from 'lucide-react';
+import { Code, Pencil, Trash2, Clock, FileCode2 } from 'lucide-react';
 import { CodeStudio } from './CodeStudio';
 import type { CodeBlockInteractiveData } from './types';
 
@@ -83,7 +84,7 @@ export function CodeBlockInteractiveNode({
           className="w-2.5 h-2.5 bg-muted-foreground border-2 border-background"
         />
 
-        {/* Card Body */}
+        {/* Card Body — lightweight metadata only */}
         <div className="p-4 flex flex-col gap-3">
           {/* Title Row */}
           <div className="flex items-start justify-between gap-2">
@@ -120,9 +121,7 @@ export function CodeBlockInteractiveNode({
               <span className="font-medium uppercase">{runtime}</span>
             </div>
             {lineCount > 0 && (
-              <div className="flex items-center gap-1">
-                <span>{lineCount} lines</span>
-              </div>
+              <span>{lineCount} lines</span>
             )}
           </div>
 
@@ -152,17 +151,20 @@ export function CodeBlockInteractiveNode({
         />
       </div>
 
-      {/* Full-Screen Code Studio */}
-      <CodeStudio
-        isOpen={isStudioOpen}
-        initialCode={code}
-        initialRuntime={runtime}
-        initialProps={data.props || {}}
-        initialHeight={data.previewHeight || 400}
-        initialDescription={description}
-        onSave={handleStudioSave}
-        onClose={() => setIsStudioOpen(false)}
-      />
+      {/* Code Studio — portaled to document.body, outside ReactFlow */}
+      {createPortal(
+        <CodeStudio
+          isOpen={isStudioOpen}
+          initialCode={code}
+          initialRuntime={runtime}
+          initialProps={data.props || {}}
+          initialHeight={data.previewHeight || 400}
+          initialDescription={description}
+          onSave={handleStudioSave}
+          onClose={() => setIsStudioOpen(false)}
+        />,
+        document.body,
+      )}
     </>
   );
 }

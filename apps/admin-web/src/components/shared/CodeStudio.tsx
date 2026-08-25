@@ -262,7 +262,7 @@ export function CodeStudio({
   );
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-background animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[999999] flex flex-col bg-background animate-in fade-in duration-150">
       {/* Toolbar */}
       <StudioToolbar
         runtime={runtime}
