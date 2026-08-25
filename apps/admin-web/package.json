@@ -13,6 +13,7 @@
     "@dikshant/node-registry": "*",
     "@dikshant/shared": "*",
     "@dikshant/types": "*",
+    "@dikshant/ui": "*",
     "@tanstack/react-query": "^5.62.2",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
