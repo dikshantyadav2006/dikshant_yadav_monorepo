@@ -139,7 +139,8 @@ export default function PreviewPanel({ post, onClose }: PreviewPanelProps) {
 
   const getShareUrl = (token: string) => {
     if (typeof window === 'undefined') return '';
-    return `${window.location.protocol}//${window.location.hostname}:3000/share/${token}`;
+    const postUrl = process.env.NEXT_PUBLIC_POST_URL || `${window.location.protocol}//${window.location.hostname}:3000`;
+    return `${postUrl}/share/${token}`;
   };
 
   const getExpiryLabel = (expiresAt: string | null) => {

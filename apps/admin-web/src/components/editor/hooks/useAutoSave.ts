@@ -169,7 +169,7 @@ export function useAutoSave({ postId }: AutoSaveProps) {
         };
         
         // Since beacon must be a POST/PUT, we use fetch with keepalive on modern browsers
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         fetch(`${API_URL}/posts/${postId}/canvas`, {
           method: 'PUT',
           headers: {

@@ -130,7 +130,7 @@ export function useWorkAutoSave({ workId }: WorkAutoSaveProps) {
       const currentEdges = state.canvasData.edges;
       const blocks = orderNodes(currentNodes, currentEdges);
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       fetch(`${API_URL}/works/${workId}/canvas`, {
         method: 'PUT',
         headers: {

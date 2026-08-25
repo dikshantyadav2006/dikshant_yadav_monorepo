@@ -4,7 +4,8 @@ import { DEV_DATABASE_URL } from './defaults.js';
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   HOST: z.string().default('0.0.0.0'),
-  PORT: z.coerce.number().int().positive().default(3001),
+  PORT: z.coerce.number().int().positive().default(5000),
+  CORS_ORIGINS: z.string().default('http://localhost:3002,http://localhost:3000'),
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string().default('dikshant_yadav_blog_secret_key_change_me_in_prod'),
   COOKIE_DOMAIN: z.string().default('.dikshantyadav.in'),

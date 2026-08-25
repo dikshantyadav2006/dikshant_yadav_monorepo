@@ -25,11 +25,15 @@ export function buildApp() {
   });
 
   // Register CORS
+  // Reflect the request origin so browser cookies (credentials) work cross-origin.
+  const allowedOrigins = env.CORS_ORIGINS.split(',').map((s) => s.trim());
   app.register(cors, {
-    origin: env.NODE_ENV === 'production'
-      ? [/dikshantyadav\.in$/, /theabhay\.in$/]
-      : true, // true allows localhost:3000 / localhost:3001 etc.
     credentials: true,
+    origin: (origin, cb) => {
+      if (!origin) { cb(null, true); return; }
+      if (allowedOrigins.includes(origin)) { cb(null, origin); return; }
+      cb(null, false);
+    },
   });
 
   // Register Helmet (security headers)
