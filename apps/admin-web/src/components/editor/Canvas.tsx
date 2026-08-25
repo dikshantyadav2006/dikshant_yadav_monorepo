@@ -42,6 +42,7 @@ import {
   ButtonNode,
   AIBlockNode
 } from './nodes/editable-nodes';
+import { CodeBlockInteractiveNodeWrapper } from './nodes/CodeBlockInteractiveNodeWrapper';
 import PreviewPanel from './PreviewPanel';
 
 import type { Post, Tag, UserPreferences } from '@dikshant/types';
@@ -60,6 +61,7 @@ const nodeTypes = {
   poll: PollNode,
   button: ButtonNode,
   'ai-block': AIBlockNode,
+  'code-block-interactive': CodeBlockInteractiveNodeWrapper,
 };
 
 export interface CanvasProps {
