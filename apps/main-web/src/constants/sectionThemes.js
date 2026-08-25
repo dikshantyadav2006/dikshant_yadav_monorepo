@@ -48,6 +48,12 @@ export const sectionThemes = {
     dark: '#0d1526',
     light: '#F8F4E9',
   },
+
+  // Services — near-black in dark, pale mint in light
+  services: {
+    dark: '#0a0f1a',
+    light: '#e8eeee',
+  },
 };
 
 export const defaultSectionTheme = sectionThemes.default;

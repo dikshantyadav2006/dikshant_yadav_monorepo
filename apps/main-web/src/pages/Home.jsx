@@ -1,6 +1,6 @@
 import MainHero from "../components/landing/MainHero";
 import { Footer } from '@components/footer';
-import { ThinkingNote, LogoMarquee } from '@sections';
+import { ThinkingNote, LogoMarquee, Services } from '@sections';
 import { DomainNetwork } from '@dikshant/ui';
 import { Section } from '@layout';
 
@@ -20,6 +20,9 @@ function Home({ addCursor, removeCursor, cursorModes, isDarkMode, isDesktop }) {
           <div className="mix-blend-difference">
               <LogoMarquee isDarkMode={isDarkMode} />
           </div>
+        </Section>
+        <Section id="services">
+          <Services isDesktop={isDesktop} />
         </Section>
         <Section id="footer">
           <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
