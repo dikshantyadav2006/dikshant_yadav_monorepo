@@ -1239,6 +1239,10 @@ export function Inspector() {
             {/* 13. Interactive Code Block Properties */}
             {type === 'code-block-interactive' && (
               <>
+                {/* General Section */}
+                <div className="space-y-1.5">
+                  <div className="text-[9px] font-bold text-primary uppercase tracking-wider">General</div>
+                </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-muted-foreground uppercase">Title</label>
                   <input
@@ -1247,6 +1251,16 @@ export function Inspector() {
                     onChange={(e) => updateField('title', e.target.value)}
                     className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
                     placeholder="Code Block"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Description</label>
+                  <textarea
+                    rows={2}
+                    value={data.description || ''}
+                    onChange={(e) => updateField('description', e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Brief description of this component..."
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -1260,14 +1274,30 @@ export function Inspector() {
                     <option value="html">HTML + Tailwind</option>
                   </select>
                 </div>
+
+                {/* Separator */}
+                <div className="border-t border-border/40 pt-3 mt-1" />
+
+                {/* Preview Section */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Preview Height</label>
+                  <div className="text-[9px] font-bold text-primary uppercase tracking-wider">Preview</div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Height</label>
                   <input
                     type="number"
                     value={data.previewHeight || 400}
                     onChange={(e) => updateField('previewHeight', Number(e.target.value) || 400)}
                     className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
                   />
+                </div>
+
+                {/* Separator */}
+                <div className="border-t border-border/40 pt-3 mt-1" />
+
+                {/* Component Section */}
+                <div className="space-y-1.5">
+                  <div className="text-[9px] font-bold text-primary uppercase tracking-wider">Component</div>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-muted-foreground uppercase">Render Mode</label>
@@ -1281,15 +1311,34 @@ export function Inspector() {
                     <option value="hidden">Hidden (library only)</option>
                   </select>
                 </div>
-                <div className="rounded-xl border border-border/60 bg-muted/10 p-3 space-y-1.5">
-                  <div className="text-[10px] font-bold text-muted-foreground uppercase">Version</div>
-                  <div className="text-xs text-foreground">v{data.version || 1}</div>
-                  {data.code && (
-                    <div className="text-[9px] text-muted-foreground">
+                {data.code && (
+                  <div className="rounded-xl border border-border/60 bg-muted/10 p-3 space-y-1">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase">Code Info</div>
+                    <div className="text-[10px] text-muted-foreground">
                       {data.code.split('\n').length} lines · {data.runtime}
                     </div>
-                  )}
+                  </div>
+                )}
+
+                {/* Separator */}
+                <div className="border-t border-border/40 pt-3 mt-1" />
+
+                {/* Advanced Section */}
+                <div className="space-y-1.5">
+                  <div className="text-[9px] font-bold text-primary uppercase tracking-wider">Advanced</div>
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl border border-border/60 bg-muted/10 p-2 text-center">
+                    <div className="text-[9px] text-muted-foreground uppercase">Version</div>
+                    <div className="text-xs font-bold text-foreground">v{data.version || 1}</div>
+                  </div>
+                  <div className="rounded-xl border border-border/60 bg-muted/10 p-2 text-center">
+                    <div className="text-[9px] text-muted-foreground uppercase">Library</div>
+                    <div className="text-xs font-bold text-foreground">{data.libraryId ? 'Linked' : 'None'}</div>
+                  </div>
+                </div>
+
+                {/* Open Studio Button */}
                 <button
                   type="button"
                   onClick={() => {
@@ -1298,9 +1347,9 @@ export function Inspector() {
                     });
                     window.dispatchEvent(event);
                   }}
-                  className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold transition flex items-center justify-center gap-1.5 mt-2"
                 >
-                  Open Code Editor
+                  Open Code Studio
                 </button>
               </>
             )}
