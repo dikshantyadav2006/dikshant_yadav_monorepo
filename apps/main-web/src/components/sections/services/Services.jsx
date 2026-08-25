@@ -20,8 +20,6 @@ function Services({ isDesktop }) {
 
   const scheduleHover = useCallback((index) => {
     clearTimeout(hoverTimer.current);
-    // 60ms debounce — just enough to prevent flicker when crossing borders,
-    // but feels immediate to the user
     hoverTimer.current = setTimeout(() => {
       setHoveredService(index);
     }, 60);
@@ -48,19 +46,19 @@ function Services({ isDesktop }) {
 
   return (
     <div
-      className="w-full min-h-[85vh] flex flex-col"
+      className="w-full flex flex-col"
       onMouseLeave={handleSectionLeave}
     >
       <ServicesHeader />
 
       {isDesktop ? (
-        <div className="flex-1 flex min-h-[55vh] overflow-hidden">
+        <div className="w-full flex min-h-[55vh]">
           {services.map((service, i) => {
             const isExpanded = expandedIndex === i;
             return (
               <div
                 key={service.id}
-                className="min-w-0 flex flex-col overflow-hidden"
+                className="min-w-0"
                 style={{
                   flexGrow: isExpanded ? 1.45 : 1,
                   flexShrink: 1,
