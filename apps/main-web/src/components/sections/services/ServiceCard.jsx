@@ -3,7 +3,7 @@ import CutReveal from './CutReveal';
 function ServiceCard({ service, isExpanded, onClick, index }) {
   return (
     <div
-      className="relative flex flex-col h-full cursor-pointer overflow-hidden select-none"
+      className="relative flex flex-col h-full cursor-none overflow-hidden select-none"
       onClick={onClick}
       tabIndex={0}
       role="button"

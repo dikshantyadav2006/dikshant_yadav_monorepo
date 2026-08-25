@@ -3,12 +3,14 @@ import { useReducedMotion } from 'framer-motion';
 import ServicesHeader from './ServicesHeader';
 import ServiceCard from './ServiceCard';
 import ServiceAccordion from './ServiceAccordion';
+import ServiceCursor from './ServiceCursor';
 import services from './servicesData';
 
 function Services({ isDesktop }) {
   const [hoveredService, setHoveredService] = useState(-1);
   const [activeService, setActiveService] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(null);
+  const [cursorActive, setCursorActive] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const hoverTimer = useRef(null);
 
@@ -32,7 +34,16 @@ function Services({ isDesktop }) {
   const handleSectionLeave = useCallback(() => {
     clearTimeout(hoverTimer.current);
     setHoveredService(-1);
+    setCursorActive(false);
+    document.body.style.cursor = '';
   }, []);
+
+  const handleSectionEnter = useCallback(() => {
+    if (isDesktop) {
+      setCursorActive(true);
+      document.body.style.cursor = 'none';
+    }
+  }, [isDesktop]);
 
   const handleCardClick = useCallback((index) => {
     clearTimeout(hoverTimer.current);
@@ -46,9 +57,11 @@ function Services({ isDesktop }) {
 
   return (
     <div
-      className="w-full flex flex-col"
+      className={`w-full flex flex-col${isDesktop ? ' cursor-none' : ''}`}
+      onMouseEnter={handleSectionEnter}
       onMouseLeave={handleSectionLeave}
     >
+      <ServiceCursor active={cursorActive} />
       <ServicesHeader />
 
       {isDesktop ? (
