@@ -3,7 +3,7 @@ import { getWorks } from '@/lib/api';
 
 export const revalidate = 60;
 
-const SITE_URL = 'https://work.dikshantyadav.in';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://work.dikshantyadav.in';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const works = await getWorks();

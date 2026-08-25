@@ -9,7 +9,7 @@ import ReachOut from '@/components/works/ReachOut';
 
 export const revalidate = 60;
 
-const SITE_URL = 'https://work.dikshantyadav.in';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://work.dikshantyadav.in';
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;

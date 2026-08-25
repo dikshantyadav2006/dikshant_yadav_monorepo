@@ -31,7 +31,7 @@ export default function SocialLinks() {
   const [links, setLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     fetch(`${API_URL}/social-links`)
       .then((res) => res.json())
       .then((data) => setLinks(Array.isArray(data) ? data : []))

@@ -8,7 +8,7 @@ interface Props {
 }
 
 async function getSharedPost(token: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
   const res = await fetch(`${apiUrl}/share/${token}`, { cache: 'no-store' });
 
   if (!res.ok) return null;

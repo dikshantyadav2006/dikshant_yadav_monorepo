@@ -3,7 +3,7 @@ import SmoothScrollProvider from '@/components/ui/SmoothScrollProvider';
 import TransitionShell from '@/components/ui/transition/TransitionShell';
 import './globals.css';
 
-const SITE_URL = 'https://work.dikshantyadav.in';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://work.dikshantyadav.in';
 
 export const viewport: Viewport = {
   themeColor: '#091223',
