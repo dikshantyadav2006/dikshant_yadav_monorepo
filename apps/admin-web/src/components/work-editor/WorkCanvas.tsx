@@ -40,6 +40,7 @@ import {
   MetricsNode,
   LinkNode,
 } from './nodes/WorkNodes';
+import { CodeBlockInteractiveNodeWrapper } from './nodes/CodeBlockInteractiveNodeWrapper';
 import WorkPreviewPanel from './WorkPreviewPanel';
 
 const workNodeTypes = {
@@ -54,6 +55,7 @@ const workNodeTypes = {
   embed: EmbedNode,
   metrics: MetricsNode,
   link: LinkNode,
+  'code-block-interactive': CodeBlockInteractiveNodeWrapper,
 };
 
 export interface WorkCanvasProps {
