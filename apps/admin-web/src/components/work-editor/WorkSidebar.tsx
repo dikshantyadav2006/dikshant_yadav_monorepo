@@ -13,6 +13,7 @@ import {
   Play,
   Link2,
   BarChart3,
+  FileCode2,
 } from 'lucide-react';
 import { workTemplates, builtInWorkNodeDefinitions } from '@dikshant/node-registry';
 import { useWorkBuilderStore } from '../../features/work-builder/store';
@@ -29,6 +30,7 @@ const NODE_ICONS: Record<string, React.ReactNode> = {
   embed: <Link2 className="w-4 h-4 text-cyan-500" />,
   metrics: <BarChart3 className="w-4 h-4 text-lime-500" />,
   link: <Link2 className="w-4 h-4 text-blue-500" />,
+  'code-block-interactive': <FileCode2 className="w-4 h-4 text-cyan-500" />,
 };
 
 export function WorkSidebar() {
