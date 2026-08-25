@@ -1235,6 +1235,75 @@ export function Inspector() {
                 </div>
               </>
             )}
+
+            {/* 13. Interactive Code Block Properties */}
+            {type === 'code-block-interactive' && (
+              <>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Title</label>
+                  <input
+                    type="text"
+                    value={data.title || ''}
+                    onChange={(e) => updateField('title', e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Code Block"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Runtime</label>
+                  <select
+                    value={data.runtime || 'react'}
+                    onChange={(e) => updateField('runtime', e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="react">React (TSX)</option>
+                    <option value="html">HTML + Tailwind</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Preview Height</label>
+                  <input
+                    type="number"
+                    value={data.previewHeight || 400}
+                    onChange={(e) => updateField('previewHeight', Number(e.target.value) || 400)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Render Mode</label>
+                  <select
+                    value={data.renderMode || 'preview'}
+                    onChange={(e) => updateField('renderMode', e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="preview">Preview (canvas + page)</option>
+                    <option value="component">Component (page only)</option>
+                    <option value="hidden">Hidden (library only)</option>
+                  </select>
+                </div>
+                <div className="rounded-xl border border-border/60 bg-muted/10 p-3 space-y-1.5">
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase">Version</div>
+                  <div className="text-xs text-foreground">v{data.version || 1}</div>
+                  {data.code && (
+                    <div className="text-[9px] text-muted-foreground">
+                      {data.code.split('\n').length} lines · {data.runtime}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const event = new CustomEvent('open-code-editor', {
+                      detail: { nodeId: selectedNode?.id },
+                    });
+                    window.dispatchEvent(event);
+                  }}
+                  className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold transition flex items-center justify-center gap-1.5"
+                >
+                  Open Code Editor
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-4">

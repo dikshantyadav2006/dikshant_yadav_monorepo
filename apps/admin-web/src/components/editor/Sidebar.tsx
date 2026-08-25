@@ -14,7 +14,8 @@ import {
   HelpCircle, 
   BarChart2, 
   MousePointerClick, 
-  Sparkles
+  Sparkles,
+  FileCode2,
 } from 'lucide-react';
 
 interface BlockItem {
@@ -55,6 +56,7 @@ export function Sidebar() {
       title: 'CODE',
       items: [
         { type: 'code-block', label: 'Code Block', icon: <Code className="w-4 h-4 text-teal-500" />, description: 'Syntax highlighted code' },
+        { type: 'code-block-interactive', label: 'Interactive Code', icon: <FileCode2 className="w-4 h-4 text-cyan-500" />, description: 'Write code with live preview' },
       ]
     },
     {
