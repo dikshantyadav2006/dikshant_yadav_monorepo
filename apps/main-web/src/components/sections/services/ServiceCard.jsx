@@ -68,7 +68,7 @@ function ServiceCard({ service, isExpanded, onClick, index }) {
 
           {/* Bottom: paragraph */}
           <CutReveal isVisible={isExpanded} delay={0.42} duration={0.45} className="shrink-0 pb-[1.5vh] pt-[1.5vh]">
-            <p className="font-['font-p-3'] text-[10.5px] leading-[1.6] tracking-wide uppercase opacity-50 m-0">
+            <p className="font-['font-p-3'] text-[10.5px] leading-[1.6] tracking-wide uppercase opacity-70 dark:opacity-50 m-0">
               {service.description}
             </p>
           </CutReveal>
