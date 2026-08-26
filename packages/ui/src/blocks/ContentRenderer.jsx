@@ -299,7 +299,12 @@ export default function ContentRenderer({ blocks }) {
         }
 
         if (block.type === 'code-block-interactive') {
-          const widthMode = block.data.widthMode || 'contained';
+          const rawCode = (block.data.code || '');
+          const isFullDoc = typeof rawCode === 'string' && (/^\s*<!doctype/i.test(rawCode) || /<html[\s>]/i.test(rawCode));
+          const hasImmersiveHints = isFullDoc && (/position\s*:\s*(fixed|absolute)/i.test(rawCode) || /height\s*:\s*100%/i.test(rawCode) || /inset\s*:\s*0/i.test(rawCode) || /overflow\s*:\s*hidden/i.test(rawCode));
+          const widthModeRaw = block.data.widthMode || 'contained';
+          const widthMode = isFullDoc && hasImmersiveHints && widthModeRaw === 'contained' ? 'full-bleed' : widthModeRaw;
+          const effectiveData = isFullDoc && hasImmersiveHints && widthModeRaw === 'contained' ? { ...block.data, widthMode } : block.data;
           let wrapperClass = 'relative block w-full min-w-0 max-w-full overflow-x-clip';
           let wrapperStyle = { ...styles.style };
           if (widthMode === 'wide') {
@@ -311,7 +316,7 @@ export default function ContentRenderer({ blocks }) {
           }
           return (
             <div key={block.id} style={wrapperStyle} className={wrapperClass}>
-              <Renderer data={block.data} />
+              <Renderer data={effectiveData} />
             </div>
           );
         }

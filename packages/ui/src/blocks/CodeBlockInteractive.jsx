@@ -162,7 +162,7 @@ function HtmlCodeBlock(_ref3) {
   }
   var blockId = blockIdRef.current;
 
-  var buildSrcdoc = useCallback(function () {
+var buildSrcdoc = useCallback(function () {
     var root = document.documentElement;
     var computed = getComputedStyle(root);
 
@@ -187,13 +187,41 @@ function HtmlCodeBlock(_ref3) {
     // Ensure no horizontal overflow and children are responsive
     var baseResponsive = ' *{min-width:0;} img,video,canvas,svg,iframe{max-width:100%;}';
 
+    // --- Detect full HTML document and extract head/body to avoid nested html/body breaking outer wrapper ---
+    var isFullDoc = /^\s*<!doctype/i.test(code) || /<html[\s>]/i.test(code);
+    var extraHead = '';
+    var bodyContent = code;
+    if (isFullDoc) {
+      var stripped = code.replace(/<!doctype[^>]*>/gi, '');
+      var headMatch = stripped.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+      if (headMatch) {
+        extraHead = headMatch[1];
+        // Remove duplicate tailwind CDN from extraHead to avoid double load (outer already injects it)
+        extraHead = extraHead.replace(/<script[^>]*cdn\.tailwindcss\.com[^>]*>[\s\S]*?<\/script>/gi, '');
+      }
+      var bodyMatch = stripped.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) {
+        bodyContent = bodyMatch[1];
+      } else {
+        var htmlMatch = stripped.match(/<html[^>]*>([\s\S]*?)<\/html>/i);
+        if (htmlMatch) {
+          bodyContent = htmlMatch[1].replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '');
+          bodyContent = bodyContent.replace(/<\/?html[^>]*>/gi, '').replace(/<\/?body[^>]*>/gi, '').replace(/<\/?head[^>]*>/gi, '');
+        } else {
+          bodyContent = stripped.replace(/<\/?html[^>]*>/gi, '').replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '').replace(/<\/?body[^>]*>/gi, '');
+        }
+      }
+    }
+
     var heightScript = '<script>\n' +
       '  (function() {\n' +
       '    var blockId = "' + blockId + '";\n' +
       '    var viewportH = ' + viewportH + ';\n' +
+      '    var isFullDoc = ' + (isFullDoc ? 'true' : 'false') + ';\n' +
       '    try {\n' +
       '      var vhStyle = document.createElement("style");\n' +
-      '      vhStyle.textContent = ".h-screen{height:"+viewportH+"px !important}.min-h-screen{min-height:"+viewportH+"px !important}";\n' +
+      '      var vhExtra = isFullDoc ? " html,body{min-height:"+viewportH+"px !important; height:auto !important;} body{overflow:visible !important;}" : "";\n' +
+      '      vhStyle.textContent = ".h-screen{height:"+viewportH+"px !important}.min-h-screen{min-height:"+viewportH+"px !important}" + vhExtra;\n' +
       '      document.head.appendChild(vhStyle);\n' +
       '    } catch(e) {}\n' +
       '    var lastH = 0;\n' +
@@ -205,6 +233,7 @@ function HtmlCodeBlock(_ref3) {
       '        document.documentElement ? document.documentElement.scrollHeight : 0,\n' +
       '        document.documentElement ? document.documentElement.offsetHeight : 0\n' +
       '      );\n' +
+      '      if (isFullDoc && h < viewportH) h = viewportH;\n' +
       '      return h;\n' +
       '    }\n' +
       '    function sendHeight() {\n' +
@@ -234,8 +263,9 @@ function HtmlCodeBlock(_ref3) {
       '  })();\n' +
       '<\/script>';
 
-    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    *, *::before, *::after { box-sizing: border-box; }\n    html { margin: 0; padding: 0; overflow-x: hidden; }\n    body { margin: 0; padding: 0; overflow-x: hidden; overflow-y: hidden; ' + baseResponsive + responsiveFix + '  font-family: system-ui, -apple-system, sans-serif; background: hsl(' + computed.getPropertyValue('--background').trim() + '); color: hsl(' + computed.getPropertyValue('--foreground').trim() + '); opacity: 0; transition: opacity 0.15s ease; }\n    body.ready { opacity: 1; }\n  </style>\n</head>\n<body>\n  ' + code + '\n  ' + heightScript + '\n</body>\n</html>';
+    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    *, *::before, *::after { box-sizing: border-box; }\n    html { margin: 0; padding: 0; overflow-x: hidden; }\n    body { margin: 0; padding: 0; overflow-x: hidden; overflow-y: hidden; ' + baseResponsive + responsiveFix + '  font-family: system-ui, -apple-system, sans-serif; background: hsl(' + computed.getPropertyValue('--background').trim() + '); color: hsl(' + computed.getPropertyValue('--foreground').trim() + '); opacity: 0; transition: opacity 0.15s ease; }\n    body.ready { opacity: 1; }\n  </style>\n  ' + extraHead + '\n</head>\n<body>\n  ' + bodyContent + '\n  ' + heightScript + '\n</body>\n</html>';
   }, [code, blockId, widthMode]);
+
 
   useEffect(function () {
     if (!iframeRef.current) return;
@@ -262,7 +292,7 @@ function HtmlCodeBlock(_ref3) {
     React.createElement('iframe', {
       ref: iframeRef,
       style: { width: '100%', minWidth: '0', display: 'block', height: '400px', border: 'none', overflow: 'hidden', transition: 'height 0.12s ease' },
-      sandbox: 'allow-scripts',
+      sandbox: 'allow-scripts allow-modals',
       title: 'HTML Preview',
       loading: 'lazy',
     })

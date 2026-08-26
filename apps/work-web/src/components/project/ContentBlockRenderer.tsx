@@ -78,7 +78,12 @@ function renderBlock(block: ContentBlock, index: number) {
         />
       );
     case 'code-block-interactive': {
-      const widthMode = (block as any).widthMode || 'contained';
+      const rawCode = (block as any).code || '';
+      const isFullDoc = typeof rawCode === 'string' && (/^\s*<!doctype/i.test(rawCode) || /<html[\s>]/i.test(rawCode));
+      const hasImmersiveHints = isFullDoc && (/position\s*:\s*(fixed|absolute)/i.test(rawCode) || /height\s*:\s*100%/i.test(rawCode) || /inset\s*:\s*0/i.test(rawCode) || /overflow\s*:\s*hidden/i.test(rawCode));
+      const widthModeRaw = (block as any).widthMode || 'contained';
+      const widthMode = isFullDoc && hasImmersiveHints && widthModeRaw === 'contained' ? 'full-bleed' : widthModeRaw;
+      const effectiveData = isFullDoc && hasImmersiveHints && widthModeRaw === 'contained' ? { ...(block as any), widthMode } : (block as any);
       let wrapperClass = 'relative block w-full min-w-0 max-w-full bg-transparent overflow-x-clip';
       let wrapperStyle: React.CSSProperties = {};
       if (widthMode === 'wide') {
@@ -90,7 +95,7 @@ function renderBlock(block: ContentBlock, index: number) {
       }
       return (
         <div key={index} className={wrapperClass} style={wrapperStyle}>
-          <CodeBlockInteractive data={block as any} />
+          <CodeBlockInteractive data={effectiveData} />
         </div>
       );
     }
