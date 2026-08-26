@@ -7,7 +7,8 @@ var esbuildModule = null;
 
 async function initEsbuild() {
   if (esbuildinitialized) return esbuildModule;
-  esbuildModule = await import('esbuild-wasm');
+  var pkg = 'esbuild-wasm';
+  esbuildModule = await import(/* @vite-ignore */ pkg);
   await esbuildModule.initialize({
     wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.28.2/esbuild.wasm',
   });
