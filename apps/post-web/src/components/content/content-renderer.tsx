@@ -173,12 +173,28 @@ export default function ContentRenderer({ blocks }: ContentRendererProps) {
                 <AIBlock data={block.data} />
               </div>
             );
-          case 'code-block-interactive':
+          case 'code-block-interactive': {
+            const widthMode = (block.data.widthMode as string) || 'contained';
+            let wrapperClass = 'relative w-full min-w-0 overflow-x-clip';
+            let wrapperStyle: React.CSSProperties = { ...styles.style };
+            if (widthMode === 'wide') {
+              wrapperClass = 'relative left-1/2 -translate-x-1/2 min-w-0 overflow-visible';
+              wrapperStyle = { ...styles.style, width: 'min(1400px, calc(100vw - 2rem))' };
+            } else if (widthMode === 'full-bleed') {
+              wrapperClass = 'relative min-w-0 overflow-visible';
+              wrapperStyle = {
+                ...styles.style,
+                width: '100vw',
+                marginLeft: 'calc(50% - 50vw)',
+                maxWidth: 'none',
+              };
+            }
             return (
-              <div key={key} style={styles.style} className={styles.className}>
+              <div key={key} style={wrapperStyle} className={wrapperClass}>
                 <CodeBlockInteractive data={block.data} />
               </div>
             );
+          }
           default:
             return (
               <div key={key} className="font-mono text-xs border-2 border-dashed border-foreground/30 p-3 text-muted-foreground">

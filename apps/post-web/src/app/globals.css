@@ -27,6 +27,7 @@
     --paper: 38 35% 92%;
     --ink: 0 0% 8%;
     --stamp: 0 65% 42%;
+    --content-width: 960px;
   }
 }
 
@@ -37,12 +38,14 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground font-serif antialiased;
     background-color: hsl(var(--paper));
     font-feature-settings: "liga" 1, "kern" 1;
+    overflow-x: clip;
   }
 }
 
@@ -144,7 +147,9 @@
   }
 
   .reading-column {
-    @apply max-w-[680px] mx-auto;
+    max-width: var(--content-width);
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

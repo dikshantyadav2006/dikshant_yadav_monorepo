@@ -32,7 +32,7 @@ export default async function SharedPostPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="max-w-[680px] mx-auto px-4 sm:px-8 py-12">
+      <div className="max-w-[960px] mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8 pb-8 border-b-2 border-foreground">
           <h1 className="editorial-headline text-4xl sm:text-5xl mb-4">
             {post.title}

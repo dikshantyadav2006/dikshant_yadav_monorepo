@@ -68,23 +68,21 @@ function CodeBlockInteractive(_ref) {
   var runtime = (data && data.runtime) || 'react';
   var code = (data && data.code) || '';
   var props = (data && data.props) || {};
-  var widthMode = (data && data.widthMode) || 'contained';
 
   if (runtime === 'html') {
-    return React.createElement(HtmlCodeBlock, { code: code, widthMode: widthMode });
+    return React.createElement(HtmlCodeBlock, { code: code });
   }
 
   if (!code.trim()) {
     return null;
   }
 
-  return React.createElement(ReactCodeBlock, { code: code, props: props, widthMode: widthMode });
+  return React.createElement(ReactCodeBlock, { code: code, props: props });
 }
 
 function ReactCodeBlock(_ref2) {
   var code = _ref2.code;
   var props = _ref2.props;
-  var widthMode = _ref2.widthMode || 'contained';
 
   var _useState = useState(null);
   var Component = _useState[0];
@@ -147,14 +145,13 @@ function ReactCodeBlock(_ref2) {
 
   return React.createElement(
     'div',
-    { className: 'relative w-full min-w-0 max-w-full overflow-x-clip bg-transparent' },
+    { className: 'relative w-full bg-transparent' },
     React.createElement(Component, props)
   );
 }
 
 function HtmlCodeBlock(_ref3) {
   var code = _ref3.code;
-  var widthMode = _ref3.widthMode || 'contained';
   var iframeRef = useRef(null);
   var blockIdRef = useRef(null);
   if (blockIdRef.current === null) {
@@ -180,22 +177,9 @@ function HtmlCodeBlock(_ref3) {
 
     var viewportH = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-    var responsiveFix = '';
-    if (widthMode === 'contained') {
-      responsiveFix = ' .max-w-7xl,.max-w-6xl,.max-w-5xl{max-width:100% !important;}';
-    }
-    // Ensure no horizontal overflow and children are responsive
-    var baseResponsive = ' *{min-width:0;} img,video,canvas,svg,iframe{max-width:100%;}';
-
     var heightScript = '<script>\n' +
       '  (function() {\n' +
       '    var blockId = "' + blockId + '";\n' +
-      '    var viewportH = ' + viewportH + ';\n' +
-      '    try {\n' +
-      '      var vhStyle = document.createElement("style");\n' +
-      '      vhStyle.textContent = ".h-screen{height:"+viewportH+"px !important}.min-h-screen{min-height:"+viewportH+"px !important}";\n' +
-      '      document.head.appendChild(vhStyle);\n' +
-      '    } catch(e) {}\n' +
       '    var lastH = 0;\n' +
       '    var raf = 0;\n' +
       '    function getHeight() {\n' +
@@ -234,8 +218,10 @@ function HtmlCodeBlock(_ref3) {
       '  })();\n' +
       '<\/script>';
 
-    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    *, *::before, *::after { box-sizing: border-box; }\n    html { margin: 0; padding: 0; overflow-x: hidden; }\n    body { margin: 0; padding: 0; overflow-x: hidden; overflow-y: hidden; ' + baseResponsive + responsiveFix + '  font-family: system-ui, -apple-system, sans-serif; background: hsl(' + computed.getPropertyValue('--background').trim() + '); color: hsl(' + computed.getPropertyValue('--foreground').trim() + '); opacity: 0; transition: opacity 0.15s ease; }\n    body.ready { opacity: 1; }\n  </style>\n</head>\n<body>\n  ' + code + '\n  ' + heightScript + '\n</body>\n</html>';
-  }, [code, blockId, widthMode]);
+    var viewportFix = '<style>.h-screen{height:' + viewportH + 'px !important}.min-h-screen{min-height:' + viewportH + 'px !important}</style>';
+
+    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n' + viewportFix + '\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    *, *::before, *::after { box-sizing: border-box; }\n    html { margin: 0; padding: 0; }\n    body { margin: 0; padding: 0; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; background: hsl(' + computed.getPropertyValue('--background').trim() + '); color: hsl(' + computed.getPropertyValue('--foreground').trim() + '); opacity: 0; transition: opacity 0.15s ease; }\n    body.ready { opacity: 1; }\n  </style>\n</head>\n<body>\n  ' + code + '\n  ' + heightScript + '\n</body>\n</html>';
+  }, [code, blockId]);
 
   useEffect(function () {
     if (!iframeRef.current) return;
@@ -258,10 +244,10 @@ function HtmlCodeBlock(_ref3) {
 
   return React.createElement(
     'div',
-    { className: 'relative w-full min-w-0 max-w-full overflow-x-clip bg-transparent' },
+    { className: 'relative w-full bg-transparent' },
     React.createElement('iframe', {
       ref: iframeRef,
-      style: { width: '100%', minWidth: '0', display: 'block', height: '400px', border: 'none', overflow: 'hidden', transition: 'height 0.12s ease' },
+      style: { width: '100%', minWidth: '100%', display: 'block', height: '400px', border: 'none', overflow: 'hidden', transition: 'height 0.12s ease' },
       sandbox: 'allow-scripts',
       title: 'HTML Preview',
       loading: 'lazy',

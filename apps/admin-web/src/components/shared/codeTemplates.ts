@@ -573,18 +573,18 @@ export default function BlogHero({ title, subtitle }) {
 
   <section class="py-20 px-8 bg-muted/30">
     <h2 class="text-3xl font-bold text-center mb-12">Features</h2>
-    <div class="grid grid-cols-3 gap-8 max-w-5xl mx-auto">
-      <div class="p-6 rounded-xl border border-border bg-card">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto w-full min-w-0">
+      <div class="p-6 rounded-xl border border-border bg-card w-full min-w-0">
         <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4 text-blue-600 font-bold">⚡</div>
         <h3 class="font-bold mb-2">Fast</h3>
         <p class="text-sm text-muted-foreground">Lightning-fast performance out of the box.</p>
       </div>
-      <div class="p-6 rounded-xl border border-border bg-card">
+      <div class="p-6 rounded-xl border border-border bg-card w-full min-w-0">
         <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-4 text-green-600 font-bold">🔒</div>
         <h3 class="font-bold mb-2">Secure</h3>
         <p class="text-sm text-muted-foreground">Enterprise-grade security by default.</p>
       </div>
-      <div class="p-6 rounded-xl border border-border bg-card">
+      <div class="p-6 rounded-xl border border-border bg-card w-full min-w-0">
         <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mb-4 text-purple-600 font-bold">📱</div>
         <h3 class="font-bold mb-2">Responsive</h3>
         <p class="text-sm text-muted-foreground">Works perfectly on every device.</p>

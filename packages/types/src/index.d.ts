@@ -351,6 +351,7 @@ export type WorkContentBlock =
       previewHeight?: number;
       renderMode?: 'preview' | 'component' | 'hidden';
       version?: number;
+      widthMode?: 'contained' | 'wide' | 'full-bleed';
     };
 
 export interface ProjectCredit {

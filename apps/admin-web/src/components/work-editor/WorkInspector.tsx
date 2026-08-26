@@ -979,6 +979,19 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
                 <option value="hidden">Hidden (library only)</option>
               </select>
             </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Width Mode</label>
+              <select
+                value={data.widthMode || 'contained'}
+                onChange={(e) => updateField('widthMode', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="contained">Contained (content width)</option>
+                <option value="wide">Wide (1400px)</option>
+                <option value="full-bleed">Full Bleed (100vw)</option>
+              </select>
+              <p className="text-[9px] text-muted-foreground">Controls how wide the block renders on the work page.</p>
+            </div>
             {data.code && (
               <div className="rounded-xl border border-border/60 bg-muted/10 p-3 space-y-1">
                 <div className="text-[10px] font-bold text-muted-foreground uppercase">Code Info</div>

@@ -77,8 +77,23 @@ function renderBlock(block: ContentBlock, index: number) {
           description={block.description}
         />
       );
-    case 'code-block-interactive':
-      return <CodeBlockInteractive key={index} data={block as any} />;
+    case 'code-block-interactive': {
+      const widthMode = (block as any).widthMode || 'contained';
+      let wrapperClass = 'relative w-full min-w-0 bg-transparent overflow-x-clip';
+      let wrapperStyle: React.CSSProperties = {};
+      if (widthMode === 'wide') {
+        wrapperClass = 'relative left-1/2 -translate-x-1/2 min-w-0 bg-transparent overflow-visible';
+        wrapperStyle = { width: 'min(1400px, calc(100vw - 2rem))' };
+      } else if (widthMode === 'full-bleed') {
+        wrapperClass = 'relative min-w-0 bg-transparent overflow-visible';
+        wrapperStyle = { width: '100vw', marginLeft: 'calc(50% - 50vw)', maxWidth: 'none' as any };
+      }
+      return (
+        <div key={index} className={wrapperClass} style={wrapperStyle}>
+          <CodeBlockInteractive data={block as any} />
+        </div>
+      );
+    }
     default:
       return null;
   }
