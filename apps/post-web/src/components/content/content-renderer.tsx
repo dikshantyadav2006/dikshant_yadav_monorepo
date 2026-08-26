@@ -93,7 +93,7 @@ export default function ContentRenderer({ blocks }: ContentRendererProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full min-w-0">
       {blocks.map((block) => {
         const key = block.id;
         const styles = getBlockStyles(block.data);
@@ -175,13 +175,13 @@ export default function ContentRenderer({ blocks }: ContentRendererProps) {
             );
           case 'code-block-interactive': {
             const widthMode = (block.data.widthMode as string) || 'contained';
-            let wrapperClass = 'relative w-full min-w-0 overflow-x-clip';
+            let wrapperClass = 'relative block w-full min-w-0 max-w-full overflow-x-clip';
             let wrapperStyle: React.CSSProperties = { ...styles.style };
             if (widthMode === 'wide') {
-              wrapperClass = 'relative left-1/2 -translate-x-1/2 min-w-0 overflow-visible';
+              wrapperClass = 'relative block left-1/2 -translate-x-1/2 min-w-0 max-w-none overflow-visible';
               wrapperStyle = { ...styles.style, width: 'min(1400px, calc(100vw - 2rem))' };
             } else if (widthMode === 'full-bleed') {
-              wrapperClass = 'relative min-w-0 overflow-visible';
+              wrapperClass = 'relative block min-w-0 max-w-none overflow-visible';
               wrapperStyle = {
                 ...styles.style,
                 width: '100vw',

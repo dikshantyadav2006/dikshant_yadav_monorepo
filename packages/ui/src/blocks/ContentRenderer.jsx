@@ -285,7 +285,7 @@ export default function ContentRenderer({ blocks }) {
   }
 
   return (
-    <div className="space-y-8 reading-column">
+    <div className="space-y-8 reading-column w-full min-w-0">
       {blocks.map((block) => {
         const Renderer = blockRenderers[block.type];
         const styles = getBlockStyles(block.data);
@@ -300,13 +300,13 @@ export default function ContentRenderer({ blocks }) {
 
         if (block.type === 'code-block-interactive') {
           const widthMode = block.data.widthMode || 'contained';
-          let wrapperClass = 'relative w-full min-w-0 overflow-x-clip';
+          let wrapperClass = 'relative block w-full min-w-0 max-w-full overflow-x-clip';
           let wrapperStyle = { ...styles.style };
           if (widthMode === 'wide') {
-            wrapperClass = 'relative left-1/2 -translate-x-1/2 min-w-0 overflow-visible';
+            wrapperClass = 'relative block left-1/2 -translate-x-1/2 min-w-0 max-w-none overflow-visible';
             wrapperStyle = { ...styles.style, width: 'min(1400px, calc(100vw - 2rem))' };
           } else if (widthMode === 'full-bleed') {
-            wrapperClass = 'relative min-w-0 overflow-visible';
+            wrapperClass = 'relative block min-w-0 max-w-none overflow-visible';
             wrapperStyle = { ...styles.style, width: '100vw', marginLeft: 'calc(50% - 50vw)', maxWidth: 'none' };
           }
           return (

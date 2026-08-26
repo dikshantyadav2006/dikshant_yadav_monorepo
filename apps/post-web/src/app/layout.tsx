@@ -102,8 +102,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NavigationProvider>
             <div className="relative z-10 flex min-h-screen flex-col">
               <Header />
-              <main className="flex-1">
-                <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+              <main className="flex-1 min-w-0">
+                <div className="mx-auto max-w-7xl w-full min-w-0 px-4 py-10 sm:px-6 lg:px-8">
                   {children}
                 </div>
               </main>

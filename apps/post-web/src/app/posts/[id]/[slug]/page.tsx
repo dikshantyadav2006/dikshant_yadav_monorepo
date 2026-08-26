@@ -128,7 +128,7 @@ export default async function PostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <article className="relative article-enter">
+      <article className="relative article-enter w-full min-w-0">
         <ArticleHeader post={post} />
         <MetadataBar post={post} />
 
@@ -152,8 +152,8 @@ export default async function PostPage({ params }: PageProps) {
           </figure>
         )}
 
-        <div className="grid gap-12 xl:grid-cols-[1fr_220px] mt-10">
-          <div className="reading-column min-w-0 article-content-enter">
+        <div className="grid gap-12 xl:grid-cols-[1fr_220px] mt-10 min-w-0">
+          <div className="reading-column w-full min-w-0 article-content-enter">
             {hasBlocks ? (
               <ContentRenderer blocks={blocks} />
             ) : (
