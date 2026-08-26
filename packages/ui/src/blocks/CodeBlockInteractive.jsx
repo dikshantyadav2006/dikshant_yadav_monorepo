@@ -59,27 +59,21 @@ function CodeBlockInteractive(_ref) {
   var runtime = (data && data.runtime) || 'react';
   var code = (data && data.code) || '';
   var props = (data && data.props) || {};
-  var height = (data && data.previewHeight) || 400;
 
   if (runtime === 'html') {
-    return React.createElement(HtmlCodeBlock, { code: code, height: height });
+    return React.createElement(HtmlCodeBlock, { code: code });
   }
 
   if (!code.trim()) {
-    return React.createElement(
-      'div',
-      { className: 'flex items-center justify-center py-16 text-muted-foreground text-sm' },
-      'No code to display'
-    );
+    return null;
   }
 
-  return React.createElement(ReactCodeBlock, { code: code, props: props, height: height });
+  return React.createElement(ReactCodeBlock, { code: code, props: props });
 }
 
 function ReactCodeBlock(_ref2) {
   var code = _ref2.code;
   var props = _ref2.props;
-  var height = _ref2.height;
 
   var _useState = useState(null);
   var Component = _useState[0];
@@ -125,7 +119,7 @@ function ReactCodeBlock(_ref2) {
   if (loading) {
     return React.createElement(
       'div',
-      { className: 'flex items-center justify-center', style: { height: height } },
+      { className: 'flex items-center justify-center py-20' },
       React.createElement('div', { className: 'h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40' })
     );
   }
@@ -133,23 +127,18 @@ function ReactCodeBlock(_ref2) {
   if (error) {
     return React.createElement(
       'div',
-      { className: 'p-4 text-destructive text-xs font-mono whitespace-pre-wrap overflow-auto', style: { height: height } },
+      { className: 'p-4 text-destructive text-xs font-mono whitespace-pre-wrap' },
       error
     );
   }
 
   if (!Component) return null;
 
-  return React.createElement(
-    'div',
-    { style: { height: height }, className: 'overflow-auto' },
-    React.createElement(Component, props)
-  );
+  return React.createElement(Component, props);
 }
 
 function HtmlCodeBlock(_ref3) {
   var code = _ref3.code;
-  var height = _ref3.height;
   var iframeRef = useRef(null);
 
   var buildSrcdoc = useCallback(function () {
@@ -168,18 +157,40 @@ function HtmlCodeBlock(_ref3) {
       return v + ': ' + computed.getPropertyValue(v) + ';';
     }).join('\n      ');
 
-    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    body {\n      margin: 0;\n      padding: 16px;\n      font-family: system-ui, -apple-system, sans-serif;\n      background: hsl(' + computed.getPropertyValue('--background').trim() + ');\n      color: hsl(' + computed.getPropertyValue('--foreground').trim() + ');\n    }\n  </style>\n</head>\n<body>\n  ' + code + '\n</body>\n</html>';
+    var heightScript = '<script>\n' +
+      '  function sendHeight() {\n' +
+      '    var h = document.body.scrollHeight;\n' +
+      '    window.parent.postMessage({ type: "code-block-resize", height: h }, "*");\n' +
+      '  }\n' +
+      '  window.addEventListener("load", sendHeight);\n' +
+      '  new ResizeObserver(sendHeight).observe(document.body);\n' +
+      '  setInterval(sendHeight, 500);\n' +
+      '<\/script>';
+
+    return '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <script src="https://cdn.tailwindcss.com"><\/script>\n  <script>\n    tailwind.config = {\n      theme: {\n        extend: {\n          colors: {\n            background: \'hsl(' + computed.getPropertyValue('--background').trim() + ')\',\n            foreground: \'hsl(' + computed.getPropertyValue('--foreground').trim() + ')\',\n            primary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--primary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--primary-foreground').trim() + ')\' },\n            secondary: { DEFAULT: \'hsl(' + computed.getPropertyValue('--secondary').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--secondary-foreground').trim() + ')\' },\n            muted: { DEFAULT: \'hsl(' + computed.getPropertyValue('--muted').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--muted-foreground').trim() + ')\' },\n            accent: { DEFAULT: \'hsl(' + computed.getPropertyValue('--accent').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--accent-foreground').trim() + ')\' },\n            destructive: { DEFAULT: \'hsl(' + computed.getPropertyValue('--destructive').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--destructive-foreground').trim() + ')\' },\n            card: { DEFAULT: \'hsl(' + computed.getPropertyValue('--card').trim() + ')\', foreground: \'hsl(' + computed.getPropertyValue('--card-foreground').trim() + ')\' },\n            border: \'hsl(' + computed.getPropertyValue('--border').trim() + ')\',\n            input: \'hsl(' + computed.getPropertyValue('--input').trim() + ')\',\n            ring: \'hsl(' + computed.getPropertyValue('--ring').trim() + ')\',\n          },\n          borderRadius: {\n            lg: \'var(--radius)\',\n            md: \'calc(var(--radius) - 2px)\',\n            sm: \'calc(var(--radius) - 4px)\',\n          },\n        },\n      },\n    };\n  <\/script>\n  <style>\n    :root { ' + rootStyles + ' }\n    *, *::before, *::after { box-sizing: border-box; }\n    body {\n      margin: 0;\n      padding: 0;\n      font-family: system-ui, -apple-system, sans-serif;\n      background: hsl(' + computed.getPropertyValue('--background').trim() + ');\n      color: hsl(' + computed.getPropertyValue('--foreground').trim() + ');\n    }\n  </style>\n</head>\n<body>\n  ' + code + '\n  ' + heightScript + '\n</body>\n</html>';
   }, [code]);
 
   useEffect(function () {
-    if (iframeRef.current) {
-      iframeRef.current.srcdoc = buildSrcdoc();
-    }
+    if (!iframeRef.current) return;
+    iframeRef.current.srcdoc = buildSrcdoc();
   }, [buildSrcdoc]);
+
+  useEffect(function () {
+    function handleMessage(event) {
+      if (event.data && event.data.type === 'code-block-resize' && iframeRef.current) {
+        var h = event.data.height;
+        if (typeof h === 'number' && h > 0) {
+          iframeRef.current.style.height = h + 'px';
+        }
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    return function () { window.removeEventListener('message', handleMessage); };
+  }, []);
 
   return React.createElement('iframe', {
     ref: iframeRef,
-    style: { height: height, width: '100%', border: 'none' },
+    style: { width: '100%', height: '0px', border: 'none', overflow: 'hidden' },
     sandbox: 'allow-scripts',
     title: 'HTML Preview',
   });
