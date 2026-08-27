@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Edit, ExternalLink, Trash2, Loader2 } from 'lucide-react';
 import type { PostStatus } from '@dikshant/types';
 import { usePostsList, useDeletePost } from '../hooks';
@@ -15,14 +14,17 @@ const statusStyles: Record<PostStatus, string> = {
 };
 
 export function PostsTable() {
-  const router = useRouter();
   const { data, isLoading, error, refetch } = usePostsList(1, 50);
   const deletePost = useDeletePost();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  async function handleDelete(id: string, title: string) {
+  const handleDelete = useCallback(async (id: string, title: string) => {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    deletePost.mutate(id);
-  }
+    setDeletingId(id);
+    deletePost.mutate(id, {
+      onSettled: () => setDeletingId(null),
+    });
+  }, [deletePost]);
 
   if (isLoading) {
     return (
@@ -124,11 +126,11 @@ export function PostsTable() {
                     <button
                       type="button"
                       onClick={() => handleDelete(post.id, post.title)}
-                      disabled={deletePost.isPending}
+                      disabled={deletingId === post.id}
                       className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
                       title="Delete"
                     >
-                      {deletePost.isPending ? (
+                      {deletingId === post.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Trash2 className="h-4 w-4" />
