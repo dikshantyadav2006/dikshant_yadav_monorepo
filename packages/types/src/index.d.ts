@@ -279,6 +279,13 @@ export type WorkContentBlock =
       height?: string;
     }
   | {
+      type: 'about';
+      eyebrow?: string;
+      heading?: string;
+      title?: string;
+      body?: string;
+    }
+  | {
       type: 'grid-2';
       images: [string, string];
       alts: [string, string];
@@ -370,6 +377,13 @@ export interface ProjectCreditBlockItem {
   label: string;
   value: string;
   variant: 'script' | 'condensed' | 'mono';
+}
+
+export interface WorkAboutBlock {
+  eyebrow?: string;
+  heading?: string;
+  title?: string;
+  body?: string;
 }
 
 export interface ProjectCredit {

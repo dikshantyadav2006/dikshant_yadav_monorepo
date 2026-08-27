@@ -15,12 +15,14 @@ import {
   BarChart3,
   FileCode2,
   Award,
+  FileText,
 } from 'lucide-react';
 import { workTemplates, builtInWorkNodeDefinitions } from '@dikshant/node-registry';
 import { useWorkBuilderStore } from '../../features/work-builder/store';
 
 const NODE_ICONS: Record<string, React.ReactNode> = {
   'large-image': <ImageIcon className="w-4 h-4 text-indigo-500" />,
+  about: <FileText className="w-4 h-4 text-green-500" />,
   'grid-2': <LayoutGrid className="w-4 h-4 text-amber-500" />,
   banner: <Square className="w-4 h-4 text-sky-500" />,
   posters: <LayoutGrid className="w-4 h-4 text-pink-500" />,

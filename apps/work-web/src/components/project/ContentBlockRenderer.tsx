@@ -11,6 +11,7 @@ import BlockVideo from './blocks/BlockVideo';
 import BlockEmbed from './blocks/BlockEmbed';
 import BlockMetrics from './blocks/BlockMetrics';
 import BlockLink from './blocks/BlockLink';
+import AboutBlock from './blocks/AboutBlock';
 import ProjectCreditsBlock from './blocks/ProjectCreditsBlock';
 
 interface ContentBlockRendererProps {
@@ -69,6 +70,16 @@ function renderBlock(block: ContentBlock, index: number) {
       return <BlockEmbed key={index} url={block.url} aspectRatio={block.aspectRatio} />;
     case 'metrics':
       return <BlockMetrics key={index} items={block.items} />;
+    case 'about':
+      return (
+        <AboutBlock
+          key={index}
+          eyebrow={block.eyebrow}
+          heading={block.heading}
+          title={block.title}
+          body={block.body}
+        />
+      );
     case 'link':
       return (
         <BlockLink

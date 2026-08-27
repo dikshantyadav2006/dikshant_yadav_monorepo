@@ -2,7 +2,6 @@
 
 import { WorkDetail } from '@/types/project';
 import CaseStudyHero from './CaseStudyHero';
-import AboutSection from './AboutSection';
 import ContentBlockRenderer from './ContentBlockRenderer';
 import RelatedCaseStudies from './RelatedCaseStudies';
 import NextProjectSection from './NextProjectSection';
@@ -24,8 +23,6 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
 
       {/* Divider */}
       <div className="h-[1px] bg-border mx-1 my-[60px]" />
-
-      <AboutSection overview={project.overview ?? ''} title={project.title} />
 
       {blocks.length > 0 && <ContentBlockRenderer blocks={blocks} />}
 

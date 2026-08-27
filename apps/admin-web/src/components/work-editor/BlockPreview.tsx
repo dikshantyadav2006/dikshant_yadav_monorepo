@@ -152,6 +152,22 @@ export function BlockPreview({ block }: { block: WorkContentBlock }) {
         </div>
       );
 
+    case 'about':
+      return (
+        <div className="rounded-xl border border-border/50 bg-muted/20 p-3 space-y-1.5">
+          <div className="text-[9px] text-muted-foreground/70">{block.eyebrow || 'The Project'}</div>
+          <div className="text-[20px] font-condensed font-black uppercase leading-none">
+            {block.heading || 'About'}
+          </div>
+          {block.title && <div className="text-[11px] font-semibold">{block.title}</div>}
+          {block.body ? (
+            <div className="text-[10px] text-muted-foreground line-clamp-2">{block.body}</div>
+          ) : (
+            <div className="text-[9px] text-muted-foreground/60">No overview text yet.</div>
+          )}
+        </div>
+      );
+
     case 'link':
       return (
         <div className="rounded-xl border border-border/50 bg-muted/20 p-4 flex items-center justify-between">

@@ -167,9 +167,20 @@ export const builtInNodeDefinitions = builtInNodes;
 export const builtInWorkNodes = [
   {
     type: 'large-image',
-    label: 'Large Image',
+    label: 'Image',
     category: 'Portfolio',
-    defaultData: { src: '', alt: '', height: '' },
+    defaultData: { src: '', alt: '' },
+  },
+  {
+    type: 'about',
+    label: 'About',
+    category: 'Portfolio',
+    defaultData: {
+      eyebrow: 'The Project',
+      heading: 'About',
+      title: '',
+      body: '',
+    },
   },
   {
     type: 'grid-2',

@@ -29,6 +29,7 @@ import { WorkToolbar } from './WorkToolbar';
 import { WorkVersionsSidebar } from './WorkVersionsSidebar';
 import {
   LargeImageNode,
+  AboutNode,
   Grid2Node,
   BannerNode,
   PostersNode,
@@ -46,6 +47,7 @@ import WorkPreviewPanel from './WorkPreviewPanel';
 
 const workNodeTypes = {
   'large-image': LargeImageNode,
+  about: AboutNode,
   'grid-2': Grid2Node,
   banner: BannerNode,
   posters: PostersNode,

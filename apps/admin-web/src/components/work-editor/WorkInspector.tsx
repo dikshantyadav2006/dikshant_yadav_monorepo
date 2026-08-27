@@ -905,6 +905,51 @@ export function WorkInspector({ workId }: WorkInspectorProps) {
           </>
         )}
 
+        {type === 'about' && (
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Eyebrow</label>
+              <input
+                type="text"
+                value={data.eyebrow || ''}
+                onChange={(e) => updateField('eyebrow', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="e.g. The Project"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Heading</label>
+              <input
+                type="text"
+                value={data.heading || ''}
+                onChange={(e) => updateField('heading', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="e.g. About"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Title</label>
+              <input
+                type="text"
+                value={data.title || ''}
+                onChange={(e) => updateField('title', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Project name shown under the heading"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Overview</label>
+              <textarea
+                rows={6}
+                value={data.body || ''}
+                onChange={(e) => updateField('body', e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Overview / description text"
+              />
+            </div>
+          </div>
+        )}
+
         {type === 'project-credits' && (
           <div className="space-y-3">
             <div className="space-y-1.5">

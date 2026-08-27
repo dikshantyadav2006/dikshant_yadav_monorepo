@@ -14,6 +14,7 @@ import {
   BarChart3,
   Blocks,
   Award,
+  FileText,
 } from 'lucide-react';
 import { useWorkBuilderStore } from '../../../features/work-builder/store';
 
@@ -152,6 +153,25 @@ export function LargeImageNode({ id, data, selected }: NodeProps) {
     >
       <ImagePreview src={data.src} alt={data.alt} />
       {data.height && <div className="mt-1.5 text-[9px] text-muted-foreground">Height: {data.height}</div>}
+    </BaseNode>
+  );
+}
+
+export function AboutNode({ id, data, selected }: NodeProps) {
+  return (
+    <BaseNode
+      id={id}
+      title="About"
+      icon={<FileText className="w-3.5 h-3.5 text-green-500" />}
+      selected={selected}
+    >
+      <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5 space-y-1">
+        <div className="text-[9px] text-muted-foreground/70">{data.eyebrow || 'The Project'}</div>
+        <div className="text-[12px] font-condensed font-black uppercase leading-none">{data.heading || 'About'}</div>
+        {data.title && <div className="text-[10px] font-semibold truncate">{data.title}</div>}
+        {data.body && <div className="text-[9px] text-muted-foreground line-clamp-2">{data.body}</div>}
+        {!data.body && <div className="text-[9px] text-muted-foreground/60">No overview text yet.</div>}
+      </div>
     </BaseNode>
   );
 }
