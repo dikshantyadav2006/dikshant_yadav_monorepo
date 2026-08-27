@@ -53,9 +53,23 @@ export async function postRoutes(fastify: FastifyInstance) {
     await optionalAuthenticate(request);
     const isAdmin = request.user?.role === 'ADMIN';
 
+    // Check cache for public post reads
+    const cacheKey = `post:${slug}:${isAdmin ? 'admin' : 'public'}`;
+    if (!isAdmin) {
+      const cached = getCached<any>(cacheKey);
+      if (cached) {
+        reply.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+        return cached;
+      }
+    }
+
     const post = await PostService.getPostBySlugOrId(slug, isAdmin);
     if (!post) {
       return reply.status(404).send({ error: 'Not Found', message: 'Post not found' });
+    }
+
+    if (!isAdmin) {
+      setCache(cacheKey, post, 30_000);
     }
 
     const ip = request.ip || '127.0.0.1';
@@ -109,6 +123,7 @@ export async function postRoutes(fastify: FastifyInstance) {
       authorId: request.user!.id,
     });
 
+    clearCache('post:');
     return post;
   });
 
@@ -134,6 +149,7 @@ export async function postRoutes(fastify: FastifyInstance) {
       seoDescription: body.seoDescription,
     });
 
+    clearCache('post:');
     return post;
   });
 
@@ -143,6 +159,7 @@ export async function postRoutes(fastify: FastifyInstance) {
 
     try {
       await PostService.deletePost(id);
+      clearCache('post:');
       return { success: true, message: 'Post deleted successfully' };
     } catch (err: any) {
       if (err?.code === 'P2025') {
@@ -158,7 +175,7 @@ export async function postRoutes(fastify: FastifyInstance) {
   fastify.get('/categories', async (_request, reply) => {
     const cached = getCached<any[]>('categories');
     if (cached) {
-      reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+      reply.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
       return cached;
     }
 
@@ -167,8 +184,8 @@ export async function postRoutes(fastify: FastifyInstance) {
       orderBy: { name: 'asc' },
     });
 
-    setCache('categories', categories, 60_000);
-    reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    setCache('categories', categories, 300_000);
+    reply.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     return categories;
   });
 
@@ -191,7 +208,7 @@ export async function postRoutes(fastify: FastifyInstance) {
   fastify.get('/tags', async (_request, reply) => {
     const cached = getCached<any[]>('tags');
     if (cached) {
-      reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+      reply.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
       return cached;
     }
 
@@ -200,8 +217,8 @@ export async function postRoutes(fastify: FastifyInstance) {
       orderBy: { name: 'asc' },
     });
 
-    setCache('tags', tags, 60_000);
-    reply.header('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    setCache('tags', tags, 300_000);
+    reply.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     return tags;
   });
 
