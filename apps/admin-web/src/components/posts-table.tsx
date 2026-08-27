@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Edit, ExternalLink, Trash2 } from 'lucide-react';
-import type { Post, PostStatus } from '@dikshant/types';
-import apiFetch from '../lib/api';
+import { Edit, ExternalLink, Trash2, Loader2 } from 'lucide-react';
+import type { PostStatus } from '@dikshant/types';
+import { usePostsList, useDeletePost } from '../hooks';
 
 const statusStyles: Record<PostStatus, string> = {
   DRAFT: 'bg-muted text-muted-foreground',
@@ -14,56 +14,17 @@ const statusStyles: Record<PostStatus, string> = {
   ARCHIVED: 'bg-red-500/15 text-red-600 dark:text-red-400',
 };
 
-interface PostsResponse {
-  posts: Post[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
-
 export function PostsTable() {
   const router = useRouter();
-  const [data, setData] = useState<PostsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const loadPosts = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await apiFetch<PostsResponse>('/posts?page=1&limit=50');
-      setData(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load posts');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadPosts();
-  }, [loadPosts]);
+  const { data, isLoading, error, refetch } = usePostsList(1, 50);
+  const deletePost = useDeletePost();
 
   async function handleDelete(id: string, title: string) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
-
-    setDeletingId(id);
-    try {
-      await apiFetch(`/posts/${id}`, { method: 'DELETE' });
-      await loadPosts();
-      router.refresh();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete post');
-    } finally {
-      setDeletingId(null);
-    }
+    deletePost.mutate(id);
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
@@ -74,10 +35,10 @@ export function PostsTable() {
   if (error) {
     return (
       <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-6 text-center text-sm text-destructive">
-        {error}
+        {error.message || 'Failed to load posts'}
         <button
           type="button"
-          onClick={loadPosts}
+          onClick={() => refetch()}
           className="mt-3 block w-full text-accent underline"
         >
           Retry
@@ -124,7 +85,7 @@ export function PostsTable() {
                 </td>
                 <td className="px-4 py-4">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[post.status]}`}
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[post.status as PostStatus]}`}
                   >
                     {post.status}
                   </span>
@@ -163,11 +124,15 @@ export function PostsTable() {
                     <button
                       type="button"
                       onClick={() => handleDelete(post.id, post.title)}
-                      disabled={deletingId === post.id}
+                      disabled={deletePost.isPending}
                       className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
                       title="Delete"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {deletePost.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </td>
