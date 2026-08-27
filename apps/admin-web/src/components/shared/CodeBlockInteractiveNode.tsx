@@ -36,10 +36,15 @@ export function CodeBlockInteractiveNode({
 
   const runtime = data.runtime || 'react';
   const code = data.code || '';
+  const htmlCode = data.html || '';
+  const cssCode = data.css || '';
+  const jsCode = data.js || '';
   const renderMode = data.renderMode || 'preview';
   const title = data.title || 'Code Block';
   const description = data.description || '';
-  const lineCount = code ? code.split('\n').length : 0;
+  const lineCount = runtime === 'html'
+    ? (htmlCode.split('\n').length + cssCode.split('\n').length + jsCode.split('\n').length)
+    : (code ? code.split('\n').length : 0);
 
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {
@@ -56,6 +61,9 @@ export function CodeBlockInteractiveNode({
       props: Record<string, any>;
       height: number;
       description?: string;
+      html?: string;
+      css?: string;
+      js?: string;
     }) => {
       onUpdate(id, {
         code: saveData.code,
@@ -63,6 +71,9 @@ export function CodeBlockInteractiveNode({
         props: saveData.props,
         previewHeight: saveData.height,
         description: saveData.description ?? data.description,
+        html: saveData.html,
+        css: saveData.css,
+        js: saveData.js,
         version: (data.version || 1) + 1,
         lastSavedAt: new Date().toISOString(),
       });
@@ -140,7 +151,7 @@ export function CodeBlockInteractiveNode({
             className="w-full py-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/40 text-foreground text-[11px] font-semibold transition flex items-center justify-center gap-1.5"
           >
             <Pencil className="w-3 h-3" />
-            {code.trim() ? 'Open Editor' : 'Write Code'}
+            {code.trim() || htmlCode.trim() ? 'Open Editor' : 'Write Code'}
           </button>
         </div>
 
@@ -160,6 +171,9 @@ export function CodeBlockInteractiveNode({
           initialProps={data.props || {}}
           initialHeight={data.previewHeight || 400}
           initialDescription={description}
+          initialHtml={htmlCode}
+          initialCss={cssCode}
+          initialJs={jsCode}
           onSave={handleStudioSave}
           onClose={() => setIsStudioOpen(false)}
         />,
