@@ -98,23 +98,39 @@ const JSX_RUNTIME_MODULES = {
 /*  esbuild bootstrap (lazy singleton)                                    */
 /* ====================================================================== */
 
-let esbuildInitialized = false;
-let esbuildModule = null;
+let esbuildPromise = null;
 
 /**
  * Boot esbuild-wasm once and reuse the same instance for every block.
  * The WASM binary is pulled from a CDN because we run entirely in the
  * browser; the version is pinned so it stays in sync with the package.
+ *
+ * We memoize a single initialization *promise* rather than a boolean flag:
+ * several React blocks can mount at the same time, and each could trigger a
+ * concurrent `initialize()` call. Memoizing the promise guarantees all callers
+ * co-operate on one initialization and fixes "Cannot call initialize more than
+ * once".
  */
 async function getEsbuild() {
-  if (esbuildInitialized) return esbuildModule;
-  /* @vite-ignore @next/dynamic */
-  esbuildModule = await import('esbuild-wasm');
-  await esbuildModule.initialize({
-    wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.28.2/esbuild.wasm',
-  });
-  esbuildInitialized = true;
-  return esbuildModule;
+  if (!esbuildPromise) {
+    esbuildPromise = (async () => {
+      /* @vite-ignore @next/dynamic */
+      const esbuild = await import('esbuild-wasm');
+      const api = esbuild.default || esbuild;
+      try {
+        await api.initialize({
+          wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.28.2/esbuild.wasm',
+        });
+      } catch (err) {
+        // esbuild-wasm throws "Cannot call initialize more than once" when
+        // another copy of this module already booted it (e.g. admin's own
+        // esbuild bootstrap). That is harmless — the shared instance is ready.
+        if (!/initialize/i.test(String(err && err.message))) throw err;
+      }
+      return api;
+    })();
+  }
+  return esbuildPromise;
 }
 
 /* ====================================================================== */
