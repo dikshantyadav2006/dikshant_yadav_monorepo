@@ -78,7 +78,7 @@ function renderBlock(block: ContentBlock, index: number) {
         />
       );
     case 'code-block-interactive': {
-      const rawCode = (block as any).code || '';
+      const rawCode = ((block as any).code || '') || ((block as any).html || '');
       const isFullDoc = typeof rawCode === 'string' && (/^\s*<!doctype/i.test(rawCode) || /<html[\s>]/i.test(rawCode));
       const hasImmersiveHints = isFullDoc && (/position\s*:\s*(fixed|absolute)/i.test(rawCode) || /height\s*:\s*100%/i.test(rawCode) || /inset\s*:\s*0/i.test(rawCode) || /overflow\s*:\s*hidden/i.test(rawCode));
       const widthModeRaw = (block as any).widthMode || 'contained';

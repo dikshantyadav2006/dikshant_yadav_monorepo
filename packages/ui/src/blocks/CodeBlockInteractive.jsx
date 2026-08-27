@@ -63,6 +63,16 @@ function extractModule(compiledCode) {
   }
 }
 
+function looksLikeHtml(code) {
+  if (!code || !code.trim()) return false;
+  var trimmed = code.trim();
+  if (/^\s*<!doctype/i.test(trimmed) || /<html[\s>]/i.test(trimmed)) return true;
+  if (/<head[\s>]/i.test(trimmed) || /<body[\s>]/i.test(trimmed)) return true;
+  if (/<div[\s>]/i.test(trimmed) && /<\/div>/i.test(trimmed)) return true;
+  if (/<section[\s>]/i.test(trimmed) && /<\/section>/i.test(trimmed)) return true;
+  return false;
+}
+
 function extractFromFullDoc(code) {
   if (!code || !code.trim()) return { html: '', css: '', js: '' };
   var trimmed = code.trim();
@@ -114,7 +124,10 @@ function CodeBlockInteractive(_ref) {
   var props = (data && data.props) || {};
   var widthMode = (data && data.widthMode) || 'contained';
 
-  if (runtime === 'html') {
+  var isHtmlRuntime = runtime === 'html';
+  var isReactWithHtml = !isHtmlRuntime && runtime === 'react' && looksLikeHtml(code);
+
+  if (isHtmlRuntime || isReactWithHtml) {
     var effectiveHtml = html;
     var effectiveCss = css;
     var effectiveJs = js;
@@ -124,6 +137,10 @@ function CodeBlockInteractive(_ref) {
       effectiveHtml = extracted.html;
       effectiveCss = extracted.css;
       effectiveJs = extracted.js;
+    }
+
+    if (!effectiveHtml && !effectiveCss && !effectiveJs) {
+      return null;
     }
 
     return React.createElement(HtmlCodeBlock, {

@@ -174,7 +174,7 @@ export default function ContentRenderer({ blocks }: ContentRendererProps) {
               </div>
             );
           case 'code-block-interactive': {
-            const rawCode = (block.data.code as string) || '';
+            const rawCode = ((block.data.code as string) || '') || ((block.data.html as string) || '');
             const isFullDoc = typeof rawCode === 'string' && (/^\s*<!doctype/i.test(rawCode) || /<html[\s>]/i.test(rawCode));
             const hasImmersiveHints = isFullDoc && (/position\s*:\s*(fixed|absolute)/i.test(rawCode) || /height\s*:\s*100%/i.test(rawCode) || /inset\s*:\s*0/i.test(rawCode) || /overflow\s*:\s*hidden/i.test(rawCode));
             const widthModeRaw = (block.data.widthMode as string) || 'contained';
