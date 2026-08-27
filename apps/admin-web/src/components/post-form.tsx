@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Post, PostStatus } from '@dikshant/types';
-import { Sparkles, Layout, Loader2 } from 'lucide-react';
+import { Sparkles, Layout } from 'lucide-react';
 import apiFetch from '../lib/api';
 import Canvas from './editor/Canvas';
 import { useCategories, useTags } from '../hooks';
+import { Skeleton } from './shared/Skeleton';
 
 export interface PostFormValues {
   title: string;
@@ -131,8 +132,42 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
   if (loadingMeta) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-14" />
+            <Skeleton className="h-20 w-full rounded-xl" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-border/60 bg-card/30 p-5 space-y-4">
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+          </div>
+          <div className="rounded-2xl border border-border/60 bg-card/30 p-5 space-y-4">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+            <div className="flex gap-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-6 w-16 rounded-full" />
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border/60 bg-card/30 p-5 space-y-4">
+            <Skeleton className="h-5 w-8" />
+            <Skeleton className="h-9 w-full rounded-xl" />
+            <Skeleton className="h-20 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }

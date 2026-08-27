@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
 import apiFetch from '../../../lib/api';
 import type { SiteConfig, SocialLink } from '@dikshant/types';
+import { Skeleton } from '../../../components/shared/Skeleton';
 
 const AUTOSAVE_INTERVAL_OPTIONS = [
   { value: 30000, label: '30 seconds' },
@@ -253,8 +254,39 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      <div className="space-y-10">
+        <div>
+          <div className="h-8 w-32 animate-pulse rounded bg-muted mb-2" />
+          <div className="h-4 w-64 animate-pulse rounded bg-muted" />
+        </div>
+        <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
+          <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <div className="h-4 w-36 animate-pulse rounded bg-muted" />
+              <div className="h-10 w-full animate-pulse rounded-xl bg-muted" />
+            </div>
+          </div>
+        </section>
+        <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
+          <div className="h-5 w-32 animate-pulse rounded bg-muted" />
+          <div className="space-y-4">
+            <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-muted" />
+          </div>
+        </section>
+        <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
+          <div className="h-5 w-28 animate-pulse rounded bg-muted" />
+          <div className="space-y-3">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="h-10 flex-1 animate-pulse rounded-lg bg-muted" />
+                <div className="h-10 flex-1 animate-pulse rounded-lg bg-muted" />
+                <div className="h-10 flex-1 animate-pulse rounded-lg bg-muted" />
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     );
   }

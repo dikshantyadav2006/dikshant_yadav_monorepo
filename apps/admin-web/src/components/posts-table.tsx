@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Edit, ExternalLink, Trash2, Loader2 } from 'lucide-react';
 import type { PostStatus } from '@dikshant/types';
 import { usePostsList, useDeletePost } from '../hooks';
+import { Skeleton } from './shared/Skeleton';
 
 const statusStyles: Record<PostStatus, string> = {
   DRAFT: 'bg-muted text-muted-foreground',
@@ -12,6 +13,52 @@ const statusStyles: Record<PostStatus, string> = {
   SCHEDULED: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
   ARCHIVED: 'bg-red-500/15 text-red-600 dark:text-red-400',
 };
+
+function PostsTableSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border/60">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-border/60 bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Title</th>
+              <th className="px-4 py-3 font-semibold">Status</th>
+              <th className="px-4 py-3 font-semibold hidden sm:table-cell">Updated</th>
+              <th className="px-4 py-3 font-semibold hidden md:table-cell">Views</th>
+              <th className="px-4 py-3 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/40">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i}>
+                <td className="px-4 py-4">
+                  <Skeleton className="h-4 w-48 mb-1.5" />
+                  <Skeleton className="h-3 w-24" />
+                </td>
+                <td className="px-4 py-4">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </td>
+                <td className="px-4 py-4 hidden sm:table-cell">
+                  <Skeleton className="h-3 w-20" />
+                </td>
+                <td className="px-4 py-4 hidden md:table-cell">
+                  <Skeleton className="h-3 w-10" />
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex items-center justify-end gap-1">
+                    <Skeleton className="size-8 rounded-lg" />
+                    <Skeleton className="size-8 rounded-lg" />
+                    <Skeleton className="size-8 rounded-lg" />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 export function PostsTable() {
   const { data, isLoading, error, refetch } = usePostsList(1, 50);
@@ -27,11 +74,7 @@ export function PostsTable() {
   }, [deletePost]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-      </div>
-    );
+    return <PostsTableSkeleton />;
   }
 
   if (error) {
