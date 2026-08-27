@@ -84,7 +84,6 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setError('');
     setSubmitting(true);
 
     const payload = {
