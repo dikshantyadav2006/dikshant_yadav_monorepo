@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Post, PostStatus } from '@dikshant/types';
 import { Sparkles, Layout } from 'lucide-react';
+import { toast } from 'sonner';
 import apiFetch from '../lib/api';
 import Canvas from './editor/Canvas';
 import { useCategories, useTags } from '../hooks';
@@ -63,7 +64,6 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
     initialPost ? postToFormValues(initialPost) : defaultValues
   );
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
 
   const { data: categories = [], isLoading: loadingCats } = useCategories();
   const { data: tags = [], isLoading: loadingTags } = useTags();
@@ -101,30 +101,27 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
     try {
       if (postId) {
-        // Existing post – update normally
         await apiFetch(`/posts/${postId}`, {
           method: 'PATCH',
           body: JSON.stringify(payload),
         });
-        // After updating, stay on form (or navigate as before)
+        toast.success('Post updated');
         router.push('/');
         router.refresh();
       } else {
-        // Create a new draft post and open canvas for editing
         const response = await apiFetch('/posts', {
           method: 'POST',
           body: JSON.stringify(payload),
         });
         const created = response as any;
         if (created && created.id) {
+          toast.success('Draft created');
           setDraftPostId(created.id);
           setIsEditingCanvas(true);
         }
-        // Optionally update local form values with returned data
-        // setValues(prev => ({ ...prev, /* any returned fields */ }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save post');
+      toast.error(err instanceof Error ? err.message : 'Failed to save post');
     } finally {
       setSubmitting(false);
     }
@@ -186,12 +183,6 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
-
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           <div className="space-y-2">

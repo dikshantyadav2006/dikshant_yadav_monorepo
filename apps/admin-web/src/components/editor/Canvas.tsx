@@ -15,6 +15,7 @@ import ReactFlow, {
   ReactFlowInstance,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { toast } from 'sonner';
 
 import { nodeRegistry } from '@dikshant/node-registry';
 import { useVisualBuilderStore } from '../../features/visual-builder/store';
@@ -265,9 +266,9 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
     try {
       updatePostMetadata({ status: 'PUBLISHED' });
       await saveImmediately();
-      alert('Post published successfully!');
+      toast.success('Post published successfully!');
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to publish post');
+      toast.error(err instanceof Error ? err.message : 'Failed to publish post');
     }
   };
 
