@@ -56,8 +56,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-3">
             <ThemeSelector />
-            {user && (
+            {user ? (
               <span className="hidden text-sm text-muted-foreground sm:inline">{user.name}</span>
+            ) : (
+              <div className="hidden h-4 w-16 animate-pulse rounded bg-muted sm:inline" />
             )}
             <button
               type="button"
