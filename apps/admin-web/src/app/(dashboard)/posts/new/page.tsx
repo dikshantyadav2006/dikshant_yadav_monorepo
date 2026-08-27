@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import apiFetch from '../../../../lib/api';
 import Canvas from '../../../../components/editor/Canvas';
@@ -10,9 +10,12 @@ export default function NewPostPage() {
   const [postId, setPostId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const draftCreated = useRef(false);
 
-  // On mount, create a blank draft post so the canvas has a postId to save against
   useEffect(() => {
+    if (draftCreated.current) return;
+    draftCreated.current = true;
+
     let active = true;
     async function createDraft() {
       try {
