@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Category, Post, PostStatus, Tag } from '@dikshant/types';
-import { Sparkles, Layout } from 'lucide-react';
+import type { Post, PostStatus } from '@dikshant/types';
+import { Sparkles, Layout, Loader2 } from 'lucide-react';
 import apiFetch from '../lib/api';
 import Canvas from './editor/Canvas';
+import { useCategories, useTags } from '../hooks';
 
 export interface PostFormValues {
   title: string;
@@ -38,7 +39,7 @@ interface PostFormProps {
 
 function postToFormValues(post: Post): PostFormValues {
   const tags = post.tags ?? [];
-  const tagIds = tags.map((t) => ('tag' in t && t.tag ? t.tag.id : (t as Tag).id));
+  const tagIds = tags.map((t) => ('tag' in t && t.tag ? t.tag.id : (t as any).id));
 
   return {
     title: post.title,
@@ -60,29 +61,12 @@ export function PostForm({ postId, initialPost }: PostFormProps) {
   const [values, setValues] = useState<PostFormValues>(
     initialPost ? postToFormValues(initialPost) : defaultValues
   );
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loadingMeta, setLoadingMeta] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    async function loadMeta() {
-      try {
-        const [cats, tagList] = await Promise.all([
-          apiFetch<Category[]>('/categories'),
-          apiFetch<Tag[]>('/tags'),
-        ]);
-        setCategories(cats);
-        setTags(tagList);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load categories/tags');
-      } finally {
-        setLoadingMeta(false);
-      }
-    }
-    loadMeta();
-  }, []);
+  const { data: categories = [], isLoading: loadingCats } = useCategories();
+  const { data: tags = [], isLoading: loadingTags } = useTags();
+  const loadingMeta = loadingCats || loadingTags;
 
   function updateField<K extends keyof PostFormValues>(key: K, value: PostFormValues[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
