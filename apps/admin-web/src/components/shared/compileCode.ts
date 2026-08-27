@@ -10,7 +10,7 @@ export async function initCompiler(): Promise<void> {
   initPromise = (async () => {
     try {
       await esbuild.initialize({
-        wasmURL: 'https://unpkg.com/esbuild-wasm@0.24.0/esbuild.wasm',
+        wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.28.2/esbuild.wasm',
       });
       initialized = true;
     } catch (err) {
