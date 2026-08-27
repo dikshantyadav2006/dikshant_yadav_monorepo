@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { RuntimeErrorBoundary } from './ErrorBoundary';
 import { compileTSX } from './compileCode';
-import { extractModule, type RuntimeModule } from './extractModule';
+import { validateSource, extractModule, type RuntimeModule } from './extractModule';
 import { withTimeout, TIMEOUTS } from './timeout';
 import { parseConfig, type ComponentConfig } from './parseConfig';
 import { ResizablePanel } from './ResizablePanel';
@@ -200,6 +200,7 @@ export function CodeStudio({
 
     (async () => {
       try {
+        validateSource(code);
         const compiled = await withTimeout(
           () => compileTSX(code),
           TIMEOUTS.compile,

@@ -25,21 +25,11 @@ export async function initCompiler(): Promise<void> {
 export async function compileTSX(code: string): Promise<string> {
   await initCompiler();
 
-  const result = await esbuild.build({
-    entryPoints: ['<virtual>'],
-    bundle: false,
-    format: 'iife',
-    loader: { '.tsx': 'tsx', '.ts': 'ts' },
+  const result = await esbuild.transform(code, {
+    loader: 'tsx',
     jsx: 'automatic',
-    write: false,
-    stdin: {
-      contents: code,
-      loader: 'tsx',
-      resolveDir: '/',
-    },
     target: 'es2020',
-    logLevel: 'silent',
   });
 
-  return result.outputFiles[0].text;
+  return result.code;
 }

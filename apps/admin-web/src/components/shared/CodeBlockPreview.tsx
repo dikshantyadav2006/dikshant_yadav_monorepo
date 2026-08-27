@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { compileTSX } from './compileCode';
-import { extractModule, type RuntimeModule } from './extractModule';
+import { validateSource, extractModule, type RuntimeModule } from './extractModule';
 import { importMap } from './importMap';
 import { RuntimeErrorBoundary } from './ErrorBoundary';
 import { withTimeout, TIMEOUTS } from './timeout';
@@ -64,6 +64,7 @@ function ReactRuntimePreview({
     setError(null);
 
     try {
+      validateSource(code);
       const compiled = await withTimeout(
         () => compileTSX(code),
         TIMEOUTS.compile,
