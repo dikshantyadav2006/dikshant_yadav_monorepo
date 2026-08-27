@@ -1332,6 +1332,14 @@ export function Inspector() {
                     </div>
                   </div>
                 )}
+                {data.runtime === 'html' && (
+                  <div className="rounded-xl border border-border/60 bg-muted/10 p-3 space-y-1">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase">Code Info</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      HTML: {((data.html as string) || '').split('\n').length}L · CSS: {((data.css as string) || '').split('\n').length}L · JS: {((data.js as string) || '').split('\n').length}L
+                    </div>
+                  </div>
+                )}
 
                 {/* Separator */}
                 <div className="border-t border-border/40 pt-3 mt-1" />

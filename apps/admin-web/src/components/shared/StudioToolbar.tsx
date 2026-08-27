@@ -13,10 +13,15 @@ import {
   Rocket,
   Download,
   FileCode2,
+  FileText,
+  Palette,
+  Braces,
 } from 'lucide-react';
 import type { ViewMode } from './CodeStudio';
 import type { PreviewDevice } from './types';
 import { PREVIEW_DEVICES } from './types';
+
+export type HtmlEditorTab = 'html' | 'css' | 'js';
 
 interface StudioToolbarProps {
   runtime: 'react' | 'html';
@@ -25,6 +30,8 @@ interface StudioToolbarProps {
   onViewModeChange: (mode: ViewMode) => void;
   previewDevice: PreviewDevice;
   onPreviewDeviceChange: (device: PreviewDevice) => void;
+  htmlEditorTab: HtmlEditorTab;
+  onHtmlEditorTabChange: (tab: HtmlEditorTab) => void;
   onSave: () => void;
   onRun: () => void;
   onPublish?: () => void;
@@ -39,6 +46,8 @@ export function StudioToolbar({
   onViewModeChange,
   previewDevice,
   onPreviewDeviceChange,
+  htmlEditorTab,
+  onHtmlEditorTabChange,
   onSave,
   onRun,
   onPublish,
@@ -78,6 +87,51 @@ export function StudioToolbar({
             HTML
           </button>
         </div>
+
+        {/* HTML Editor Tab Selector (only when runtime is html) */}
+        {runtime === 'html' && (
+          <>
+            <div className="w-px h-5 bg-border/40" />
+            <div className="flex items-center rounded-lg border border-border bg-muted/30 p-0.5">
+              <button
+                onClick={() => onHtmlEditorTabChange('html')}
+                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-md transition ${
+                  htmlEditorTab === 'html'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="HTML Markup"
+              >
+                <FileText className="w-3 h-3" />
+                HTML
+              </button>
+              <button
+                onClick={() => onHtmlEditorTabChange('css')}
+                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-md transition ${
+                  htmlEditorTab === 'css'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="CSS Styles"
+              >
+                <Palette className="w-3 h-3" />
+                CSS
+              </button>
+              <button
+                onClick={() => onHtmlEditorTabChange('js')}
+                className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-md transition ${
+                  htmlEditorTab === 'js'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="JavaScript"
+              >
+                <Braces className="w-3 h-3" />
+                JS
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Separator */}
         <div className="w-px h-5 bg-border/40" />

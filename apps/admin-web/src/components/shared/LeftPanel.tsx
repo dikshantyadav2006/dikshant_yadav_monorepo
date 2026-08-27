@@ -20,9 +20,12 @@ interface LeftPanelProps {
   runtime: 'react' | 'html';
   title: string;
   version: number;
-  versionHistory: Array<{ version: number; savedAt: string; code: string }>;
+  versionHistory: Array<{ version: number; savedAt: string; code: string; html?: string; css?: string; js?: string }>;
+  htmlCode?: string;
+  cssCode?: string;
+  jsCode?: string;
   onSelectTemplate: (template: CodeTemplate) => void;
-  onLoadVersion: (code: string) => void;
+  onLoadVersion: (v: { code: string; html?: string; css?: string; js?: string }) => void;
 }
 
 export function LeftPanel({
@@ -31,11 +34,16 @@ export function LeftPanel({
   title,
   version,
   versionHistory,
+  htmlCode = '',
+  cssCode = '',
+  jsCode = '',
   onSelectTemplate,
   onLoadVersion,
 }: LeftPanelProps) {
   const [activeTab, setActiveTab] = useState<LeftTab>('templates');
-  const lineCount = currentCode ? currentCode.split('\n').length : 0;
+  const lineCount = runtime === 'html'
+    ? (htmlCode.split('\n').length + cssCode.split('\n').length + jsCode.split('\n').length)
+    : (currentCode ? currentCode.split('\n').length : 0);
 
   return (
     <div className="h-full flex flex-col bg-card border-r border-border/40">
@@ -82,11 +90,34 @@ export function LeftPanel({
             {/* File Tree Placeholder */}
             <div className="space-y-1">
               <div className="text-[10px] font-bold text-muted-foreground uppercase px-1">Files</div>
-              <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-primary/5 text-primary text-xs font-medium">
-                <ChevronRight className="w-3 h-3 rotate-90" />
-                <FileCode2 className="w-3 h-3" />
-                component.{runtime === 'react' ? 'tsx' : 'html'}
-              </div>
+              {runtime === 'html' ? (
+                <>
+                  <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-primary/5 text-primary text-xs font-medium">
+                    <ChevronRight className="w-3 h-3 rotate-90" />
+                    <FileCode2 className="w-3 h-3" />
+                    component.html
+                    <span className="text-[9px] text-muted-foreground ml-auto">{htmlCode.split('\n').length}L</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted/30 transition">
+                    <ChevronRight className="w-3 h-3 rotate-90" />
+                    <FileCode2 className="w-3 h-3" />
+                    styles.css
+                    <span className="text-[9px] text-muted-foreground/60 ml-auto">{cssCode.split('\n').length}L</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted/30 transition">
+                    <ChevronRight className="w-3 h-3 rotate-90" />
+                    <FileCode2 className="w-3 h-3" />
+                    script.js
+                    <span className="text-[9px] text-muted-foreground/60 ml-auto">{jsCode.split('\n').length}L</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-primary/5 text-primary text-xs font-medium">
+                  <ChevronRight className="w-3 h-3 rotate-90" />
+                  <FileCode2 className="w-3 h-3" />
+                  component.tsx
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -108,7 +139,7 @@ export function LeftPanel({
                 {versionHistory.map((v) => (
                   <button
                     key={v.version}
-                    onClick={() => onLoadVersion(v.code)}
+                    onClick={() => onLoadVersion(v)}
                     className="w-full text-left p-2.5 rounded-lg border border-border/40 hover:border-primary/40 hover:bg-muted/20 transition group"
                   >
                     <div className="flex items-center justify-between">

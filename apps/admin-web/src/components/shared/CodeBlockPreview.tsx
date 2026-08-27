@@ -12,6 +12,9 @@ interface CodeBlockPreviewProps {
   runtime: 'react' | 'html';
   props?: Record<string, any>;
   height?: number;
+  html?: string;
+  css?: string;
+  js?: string;
 }
 
 export function CodeBlockPreview({
@@ -19,9 +22,12 @@ export function CodeBlockPreview({
   runtime,
   props = {},
   height = 400,
+  html = '',
+  css = '',
+  js = '',
 }: CodeBlockPreviewProps) {
   if (runtime === 'html') {
-    return <HtmlPreview code={code} height={height} />;
+    return <HtmlPreview html={html} css={css} js={js} height={height} />;
   }
 
   if (!code.trim()) {
@@ -112,7 +118,7 @@ function ReactRuntimePreview({
   );
 }
 
-function HtmlPreview({ code, height }: { code: string; height: number }) {
+function HtmlPreview({ html, css, js, height }: { html: string; css: string; js: string; height: number }) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   const buildSrcdoc = useCallback(() => {
@@ -127,6 +133,8 @@ function HtmlPreview({ code, height }: { code: string; height: number }) {
     ];
 
     const rootStyles = vars.map((v) => `${v}: ${computed.getPropertyValue(v)};`).join('\n      ');
+
+    const jsBlock = js && js.trim() ? `<script>\n${js}\n<\/script>` : '';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -171,13 +179,20 @@ function HtmlPreview({ code, height }: { code: string; height: number }) {
       background: hsl(${computed.getPropertyValue('--background').trim()});
       color: hsl(${computed.getPropertyValue('--foreground').trim()});
     }
+    #root {
+      width: 100%;
+    }
+    ${css || ''}
   </style>
 </head>
 <body>
-  ${code}
+  <div id="root">
+    ${html || ''}
+  </div>
+  ${jsBlock}
 </body>
 </html>`;
-  }, [code]);
+  }, [html, css, js]);
 
   useEffect(() => {
     if (iframeRef.current) {

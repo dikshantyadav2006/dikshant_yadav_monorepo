@@ -347,6 +347,9 @@ export type WorkContentBlock =
       description?: string;
       runtime: 'react' | 'html';
       code: string;
+      html?: string;
+      css?: string;
+      js?: string;
       props?: Record<string, any>;
       previewHeight?: number;
       renderMode?: 'preview' | 'component' | 'hidden';

@@ -5,6 +5,9 @@ export interface CodeTemplate {
   runtime: 'react' | 'html';
   description: string;
   code: string;
+  html?: string;
+  css?: string;
+  js?: string;
   config?: {
     name: string;
     description?: string;
@@ -552,8 +555,8 @@ export default function BlogHero({ title, subtitle }) {
     category: 'portfolio',
     runtime: 'html',
     description: 'Multi-section standalone landing page.',
-    code: `<div class="min-h-screen">
-  <nav class="flex items-center justify-between px-8 py-4 border-b border-border">
+    code: '',
+    html: `<nav class="flex items-center justify-between px-8 py-4 border-b border-border">
     <span class="font-bold text-lg">Brand</span>
     <div class="flex gap-6 text-sm text-muted-foreground">
       <a href="#" class="hover:text-foreground transition">Features</a>
@@ -594,8 +597,9 @@ export default function BlogHero({ title, subtitle }) {
 
   <footer class="py-8 px-8 border-t border-border text-center text-sm text-muted-foreground">
     &copy; 2026 Brand. All rights reserved.
-  </footer>
-</div>`,
+  </footer>`,
+    css: '',
+    js: '',
   },
   {
     id: 'html-email',
@@ -603,7 +607,8 @@ export default function BlogHero({ title, subtitle }) {
     category: 'portfolio',
     runtime: 'html',
     description: 'Table-based email layout.',
-    code: `<div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
+    code: '',
+    html: `<div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
   <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 40px; text-align: center; border-radius: 12px 12px 0 0;">
     <h1 style="color: white; margin: 0; font-size: 28px;">Welcome Aboard!</h1>
     <p style="color: rgba(255,255,255,0.85); margin-top: 12px;">We're excited to have you.</p>
@@ -622,5 +627,7 @@ export default function BlogHero({ title, subtitle }) {
     <p style="color: #9ca3af; font-size: 13px; text-align: center; margin-top: 32px;">If you didn't create this account, ignore this email.</p>
   </div>
 </div>`,
+    css: '',
+    js: '',
   },
 ];

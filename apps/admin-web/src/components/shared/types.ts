@@ -3,6 +3,9 @@ export interface CodeBlockInteractiveData {
   description: string;
   runtime: 'react' | 'html';
   code: string;
+  html: string;
+  css: string;
+  js: string;
   props: Record<string, any>;
   previewHeight: number;
   previewWidth: number;
