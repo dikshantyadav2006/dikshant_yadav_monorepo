@@ -2,9 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useVisualBuilderStore } from '../../../features/visual-builder/store';
-import { savePostCanvas } from '../../../features/visual-builder/api';
 import { orderNodes } from '../../../features/visual-builder/serializer';
-import apiFetch from '../../../lib/api';
 
 interface AutoSaveProps {
   postId: string;
@@ -80,34 +78,36 @@ export function useAutoSave({ postId }: AutoSaveProps) {
       // Serialize nodes to ordered block structure
       const blocks = orderNodes(currentNodes, currentEdges);
       
-      const payload = {
+      const canvasPayload = {
         nodes: currentNodes,
         edges: currentEdges,
         blocks
       };
 
-      await savePostCanvas(postId, payload);
-
-      // Save post metadata
-      if (currentMeta) {
-        await apiFetch(`/posts/${postId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({
+      // Single combined save: canvas data + post metadata in one request
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      await fetch(`${API_URL}/posts/${postId}/save`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          canvasData: canvasPayload,
+          ...(currentMeta ? {
             title: currentMeta.title,
             excerpt: currentMeta.excerpt,
             status: currentMeta.status,
             featured: currentMeta.featured,
             featuredPinned: currentMeta.featuredPinned,
             categoryId: currentMeta.categoryId || null,
-            tags: currentMeta.tagIds,
+            tagIds: currentMeta.tagIds,
             seoTitle: currentMeta.seoTitle,
             seoDescription: currentMeta.seoDescription,
             featuredImageId: currentMeta.featuredImageId || null,
             featuredBannerImageId: currentMeta.featuredBannerImageId || null,
             featuredBannerImageMeta: currentMeta.featuredBannerImageMeta || null,
-          }),
-        });
-      }
+          } : {}),
+        }),
+      });
       
       // Update last saved state
       lastSavedDataRef.current = JSON.stringify({
