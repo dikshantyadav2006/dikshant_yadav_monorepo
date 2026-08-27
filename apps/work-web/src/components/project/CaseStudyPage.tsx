@@ -4,7 +4,6 @@ import { WorkDetail } from '@/types/project';
 import CaseStudyHero from './CaseStudyHero';
 import AboutSection from './AboutSection';
 import ContentBlockRenderer from './ContentBlockRenderer';
-import CreditsSection from './CreditsSection';
 import RelatedCaseStudies from './RelatedCaseStudies';
 import NextProjectSection from './NextProjectSection';
 
@@ -29,8 +28,6 @@ export default function CaseStudyPage({ project }: CaseStudyPageProps) {
       <AboutSection overview={project.overview ?? ''} title={project.title} />
 
       {blocks.length > 0 && <ContentBlockRenderer blocks={blocks} />}
-
-      <CreditsSection credits={project.credits ?? []} year={project.year ?? ''} />
 
       <RelatedCaseStudies posts={project.posts ?? []} />
 

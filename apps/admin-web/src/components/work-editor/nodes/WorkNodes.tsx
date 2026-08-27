@@ -13,6 +13,7 @@ import {
   Link2,
   BarChart3,
   Blocks,
+  Award,
 } from 'lucide-react';
 import { useWorkBuilderStore } from '../../../features/work-builder/store';
 
@@ -350,6 +351,40 @@ export function LinkNode({ id, data, selected }: NodeProps) {
         <div className="text-[9px] text-muted-foreground truncate">{data.href || 'https://…'}</div>
         {data.description && (
           <div className="text-[9px] text-muted-foreground/70 line-clamp-2">{data.description}</div>
+        )}
+      </div>
+    </BaseNode>
+  );
+}
+
+export function ProjectCreditsNode({ id, data, selected }: NodeProps) {
+  const items = Array.isArray(data.items) ? data.items : [];
+  return (
+    <BaseNode
+      id={id}
+      title="Project Credits"
+      icon={<Award className="w-3.5 h-3.5 text-teal-500" />}
+      selected={selected}
+    >
+      <div className="space-y-1.5">
+        <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5">
+          <div className="text-[9px] text-muted-foreground/70">{data.eyebrow || 'Project Metadata'}</div>
+          <div className="text-[13px] font-bold leading-none mt-0.5">{data.title || 'Credits'}</div>
+        </div>
+        {items.length === 0 && (
+          <div className="text-[9px] text-muted-foreground/60">No credits added yet.</div>
+        )}
+        {items.map((item: { label?: string; value?: string }, i: number) => (
+          <div key={i} className="flex items-center justify-between gap-2 text-[10px]">
+            <span className="text-muted-foreground">{item.label || `Credit ${i + 1}`}</span>
+            <span className="text-foreground truncate">{item.value || '—'}</span>
+          </div>
+        ))}
+        {data.year && (
+          <div className="flex items-center justify-between text-[10px]">
+            <span className="text-muted-foreground">Year</span>
+            <span className="text-foreground">{data.year}</span>
+          </div>
         )}
       </div>
     </BaseNode>

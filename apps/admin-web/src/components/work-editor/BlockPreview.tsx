@@ -167,6 +167,36 @@ export function BlockPreview({ block }: { block: WorkContentBlock }) {
         </div>
       );
 
+    case 'project-credits': {
+      const items = block.items || [];
+      return (
+        <div className="rounded-xl border border-border/50 bg-muted/20 p-3 space-y-2">
+          <div className="text-center">
+            <div className="text-[9px] text-muted-foreground">{block.eyebrow || 'Project Metadata'}</div>
+            <div className="font-script text-2xl leading-none mt-1">{block.title || 'Credits'}</div>
+          </div>
+          {items.length === 0 ? (
+            <div className="flex h-20 items-center justify-center rounded-lg border border-dashed border-border/50 text-muted-foreground/60 text-xs">
+              Project Credits block
+            </div>
+          ) : (
+            items.map((item, i) => (
+              <div key={i} className="flex items-center justify-between gap-2 text-[10px]">
+                <span className="text-muted-foreground">{item.label || `Credit ${i + 1}`}</span>
+                <span className="truncate">{item.value || '—'}</span>
+              </div>
+            ))
+          )}
+          {block.year && (
+            <div className="flex items-center justify-between border-t border-border/50 pt-1.5 text-[10px]">
+              <span className="text-muted-foreground">Year</span>
+              <span>{block.year}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     default:
       return null;
   }

@@ -241,6 +241,23 @@ export const builtInWorkNodes = [
     defaultData: { label: '', href: '', description: '' },
   },
   {
+    type: 'project-credits',
+    label: 'Project Credits',
+    category: 'Portfolio',
+    defaultData: {
+      eyebrow: 'Project Metadata',
+      title: 'Credits',
+      headingLabel: 'Project Credits',
+      heading: 'Crafted With\nPrecision',
+      year: '',
+      items: [
+        { label: 'Art Direction', value: '', variant: 'script' },
+        { label: 'Web Design', value: '', variant: 'condensed' },
+        { label: 'Development', value: '', variant: 'mono' },
+      ],
+    },
+  },
+  {
     type: 'code-block-interactive',
     label: 'Code Block',
     category: 'Code',

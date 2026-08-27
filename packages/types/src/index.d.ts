@@ -355,7 +355,22 @@ export type WorkContentBlock =
       renderMode?: 'preview' | 'component' | 'hidden';
       version?: number;
       widthMode?: 'contained' | 'wide' | 'full-bleed';
+    }
+  | {
+      type: 'project-credits';
+      eyebrow?: string;
+      title?: string;
+      headingLabel?: string;
+      heading?: string;
+      year?: string;
+      items: ProjectCreditBlockItem[];
     };
+
+export interface ProjectCreditBlockItem {
+  label: string;
+  value: string;
+  variant: 'script' | 'condensed' | 'mono';
+}
 
 export interface ProjectCredit {
   role: string;

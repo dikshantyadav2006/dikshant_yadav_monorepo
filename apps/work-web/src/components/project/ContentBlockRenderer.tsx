@@ -11,6 +11,7 @@ import BlockVideo from './blocks/BlockVideo';
 import BlockEmbed from './blocks/BlockEmbed';
 import BlockMetrics from './blocks/BlockMetrics';
 import BlockLink from './blocks/BlockLink';
+import ProjectCreditsBlock from './blocks/ProjectCreditsBlock';
 
 interface ContentBlockRendererProps {
   blocks: ContentBlock[];
@@ -75,6 +76,18 @@ function renderBlock(block: ContentBlock, index: number) {
           label={block.label}
           href={block.href}
           description={block.description}
+        />
+      );
+    case 'project-credits':
+      return (
+        <ProjectCreditsBlock
+          key={index}
+          eyebrow={block.eyebrow}
+          title={block.title}
+          headingLabel={block.headingLabel}
+          heading={block.heading}
+          year={block.year}
+          items={block.items}
         />
       );
     case 'code-block-interactive': {

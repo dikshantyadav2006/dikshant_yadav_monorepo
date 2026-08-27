@@ -39,6 +39,7 @@ import {
   EmbedNode,
   MetricsNode,
   LinkNode,
+  ProjectCreditsNode,
 } from './nodes/WorkNodes';
 import { CodeBlockInteractiveNodeWrapper } from './nodes/CodeBlockInteractiveNodeWrapper';
 import WorkPreviewPanel from './WorkPreviewPanel';
@@ -55,6 +56,7 @@ const workNodeTypes = {
   embed: EmbedNode,
   metrics: MetricsNode,
   link: LinkNode,
+  'project-credits': ProjectCreditsNode,
   'code-block-interactive': CodeBlockInteractiveNodeWrapper,
 };
 
