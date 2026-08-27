@@ -80,6 +80,10 @@ export class PostService {
   }
 
   private static async resolveSiteConfig(tx: any) {
+    const { getCached, setCache } = await import('../lib/cache.js');
+    const cached = getCached<any>('site-config:default');
+    if (cached) return cached;
+
     const config = await tx.siteConfig.upsert({
       where: { id: 'default' },
       create: {
@@ -89,10 +93,13 @@ export class PostService {
       update: {},
     });
 
-    return {
+    const result = {
       ...config,
       homepageConfig: this.normalizeHomepageConfig(config.homepageConfig),
     };
+
+    setCache('site-config:default', result, 60_000);
+    return result;
   }
 
   private static async enforceFeaturedCapacity(
@@ -154,6 +161,12 @@ export class PostService {
   // Generate a unique slug in the database
   static async generateUniqueSlug(title: string, currentPostId?: string): Promise<string> {
     const baseSlug = slugify(title) || 'untitled';
+
+    // Fast path: if slug contains a UUID suffix, it's already guaranteed unique
+    if (/[0-9a-f]{8}$/.test(baseSlug)) {
+      return baseSlug;
+    }
+
     let slug = baseSlug;
     let counter = 1;
 
