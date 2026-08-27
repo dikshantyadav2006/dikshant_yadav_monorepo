@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
 import apiFetch from '../../../lib/api';
 import type { SiteConfig, SocialLink } from '@dikshant/types';
@@ -79,7 +80,6 @@ function SaveStatus({ state, idle, onRetry }: { state: SaveState; idle?: string;
 }
 
 export default function SettingsPage() {
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [status, setStatus] = useState<Record<string, SaveState>>({});
   const [featuredCountStr, setFeaturedCountStr] = useState('1');
@@ -89,6 +89,25 @@ export default function SettingsPage() {
     autosaveIntervalMs: number;
   } | null>(null);
   const [socialRows, setSocialRows] = useState<SocialRow[]>([]);
+
+  const { data: settingsData, isLoading } = useQuery<SiteConfig>({
+    queryKey: ['settings'],
+    queryFn: () => apiFetch('/settings'),
+    staleTime: 30_000,
+  });
+
+  // Hydrate local state from query data
+  useEffect(() => {
+    if (settingsData) {
+      setForm({
+        homepageFeaturedCount: settingsData.homepageFeaturedCount,
+        autosaveEnabled: settingsData.autosaveEnabled,
+        autosaveIntervalMs: settingsData.autosaveIntervalMs,
+      });
+      setFeaturedCountStr(String(settingsData.homepageFeaturedCount));
+      setSocialRows((settingsData.socialLinks ?? []).map(toSocialRow));
+    }
+  }, [settingsData]);
 
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const seq = useRef<Record<string, number>>({});
@@ -116,7 +135,6 @@ export default function SettingsPage() {
         method: 'PATCH',
         body: JSON.stringify(payload),
       });
-      // Ignore stale responses (a newer request was issued meanwhile).
       if (seq.current[key] !== current) return;
 
       const latest = formRef.current;
@@ -126,8 +144,6 @@ export default function SettingsPage() {
         for (const k of Object.keys(payload) as Array<keyof SiteConfig>) {
           const pv = (payload as any)[k];
           const fv = (latest as any)[k];
-          // Only apply the server's normalized value if the field wasn't edited again
-          // while the request was in flight.
           if (JSON.stringify(fv) === JSON.stringify(pv) && (saved as any)[k] !== undefined) {
             (next as any)[k] = (saved as any)[k];
             changed = true;
@@ -164,38 +180,6 @@ export default function SettingsPage() {
     },
     [flushSave],
   );
-
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      try {
-        const data = await apiFetch<SiteConfig>('/settings');
-        if (!active) return;
-        setForm({
-          homepageFeaturedCount: data.homepageFeaturedCount,
-          autosaveEnabled: data.autosaveEnabled,
-          autosaveIntervalMs: data.autosaveIntervalMs,
-        });
-        setFeaturedCountStr(String(data.homepageFeaturedCount));
-        setSocialRows((data.socialLinks ?? []).map(toSocialRow));
-      } catch (err) {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : 'Failed to load settings');
-      } finally {
-        if (!active) return;
-        setLoading(false);
-      }
-    }
-
-    load();
-
-    return () => {
-      active = false;
-      Object.values(timers.current).forEach(clearTimeout);
-      timers.current = {};
-    };
-  }, []);
 
   const scheduleSocialSave = useCallback(
     (rows: SocialRow[]) => {
@@ -267,7 +251,7 @@ export default function SettingsPage() {
     scheduleSave('autosaveIntervalMs', { autosaveIntervalMs: value }, 0);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
