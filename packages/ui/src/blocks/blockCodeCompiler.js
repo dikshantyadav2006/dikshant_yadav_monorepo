@@ -35,6 +35,7 @@ import * as LucideIcons from 'lucide-react';
 import clsx from 'clsx';
 import { cva } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
+import * as esbuild from 'esbuild-wasm';
 import * as UIGateway from './ContentRenderer.jsx';
 
 /* ====================================================================== */
@@ -110,24 +111,29 @@ let esbuildPromise = null;
  * concurrent `initialize()` call. Memoizing the promise guarantees all callers
  * co-operate on one initialization and fixes "Cannot call initialize more than
  * once".
+ *
+ * `esbuild` is imported statically (as the admin app does) so every bundler
+ * (webpack, vite) resolves and bundles it consistently. The module itself is
+ * only activated lazily, on the first transform request.
  */
 async function getEsbuild() {
   if (!esbuildPromise) {
     esbuildPromise = (async () => {
-      /* @vite-ignore @next/dynamic */
-      const esbuild = await import('esbuild-wasm');
-      const api = esbuild.default || esbuild;
       try {
-        await api.initialize({
+        await esbuild.initialize({
           wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.28.2/esbuild.wasm',
         });
       } catch (err) {
         // esbuild-wasm throws "Cannot call initialize more than once" when
         // another copy of this module already booted it (e.g. admin's own
-        // esbuild bootstrap). That is harmless — the shared instance is ready.
-        if (!/initialize/i.test(String(err && err.message))) throw err;
+        // esbuild bootstrap, or the block renderer's own copy). That is
+        // harmless — the shared instance is already ready.
+        if (!/initialize/i.test(String(err && err.message))) {
+          esbuildPromise = null;
+          throw err;
+        }
       }
-      return api;
+      return esbuild;
     })();
   }
   return esbuildPromise;
