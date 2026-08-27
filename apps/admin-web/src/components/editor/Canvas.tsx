@@ -100,7 +100,12 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
 
     async function loadEditorState() {
       try {
-        const preferences = await apiFetch<UserPreferences>('/preferences').catch(() => null);
+        // Parallel fetch: preferences + canvas data
+        const [preferences, canvasData] = await Promise.all([
+          apiFetch<UserPreferences>('/preferences').catch(() => null),
+          getPostCanvas(postId).catch(() => null),
+        ]);
+
         if (active && preferences) {
           setAutosaveConfig({
             enabled: preferences.autosaveEnabled,
@@ -151,9 +156,8 @@ function CanvasInner({ postId, initialPost, onBack }: CanvasProps) {
           });
         }
 
-        const data = await getPostCanvas(postId);
         if (active) {
-          setCanvasData(data && (data.nodes || data.edges) ? data : { nodes: [], edges: [] });
+          setCanvasData(canvasData && (canvasData.nodes || canvasData.edges) ? canvasData : { nodes: [], edges: [] });
         }
       } catch (err) {
         console.error('[Canvas] Failed to load editor state:', err);
