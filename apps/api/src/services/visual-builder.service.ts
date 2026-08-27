@@ -60,23 +60,74 @@ export class VisualBuilderService {
         select: { currentVersion: true },
       });
 
-      await tx.builderEdge.deleteMany({ where: { postId } });
-      await tx.builderNode.deleteMany({ where: { postId } });
+      // Diff-based node/edge sync: fetch existing, compute sets, then batch ops
+      const [existingNodes, existingEdges] = await Promise.all([
+        tx.builderNode.findMany({ where: { postId }, select: { id: true } }),
+        tx.builderEdge.findMany({ where: { postId }, select: { id: true } }),
+      ]);
 
-      if (normalized.nodes.length > 0) {
-        await tx.builderNode.createMany({
-          data: normalized.nodes.map((node) => nodeRow(postId, node)),
-        });
-      }
+      const existingNodeIds = new Set(existingNodes.map((n) => n.id));
+      const existingEdgeIds = new Set(existingEdges.map((e) => e.id));
 
-      const validNodeIds = new Set(normalized.nodes.map((node) => node.id));
+      const newNodeIds = new Set(normalized.nodes.map((n) => n.id));
+      const validNodeIds = new Set(normalized.nodes.map((n) => n.id));
       const validEdges = normalized.edges.filter((edge) => (
         validNodeIds.has(edge.source) && validNodeIds.has(edge.target)
       ));
+      const newEdgeIds = new Set(validEdges.map((e) => e.id));
 
-      if (validEdges.length > 0) {
-        await tx.builderEdge.createMany({
-          data: validEdges.map((edge) => edgeRow(postId, edge)),
+      // Nodes to delete (existed before, not in new data)
+      const nodeIdsToDelete = [...existingNodeIds].filter((id) => !newNodeIds.has(id));
+      if (nodeIdsToDelete.length > 0) {
+        await tx.builderNode.deleteMany({ where: { postId, id: { in: nodeIdsToDelete } } });
+      }
+
+      // Edges to delete (existed before, not in new data or targets invalid)
+      const edgeIdsToDelete = [...existingEdgeIds].filter((id) => !newEdgeIds.has(id));
+      if (edgeIdsToDelete.length > 0) {
+        await tx.builderEdge.deleteMany({ where: { postId, id: { in: edgeIdsToDelete } } });
+      }
+
+      // Nodes to insert (new nodes not in DB)
+      const nodesToInsert = normalized.nodes
+        .filter((n) => !existingNodeIds.has(n.id))
+        .map((n) => nodeRow(postId, n));
+      if (nodesToInsert.length > 0) {
+        await tx.builderNode.createMany({ data: nodesToInsert });
+      }
+
+      // Nodes to update (exist in both)
+      const nodesToUpdate = normalized.nodes.filter((n) => existingNodeIds.has(n.id));
+      for (const n of nodesToUpdate) {
+        await tx.builderNode.update({
+          where: { id: n.id },
+          data: {
+            type: n.type,
+            data: (n.data ?? {}) as any,
+            position: (n.position ?? { x: 0, y: 0 }) as any,
+          },
+        });
+      }
+
+      // Edges to insert (new edges not in DB)
+      const edgesToInsert = validEdges
+        .filter((e) => !existingEdgeIds.has(e.id))
+        .map((e) => edgeRow(postId, e));
+      if (edgesToInsert.length > 0) {
+        await tx.builderEdge.createMany({ data: edgesToInsert });
+      }
+
+      // Edges to update (exist in both, condition/data may have changed)
+      const edgesToUpdate = validEdges.filter((e) => existingEdgeIds.has(e.id));
+      for (const e of edgesToUpdate) {
+        await tx.builderEdge.update({
+          where: { id: e.id },
+          data: {
+            sourceId: e.source,
+            targetId: e.target,
+            condition: e.condition ? (e.condition as any) : undefined,
+            data: e.data ? (e.data as any) : undefined,
+          },
         });
       }
 
