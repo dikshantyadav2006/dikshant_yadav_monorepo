@@ -35,21 +35,7 @@ import * as LucideIcons from 'lucide-react';
 import clsx from 'clsx';
 import { cva } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
-import ContentRenderer, {
-  HeadingBlock,
-  TextBlock,
-  ImageBlock,
-  VideoBlock,
-  GalleryBlock,
-  QuoteBlock,
-  DividerBlock,
-  CodeBlock,
-  EmbedBlock,
-  QuestionBlock,
-  PollBlock,
-  ButtonBlock,
-  AIBlock,
-} from './ContentRenderer.jsx';
+import * as UIGateway from './ContentRenderer.jsx';
 
 /* ====================================================================== */
 /*  Sandbox import map                                                    */
@@ -60,26 +46,32 @@ import ContentRenderer, {
  * bare specifier to the *real* runtime object we inject into the sandbox.
  * Kept inline so the public apps (post-web / work-web) can resolve imports
  * for @dikshant/ui without relying on a separate build step.
+ *
+ * The `@dikshant/ui` entry uses a lazy getter: ContentRenderer.jsx imports
+ * CodeBlockInteractive and this module, forming a module cycle. Reading the
+ * block components eagerly at module-init would hit the temporal dead zone,
+ * so we defer the lookup until the sandbox actually executes user code (at
+ * which point the module graph is fully initialized).
  */
 const SANDBOXED_MODULES = {
   react: React,
   'react/jsx-runtime': React,
   'react/jsx-dev-runtime': React,
   '@dikshant/ui': {
-    ContentRenderer,
-    HeadingBlock,
-    TextBlock,
-    ImageBlock,
-    VideoBlock,
-    GalleryBlock,
-    QuoteBlock,
-    DividerBlock,
-    CodeBlock,
-    EmbedBlock,
-    QuestionBlock,
-    PollBlock,
-    ButtonBlock,
-    AIBlock,
+    get ContentRenderer() { return UIGateway.default; },
+    get HeadingBlock() { return UIGateway.HeadingBlock; },
+    get TextBlock() { return UIGateway.TextBlock; },
+    get ImageBlock() { return UIGateway.ImageBlock; },
+    get VideoBlock() { return UIGateway.VideoBlock; },
+    get GalleryBlock() { return UIGateway.GalleryBlock; },
+    get QuoteBlock() { return UIGateway.QuoteBlock; },
+    get DividerBlock() { return UIGateway.DividerBlock; },
+    get CodeBlock() { return UIGateway.CodeBlock; },
+    get EmbedBlock() { return UIGateway.EmbedBlock; },
+    get QuestionBlock() { return UIGateway.QuestionBlock; },
+    get PollBlock() { return UIGateway.PollBlock; },
+    get ButtonBlock() { return UIGateway.ButtonBlock; },
+    get AIBlock() { return UIGateway.AIBlock; },
   },
   'framer-motion': {
     motion,
