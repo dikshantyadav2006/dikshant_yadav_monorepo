@@ -3,14 +3,19 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { compileCode, loadModule } from './blockCodeCompiler.js';
 
-function looksLikeHtml(code) {
+// Detect whether the source is a *complete HTML document* (doctype / <html> /
+// <head> / <body>). Used ONLY for legacy blocks whose runtime is unknown.
+// Deliberately does NOT treat loose JSX tags (e.g. <div>) as HTML, so React
+// components that use <div>/<section> are never misrouted to the HTML renderer.
+function isFullHtmlDocument(code) {
   if (!code || !code.trim()) return false;
   var trimmed = code.trim();
-  if (/^\s*<!doctype/i.test(trimmed) || /<html[\s>]/i.test(trimmed)) return true;
-  if (/<head[\s>]/i.test(trimmed) || /<body[\s>]/i.test(trimmed)) return true;
-  if (/<div[\s>]/i.test(trimmed) && /<\/div>/i.test(trimmed)) return true;
-  if (/<section[\s>]/i.test(trimmed) && /<\/section>/i.test(trimmed)) return true;
-  return false;
+  return (
+    /^\s*<!doctype/i.test(trimmed) ||
+    /<html[\s>]/i.test(trimmed) ||
+    /<head[\s>]/i.test(trimmed) ||
+    /<body[\s>]/i.test(trimmed)
+  );
 }
 
 function extractFromFullDoc(code) {
@@ -65,9 +70,13 @@ function CodeBlockInteractive(_ref) {
   var widthMode = (data && data.widthMode) || 'contained';
 
   var isHtmlRuntime = runtime === 'html';
-  var isReactWithHtml = !isHtmlRuntime && runtime === 'react' && looksLikeHtml(code);
 
-  if (isHtmlRuntime || isReactWithHtml) {
+  // Auto-detect HTML ONLY for legacy/unknown runtimes. If the author explicitly
+  // chose 'react', we ALWAYS compile as React — even when the JSX contains
+  // <div>/<section> tags (which are not proof of raw HTML).
+  var isLegacyAutoHtml = !isHtmlRuntime && runtime !== 'react' && isFullHtmlDocument(code);
+
+  if (isHtmlRuntime || isLegacyAutoHtml) {
     var effectiveHtml = html;
     var effectiveCss = css;
     var effectiveJs = js;

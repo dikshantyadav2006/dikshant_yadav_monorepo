@@ -11,16 +11,18 @@ interface CaseStudyHeroProps {
 export default function CaseStudyHero({ image, title, subtitle }: CaseStudyHeroProps) {
   return (
     <section className="w-full">
-      <div className="w-full max-w-[90vw] max-w-[1400px] mx-auto overflow-hidden">
-        <motion.img
-          src={image}
-          alt={title}
-          className="w-full h-auto object-cover"
-          initial={{ scale: 1.05, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        />
-      </div>
+      {image && (
+        <div className="w-full max-w-[90vw] max-w-[1400px] mx-auto overflow-hidden">
+          <motion.img
+            src={image}
+            alt={title}
+            className="w-full h-auto object-cover"
+            initial={{ scale: 1.05, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </div>
+      )}
 
       <div className="text-center pt-[40px] md:pt-[60px] pb-[20px]">
         <motion.div
