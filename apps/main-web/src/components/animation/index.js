@@ -13,3 +13,4 @@ export { default as ScrambledText } from './texts/scrambledText/ScrambledText';
 export { default as TextReveal } from './texts/textReveal/TextReveal';
 export { default as Noise } from './backgrounds/noise/Noise';
 export { default as ArtifactSpawner } from './hero-artifacts/ArtifactSpawner';
+export * from './transition';

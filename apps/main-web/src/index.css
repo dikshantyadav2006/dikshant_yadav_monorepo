@@ -175,3 +175,23 @@ body {
     display: none !important;
   }
 }
+
+/* Page transition mask (curtain overlay) */
+.no-scroll {
+  overflow: hidden !important;
+}
+
+.no-scroll body,
+.no-scroll html {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
+.transition-overlay-col {
+  background: var(--dark-color);
+}
+
+.dark .transition-overlay-col {
+  background: var(--light-color);
+}
+
