@@ -3,17 +3,24 @@ import LocomotiveScroll from 'locomotive-scroll';
 
 /**
  * useLocomotiveScroll Hook
- * Manages Locomotive Scroll initialization and cleanup
+ * Manages Locomotive Scroll initialization and cleanup.
+ *
+ * Because the mask-based page transition swaps the route behind a full-screen
+ * overlay (no animation overlap), the new page's [data-scroll-container] is
+ * present in the DOM as soon as the pathname changes, so a direct query is safe.
  *
  * @param {Array} deps - Dependencies that trigger re-initialization (e.g. route pathname).
- *                       When the active page changes the old container is destroyed and a
- *                       fresh LocomotiveScroll instance is bound to the new [data-scroll-container].
  * @returns {object} { scrollRef } - Reference to Locomotive Scroll instance
  */
 const useLocomotiveScroll = (deps = []) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.destroy();
+      scrollRef.current = null;
+    }
+
     const el = document.querySelector("[data-scroll-container]");
     if (!el) return; // Route has no scroll container (e.g. 404 page)
 
@@ -49,6 +56,9 @@ const useLocomotiveScroll = (deps = []) => {
         inertia: 0.8,
       },
     });
+
+    // Always land each new page at the top
+    scrollRef.current.scrollTo(0, { duration: 0 });
 
     return () => {
       if (scrollRef.current) {
