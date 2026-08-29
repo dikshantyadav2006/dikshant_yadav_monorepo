@@ -40,17 +40,14 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
     }, [addCursor, removeCursor, cursorModes]);
     return (
         <div ref={ref}>
-            <div
+            {/* <div
                 className="relative"
                 style={{ width: "100vw", mixBlendMode: "difference" }}
             >
                 <div className="absolute  -bottom-[420%] md:-bottom-[355%] scale-[.4] left-[55%] md:left-[20%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90">
                     <ClockAnimation />
                 </div>
-
-                {/* This will be full screen width */}
-                <ElasticString color="black" height={300} />
-            </div>
+            </div> */}
 
             {/* CTA Section - Editorial Contact Form */}
             <motion.div
@@ -76,6 +73,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                 viewport={{ once: true, margin: "0px 0px -50px 0px" }}
                 className="  font-['font-p-3']      pb-16 md:pb-20 lg:pb-24 "
             >
+                   <ElasticString color="black" height={300} />
                 <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12">
                     {/* Brand + Content Grid */}
                     <div className="space-y-12 lg:space-y-0">
