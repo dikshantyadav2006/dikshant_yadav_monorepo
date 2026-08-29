@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { TransitionLink } from '@animation';
 import { TextSwap } from '@dikshant/ui';
 
 /**
@@ -43,12 +43,12 @@ const FooterNav = ({ links }) => {
             className="flex flex-col gap-4 md:gap-6"
         >
             {links.map((link) => {
-                const MotionEl = link.external ? motion.a : motion(Link);
+                const MotionEl = link.external ? motion.a : TransitionLink;
                 return (
                 <MotionEl
                     key={link.href}
                     variants={itemVariants}
-                    href={link.external ? link.href : undefined}
+                    href={link.href}
                     to={link.external ? undefined : link.href}
                     target={link.external ? '_blank' : link.target}
                     rel={link.external ? 'noopener noreferrer' : link.rel}

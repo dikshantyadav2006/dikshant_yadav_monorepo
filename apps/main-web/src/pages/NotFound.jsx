@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
+import { TransitionLink } from '@animation';
 import { NotFoundPage } from '@dikshant/ui';
 
 function NotFound({ addCursor, removeCursor, cursorModes }) {
   return (
     <NotFoundPage
-      LinkComponent={Link}
-      linkProp="to"
+      LinkComponent={TransitionLink}
+      linkProp="href"
       homeHref="/"
       connectHref="/connect"
       cursorEvents={{ addCursor, removeCursor, cursorModes }}

@@ -4,7 +4,7 @@ import { Nav, TopScroller } from '@components/navbar';
 import useNavbarAnimations from "./components/navbar/NavbarAnimations";
 import { SectionBackgroundProvider } from '@layout';
 import { useLocomotiveScroll, useScrollLock, useDarkMode, useCustomCursorHook } from '@hooks';
-import { LandingAnimation } from '@animation';
+import { LandingAnimation, TransitionShell } from '@animation';
 import Home from "./pages/Home";
 import Connect from "./pages/Connect";
 import NotFound from "./pages/NotFound";
@@ -41,7 +41,7 @@ function App() {
   const cursorProps = { addCursor, removeCursor, cursorModes }
 
   return (
-    <>
+    <TransitionShell>
       {/* CRITICAL: CursorRenderer at TOP LEVEL, OUTSIDE all state and blend-mode divs */}
       {/* Renders once, persists for entire app lifetime, never re-mounts */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[99999] ">
@@ -95,7 +95,7 @@ function App() {
           </Routes>
         </SectionBackgroundProvider>
       </div>
-    </>
+    </TransitionShell>
   );
 }
 
