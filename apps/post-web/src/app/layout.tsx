@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE_NAME} | Abhay Singh Yadav`,
+    default: `${SITE_NAME} | Dikshant Yadav`,
     template: `%s | ${SITE_NAME}`,
   },
   description: 'Reflections from the intersection of law, leadership, and social consciousness.',

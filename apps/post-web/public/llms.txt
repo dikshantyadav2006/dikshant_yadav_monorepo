@@ -1,17 +1,16 @@
-# Intelligence Archive — Blog by Abhay Singh Yadav
+# Intelligence Archive — Blog by Dikshant Yadav
 
 Reflections from the intersection of law, leadership, and social consciousness.
 
 ## About
 
-Intelligence Archive is a blog platform featuring articles on law, leadership, social consciousness, and academic life. Written by Abhay Singh Yadav, an LLB (Hons.) student at Lucknow University.
+Intelligence Archive is a blog platform featuring articles on law, leadership, social consciousness, and academic life. Written by Dikshant Yadav.
 
 ## Author
 
-- Name: Abhay Singh Yadav
-- University: Lucknow University
-- Degree: LLB (Hons.)
-- Focus: Law, Leadership, Social Work
+- Name: Dikshant Yadav
+- Role: Frontend Developer
+- Focus: React, Next.js, Cybersecurity
 
 ## Main Portfolio
 

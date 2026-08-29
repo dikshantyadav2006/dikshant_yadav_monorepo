@@ -97,7 +97,7 @@ export default async function PostPage({ params }: PageProps) {
     description: post.seoDescription || post.excerpt || undefined,
     author: {
       '@type': 'Person',
-      name: post.author?.name || 'Abhay Singh Yadav',
+      name: post.author?.name || 'Dikshant Yadav',
       url: SITE_URL,
     },
     publisher: {

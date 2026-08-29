@@ -31,13 +31,10 @@ export default async function HomePage() {
       <section className="text-center space-y-3 pb-4 border-b-2 border-foreground">
         <DossierLabel>Vol. {new Date().getFullYear()} — Public Edition</DossierLabel>
         <h1 className="editorial-headline text-5xl sm:text-6xl md:text-7xl">
-          Abhay Singh Yadav 
+          Dikshant Yadav 
         </h1>
         <p className="font-serif text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Degree: LLB (Hons.)
-- University: Lucknow University
-- Roles: Social Worker, Legal Learner
-- Focus: Academic credibility, leadership, professionalism
+          Frontend Developer • Cybersecurity Enthusiast • Software Engineer
         </p>
       </section>
 
