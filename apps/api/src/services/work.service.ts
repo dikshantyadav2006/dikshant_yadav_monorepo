@@ -57,6 +57,53 @@ export function toContentBlocks(canvasData: any): Array<Record<string, any>> {
   return blocks.map((block: any) => ({ type: block.type, ...(block.data ?? {}) }));
 }
 
+// Lightweight media preview (poster + images) derived from a work's metadata and
+// content canvas. Used by the home page cards for the hover media inner card.
+export function extractWorkPreview(work: any, blocks: Array<Record<string, any>>) {
+  const images: string[] = [];
+  const pushImage = (src: unknown) => {
+    if (typeof src === 'string' && src.trim()) images.push(src.trim());
+  };
+  const pushImages = (list: unknown) => (Array.isArray(list) ? list.forEach(pushImage) : undefined);
+
+  pushImage(work.imageUrl);
+  pushImage(work.heroImageUrl);
+
+  let video: string | null = null;
+
+  for (const block of blocks) {
+    switch (block.type) {
+      case 'large-image':
+      case 'banner':
+        pushImage(block.src);
+        break;
+      case 'grid-2':
+      case 'posters':
+        pushImages(block.images);
+        break;
+      case 'mobile-showcase':
+        pushImages(block.mobile);
+        pushImages(block.desktop);
+        break;
+      case 'desktop-showcase':
+        pushImages(block.desktop);
+        pushImages(block.mobile);
+        break;
+      case 'video':
+        pushImage(block.poster);
+        if (!video && typeof block.src === 'string' && block.src.trim()) video = block.src.trim();
+        break;
+      default:
+        break;
+    }
+  }
+
+  return {
+    previewImages: Array.from(new Set(images)).slice(0, 12),
+    previewVideo: video,
+  };
+}
+
 export class WorkService {
   // Generate a unique slug in the database
   static async generateUniqueSlug(title: string, currentWorkId?: string): Promise<string> {
@@ -311,6 +358,7 @@ export class WorkService {
           publishedAt: true,
           createdAt: true,
           updatedAt: true,
+          canvasData: true,
           author: {
             select: { id: true, name: true, avatarUrl: true },
           },
@@ -322,8 +370,13 @@ export class WorkService {
       prisma.work.count({ where }),
     ]);
 
+    const worksWithPreview = works.map(({ canvasData, ...work }) => {
+      const preview = extractWorkPreview(work, toContentBlocks(canvasData));
+      return { ...work, ...preview };
+    });
+
     return {
-      works,
+      works: worksWithPreview,
       pagination: {
         total,
         page,
