@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import AnimatedWrapper from '@/components/ui/AnimatedWrapper';
 
-export default function WorksCTA() {
+export default function WorksCTA({ connectUrl }: { connectUrl: string }) {
   return (
     <section className="pt-[180px] pb-[40px]">
       <AnimatedWrapper className="flex justify-center">
@@ -13,7 +13,7 @@ export default function WorksCTA() {
           className="group"
         >
           <a
-            href="mailto:hello@dikshantyadav.com"
+            href={connectUrl}
             className="font-display text-[24px] md:text-[32px] font-bold uppercase tracking-[0.05em] inline-flex items-center gap-3"
           >
             START A PROJECT

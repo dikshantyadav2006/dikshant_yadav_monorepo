@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import AnimatedWrapper from '@/components/ui/AnimatedWrapper';
 import MagnetLines from '@/components/ui/MagnetLines';
 
-export default function ReachOut() {
+export default function ReachOut({ connectUrl }: { connectUrl: string }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function ReachOut() {
             Let&apos;s work together!
           </p>
           <motion.a
-            href="mailto:hello@dikshantyadav.in"
+            href={connectUrl}
             initial="rest"
             whileHover="hover"
             animate="rest"

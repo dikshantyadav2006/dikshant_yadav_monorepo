@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getWorks, getWork } from '@/lib/api';
+import { getWorks, getWork, getSiteConfig, DEFAULT_CONNECT_URL } from '@/lib/api';
 import CaseStudyPage from '@/components/project/CaseStudyPage';
 import BackToWorks from '@/components/project/BackToWorks';
 import { AccentProvider } from '@/components/project/AccentContext';
@@ -68,11 +68,13 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = await getWork(slug);
+  const [project, siteConfig] = await Promise.all([getWork(slug), getSiteConfig()]);
 
   if (!project) {
     notFound();
   }
+
+  const connectUrl = siteConfig?.connectUrl || DEFAULT_CONNECT_URL;
 
   const canonical = `${SITE_URL}/project/${slug}`;
 
@@ -111,7 +113,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </AccentProvider>
       </div>
 
-      <ReachOut />
+      <ReachOut connectUrl={connectUrl} />
     </main>
   );
 }

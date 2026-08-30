@@ -9,7 +9,10 @@ export interface SiteIntro {
 
 export interface SiteConfigData {
   worksIntro?: SiteIntro | null;
+  connectUrl?: string | null;
 }
+
+export const DEFAULT_CONNECT_URL = 'https://www.dikshantyadav.in/connect';
 
 export interface AdjacentWork {
   slug: string;
