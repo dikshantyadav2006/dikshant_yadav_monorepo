@@ -7,6 +7,34 @@ import EditorialContactForm from "./EditorialContactForm";
 import { footerContent } from "@/constants/footerLinks";
 import { ElasticString, ClockAnimation } from "@animation";
 
+const CONTACT_API_URL = `${import.meta.env.VITE_API_URL || "https://api.dikshantyadav.in"}/contact-submissions`;
+
+async function submitContactForm(data) {
+    const response = await fetch(CONTACT_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            message: data.message,
+            budget: data.budget,
+            source: "connect",
+        }),
+    });
+
+    if (!response.ok) {
+        let message = "Something went wrong";
+        try {
+            const body = await response.json();
+            message = body.message || message;
+        } catch (e) {
+            // ignore parse failure, fall back to generic message
+        }
+        throw new Error(message);
+    }
+}
+
 /**
  * Footer Component
  * Main footer orchestrating all sub-components with Swiss design principles
@@ -60,9 +88,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes }) => {
                 <EditorialContactForm
                     title="Let's work together!"
                     budgets={["5K–10K", "10K–20K", "20K–50K", "Custom"]}
-                    onSubmit={(data) => {
-                        console.log("Form submitted:", data);
-                    }}
+                    onSubmit={(data) => submitContactForm(data)}
                 />
             </motion.div>
 
