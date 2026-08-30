@@ -314,6 +314,7 @@ function WorkCanvasInner({ workId, initialWork, onBack }: WorkCanvasProps) {
                 snapToGrid
                 snapGrid={[16, 16]}
                 deleteKeyCode="Delete"
+                panActivationKeyCode={null}
               >
                 <Background gap={16} size={1} />
                 <Controls />
