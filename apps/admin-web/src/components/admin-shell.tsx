@@ -11,6 +11,7 @@ import {
   Settings,
   Briefcase,
   PenSquare,
+  MessagesSquare,
 } from 'lucide-react';
 import ThemeSelector from '../app/theme-selector';
 import { useAuth } from '../context/auth-provider';
@@ -18,6 +19,7 @@ import { useAuth } from '../context/auth-provider';
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/works', label: 'Works', icon: Briefcase },
+  { href: '/submissions', label: 'Submissions', icon: MessagesSquare },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -25,6 +27,7 @@ const mobileNavItems = [
   { href: '/', label: 'Posts', icon: LayoutDashboard },
   { href: '/works', label: 'Works', icon: Briefcase },
   { href: '/posts/new', label: 'New', icon: PenSquare },
+  { href: '/submissions', label: 'Inbox', icon: MessagesSquare },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -116,7 +119,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         className="fixed inset-x-0 bottom-0 z-50 border-t border-border/40 bg-background/90 backdrop-blur-md sm:hidden"
         aria-label="Mobile"
       >
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {mobileNavItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
             return (

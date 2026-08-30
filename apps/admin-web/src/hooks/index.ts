@@ -11,3 +11,6 @@ export { usePreferences } from './use-preferences';
 export type { UserPreferences } from './use-preferences';
 
 export { useCanvas, useSaveCanvas } from './use-canvas';
+
+export { useContactSubmissionsList, useDeleteContactSubmission } from './use-contact-submissions';
+export type { ContactSubmission } from './use-contact-submissions';

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useWorksList, usePostsList } from '../../hooks';
+import { useWorksList, usePostsList, useContactSubmissionsList } from '../../hooks';
 import { Skeleton } from './Skeleton';
 
 function CountChip({
@@ -29,4 +29,9 @@ export function WorksCountChip() {
 export function PostsCountChip() {
   const { data, isLoading } = usePostsList(1, 50);
   return <CountChip value={data?.pagination.total} loading={isLoading} label="posts" />;
+}
+
+export function SubmissionsCountChip() {
+  const { data, isLoading } = useContactSubmissionsList(1, 50);
+  return <CountChip value={data?.pagination.total} loading={isLoading} label="submissions" />;
 }
