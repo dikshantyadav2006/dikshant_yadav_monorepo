@@ -62,7 +62,6 @@ export default function NewWorkPage() {
       initialWork={null}
       onBack={() => {
         router.push('/works');
-        router.refresh();
       }}
     />
   );
