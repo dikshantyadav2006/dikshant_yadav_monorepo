@@ -68,26 +68,31 @@ export function PostsTable() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleDeleteRequest = useCallback((id: string) => {
+    if (deletingId) return;
     setConfirmDeleteId(id);
-  }, []);
+  }, [deletingId]);
 
-  const handleDeleteConfirm = useCallback((id: string, title: string) => {
-    setConfirmDeleteId(null);
-    setDeletingId(id);
-    deletePost.mutate(id, {
-      onSuccess: () => {
-        toast.success(`"${title}" deleted`);
-      },
-      onError: (err) => {
-        toast.error(err instanceof Error ? err.message : 'Failed to delete post');
-      },
-      onSettled: () => setDeletingId(null),
-    });
-  }, [deletePost]);
+  const handleDeleteConfirm = useCallback(
+    (id: string, title: string) => {
+      setConfirmDeleteId(null);
+      setDeletingId(id);
+      deletePost.mutate(id, {
+        onSuccess: () => {
+          toast.success(`"${title}" deleted`);
+        },
+        onError: (err) => {
+          toast.error(err instanceof Error ? err.message : 'Failed to delete post');
+        },
+        onSettled: () => setDeletingId(null),
+      });
+    },
+    [deletePost],
+  );
 
   const handleDeleteCancel = useCallback(() => {
+    if (deletingId) return;
     setConfirmDeleteId(null);
-  }, []);
+  }, [deletingId]);
 
   if (isLoading) {
     return <PostsTableSkeleton />;
@@ -145,8 +150,12 @@ export function PostsTable() {
               return (
                 <tr
                   key={post.id}
-                  className={`transition-colors ${
-                    isConfirming ? 'bg-destructive/5' : 'hover:bg-muted/20'
+                  className={`${
+                    isDeleting
+                      ? 'pointer-events-none cursor-progress select-none opacity-0 -translate-x-3 transition-all duration-300'
+                      : `transition-colors ${
+                          isConfirming ? 'bg-destructive/5' : 'hover:bg-muted/20'
+                        }`
                   }`}
                 >
                   <td className="px-4 py-4">
@@ -173,7 +182,12 @@ export function PostsTable() {
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center justify-end gap-1">
-                      {isConfirming ? (
+                      {isDeleting ? (
+                        <span className="inline-flex items-center gap-1.5 pr-1 text-xs font-medium text-destructive">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Deleting…
+                        </span>
+                      ) : isConfirming ? (
                         <>
                           <span className="text-xs text-destructive font-medium mr-1">Delete?</span>
                           <button

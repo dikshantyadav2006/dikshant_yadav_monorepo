@@ -38,8 +38,23 @@ export function useDeletePost() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => apiFetch(`/posts/${id}`, { method: 'DELETE' }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['posts'] });
+    // Optimistically remove just this post from every cached list page —
+    // no full refetch, no list reload, no UI flash.
+    onSuccess: (_data, id) => {
+      qc.setQueriesData<PostsResponse>({ queryKey: ['posts'] }, (old) =>
+        old ? removePostFromPage(old, id) : old,
+      );
     },
   });
+}
+
+function removePostFromPage(data: PostsResponse, id: string): PostsResponse {
+  return {
+    ...data,
+    posts: data.posts.filter((post) => post.id !== id),
+    pagination: {
+      ...data.pagination,
+      total: Math.max(0, data.pagination.total - 1),
+    },
+  };
 }
