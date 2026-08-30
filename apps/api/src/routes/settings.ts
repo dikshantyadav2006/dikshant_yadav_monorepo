@@ -12,6 +12,12 @@ const DEFAULT_HOMEPAGE_CONFIG = {
   showTrendingTopics: true,
 } as const;
 
+const DEFAULT_CONNECT_URL = 'https://www.dikshantyadav.in/connect';
+
+function normalizeConnectUrl(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : DEFAULT_CONNECT_URL;
+}
+
 const DEFAULT_WORKS_INTRO = {
   script: 'All',
   title: 'WORKS',
@@ -64,6 +70,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
       worksIntro: normalizeWorksIntro(config.worksIntro),
       socialLinks: config.socialLinks ?? [],
+      connectUrl: normalizeConnectUrl(config.connectUrl),
     };
 
     setCache('site-config', result, 30_000);
@@ -101,6 +108,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
       ...config,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
       worksIntro: normalizeWorksIntro(config.worksIntro),
+      connectUrl: normalizeConnectUrl(config.connectUrl),
     };
   });
 
@@ -164,6 +172,13 @@ export async function settingsRoutes(fastify: FastifyInstance) {
       };
     }
 
+    if (body.connectUrl !== undefined) {
+      if (typeof body.connectUrl !== 'string') {
+        return reply.status(400).send({ error: 'Bad Request', message: 'connectUrl must be a string' });
+      }
+      data.connectUrl = normalizeConnectUrl(body.connectUrl);
+    }
+
     const config = await prisma.siteConfig.upsert({
       where: { id: 'default' },
       create: { id: 'default', homepageConfig: DEFAULT_HOMEPAGE_CONFIG, ...data },
@@ -177,6 +192,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
       ...config,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
       worksIntro: normalizeWorksIntro(config.worksIntro),
+      connectUrl: normalizeConnectUrl(config.connectUrl),
     };
   });
 
