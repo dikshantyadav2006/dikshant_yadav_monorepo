@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getWorks, getWork } from '@/lib/api';
 import CaseStudyPage from '@/components/project/CaseStudyPage';
+import BackToWorks from '@/components/project/BackToWorks';
 import { AccentProvider } from '@/components/project/AccentContext';
 import ColorTracker from '@/components/ui/ColorTracker';
 import ReachOut from '@/components/works/ReachOut';
@@ -103,15 +103,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       />
 
       <div className="max-w-[1800px] mx-auto px-1">
-        {/* Back link */}
-        <div className="pt-6">
-          <Link
-            href="/"
-            className="font-sans text-[11px] uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity duration-300"
-          >
-            ← Back to Works
-          </Link>
-        </div>
+        <BackToWorks />
 
         <AccentProvider swatchColor={project.swatchColor} heroImageUrl={project.heroImageUrl}>
           <CaseStudyPage project={project} />
