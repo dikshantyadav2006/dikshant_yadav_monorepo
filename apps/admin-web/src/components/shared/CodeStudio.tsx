@@ -422,7 +422,7 @@ ${jsCode ? `<script>\n${jsCode}\n</script>` : ''}
   );
 
   const getEditorLanguage = () => {
-    if (runtime === 'react') return 'typescript';
+    if (runtime === 'react') return 'typescriptreact';
     switch (activeEditorTab) {
       case 'html': return 'html';
       case 'css': return 'css';
