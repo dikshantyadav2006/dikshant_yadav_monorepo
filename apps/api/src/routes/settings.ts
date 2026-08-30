@@ -12,6 +12,19 @@ const DEFAULT_HOMEPAGE_CONFIG = {
   showTrendingTopics: true,
 } as const;
 
+const DEFAULT_WORKS_INTRO = {
+  script: 'All',
+  title: 'WORKS',
+} as const;
+
+function normalizeWorksIntro(value: unknown) {
+  const base = value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+  return {
+    script: typeof base.script === 'string' && base.script.trim() ? base.script : DEFAULT_WORKS_INTRO.script,
+    title: typeof base.title === 'string' && base.title.trim() ? base.title : DEFAULT_WORKS_INTRO.title,
+  };
+}
+
 function clampInt(value: unknown, min: number, max: number) {
   const num = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(num)) return null;
@@ -49,6 +62,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
     const result = {
       homepageFeaturedCount: config.homepageFeaturedCount,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
+      worksIntro: normalizeWorksIntro(config.worksIntro),
       socialLinks: config.socialLinks ?? [],
     };
 
@@ -86,6 +100,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
     return {
       ...config,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
+      worksIntro: normalizeWorksIntro(config.worksIntro),
     };
   });
 
@@ -136,6 +151,19 @@ export async function settingsRoutes(fastify: FastifyInstance) {
       data.socialLinks = body.socialLinks;
     }
 
+    if (body.worksIntro !== undefined) {
+      if (body.worksIntro === null || typeof body.worksIntro !== 'object' || Array.isArray(body.worksIntro)) {
+        return reply.status(400).send({ error: 'Bad Request', message: 'worksIntro must be an object' });
+      }
+      const prev = await prisma.siteConfig.findUnique({ where: { id: 'default' } });
+      const current = normalizeWorksIntro(prev?.worksIntro);
+      const patch = body.worksIntro as Record<string, unknown>;
+      data.worksIntro = {
+        script: typeof patch.script === 'string' ? patch.script.slice(0, 80) : current.script,
+        title: typeof patch.title === 'string' ? patch.title.slice(0, 80) : current.title,
+      };
+    }
+
     const config = await prisma.siteConfig.upsert({
       where: { id: 'default' },
       create: { id: 'default', homepageConfig: DEFAULT_HOMEPAGE_CONFIG, ...data },
@@ -148,6 +176,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
     return {
       ...config,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
+      worksIntro: normalizeWorksIntro(config.worksIntro),
     };
   });
 
