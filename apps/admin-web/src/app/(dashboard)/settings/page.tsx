@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
 import apiFetch from '../../../lib/api';
-import type { SiteConfig, SocialLink } from '@dikshant/types';
+import type { SiteConfig, SocialLink, WorksIntroConfig } from '@dikshant/types';
 import { Skeleton } from '../../../components/shared/Skeleton';
 
 const AUTOSAVE_INTERVAL_OPTIONS = [
@@ -88,8 +88,10 @@ export default function SettingsPage() {
     homepageFeaturedCount: number;
     autosaveEnabled: boolean;
     autosaveIntervalMs: number;
+    worksIntro: WorksIntroConfig;
   } | null>(null);
   const [socialRows, setSocialRows] = useState<SocialRow[]>([]);
+  const [worksIntro, setWorksIntro] = useState<WorksIntroConfig>({ script: 'All', title: 'WORKS' });
 
   const { data: settingsData, isLoading } = useQuery<SiteConfig>({
     queryKey: ['settings'],
@@ -104,9 +106,11 @@ export default function SettingsPage() {
         homepageFeaturedCount: settingsData.homepageFeaturedCount,
         autosaveEnabled: settingsData.autosaveEnabled,
         autosaveIntervalMs: settingsData.autosaveIntervalMs,
+        worksIntro: settingsData.worksIntro || { script: 'All', title: 'WORKS' },
       });
       setFeaturedCountStr(String(settingsData.homepageFeaturedCount));
       setSocialRows((settingsData.socialLinks ?? []).map(toSocialRow));
+      setWorksIntro(settingsData.worksIntro || { script: 'All', title: 'WORKS' });
     }
   }, [settingsData]);
 
@@ -252,6 +256,12 @@ export default function SettingsPage() {
     scheduleSave('autosaveIntervalMs', { autosaveIntervalMs: value }, 0);
   };
 
+  const handleWorksIntroChange = (field: keyof WorksIntroConfig, value: string) => {
+    const next = { ...worksIntro, [field]: value };
+    setWorksIntro(next);
+    scheduleSave('worksIntro', { worksIntro: next });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-10">
@@ -356,6 +366,45 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
+        <div>
+          <h2 className="text-lg font-bold">Works Page Intro</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Controls the intro heading on the work site hero (the script word + giant heading).
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor="works-intro-script" className="text-sm font-medium">
+              Script word
+            </label>
+            <input
+              id="works-intro-script"
+              type="text"
+              value={worksIntro.script ?? ''}
+              onChange={(e) => handleWorksIntroChange('script', e.target.value)}
+              placeholder="e.g. All"
+              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="works-intro-title" className="text-sm font-medium">
+              Heading
+            </label>
+            <input
+              id="works-intro-title"
+              type="text"
+              value={worksIntro.title ?? ''}
+              onChange={(e) => handleWorksIntroChange('title', e.target.value)}
+              placeholder="e.g. WORKS"
+              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30"
+            />
+          </div>
+        </div>
+        <SaveStatus state={status['worksIntro'] ?? 'idle'} idle="Auto-saves when you stop typing" />
       </section>
 
       <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
