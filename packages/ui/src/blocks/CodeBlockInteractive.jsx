@@ -59,6 +59,116 @@ function extractFromFullDoc(code) {
   return { html: html, css: css, js: js };
 }
 
+var RUNTIME_TW_SRC = 'https://cdn.tailwindcss.com';
+var runtimeTWInjected = false;
+
+/**
+ * React-runtime blocks are mounted into the parent page's DOM, so their
+ * Tailwind utilities must exist in the site's compiled CSS. Because the
+ * authored TSX lives in the database, its classes are never scanned at build
+ * time and get purged from post-web / work-web bundles (the admin preview only
+ * works because its own bundle happens to contain them).
+ *
+ * To get the same "always correct" behavior as the HTML-runtime iframes (which
+ * load the Play CDN), we lazily inject the Play CDN into the parent page with
+ * `preflight: false` and map its theme to the site's CSS variables. The CDN's
+ * MutationObserver then generates whatever utilities the mounted component
+ * uses — for any class, now and in the future.
+ */
+function mapRuntimeVar(name, computed, fallbackName) {
+  var value = computed.getPropertyValue(name).trim();
+  var resolvedName = name;
+  if (!value) {
+    if (!fallbackName) return null;
+    value = computed.getPropertyValue(fallbackName).trim();
+    resolvedName = fallbackName;
+  }
+  if (!value) return null;
+  // Channel triples like "38 35% 92%" need an hsl() wrapper; hex/keywords use
+  // the variable directly (works for both post-web HSL tokens and hex themes).
+  return /^[\d.\s%]+$/.test(value)
+    ? 'hsl(var(' + resolvedName + '))'
+    : 'var(' + resolvedName + ')';
+}
+
+function buildRuntimeTailwindConfig() {
+  if (typeof document === 'undefined') return null;
+  var computed = getComputedStyle(document.documentElement);
+  var m = function (name, fb) { return mapRuntimeVar(name, computed, fb || null); };
+
+  var cardDefault = m('--card', '--background') || m('--background');
+  var cardForeground = m('--card-foreground', '--foreground') || m('--foreground');
+  var popoverDefault = m('--popover', '--card') || cardDefault;
+  var popoverForeground = m('--popover-foreground', '--card-foreground') || cardForeground;
+  var primaryDefault = m('--primary', '--foreground') || m('--foreground');
+  var primaryForeground = m('--primary-foreground', '--background') || m('--background');
+  var secondaryDefault = m('--secondary', '--muted') || m('--muted') || cardDefault;
+  var secondaryForeground = m('--secondary-foreground', '--foreground') || m('--foreground');
+  var mutedDefault = m('--muted', '--secondary') || secondaryDefault;
+  var mutedForeground = m('--muted-foreground', '--secondary') || secondaryForeground;
+  var accentDefault = m('--accent', '--primary') || primaryDefault;
+  var accentForeground = m('--accent-foreground', '--primary-foreground') || primaryForeground;
+  var destructiveDefault = m('--destructive') || m('--foreground');
+  var destructiveForeground = m('--destructive-foreground', '--background') || m('--background');
+
+  return {
+    corePlugins: { preflight: false },
+    theme: {
+      extend: {
+        colors: {
+          background: m('--background', '--bg') || '#ffffff',
+          foreground: m('--foreground', '--text') || '#111111',
+          border: m('--border') || 'var(--foreground)',
+          input: m('--input', '--border') || m('--border'),
+          ring: m('--ring', '--foreground') || m('--foreground'),
+          card: { DEFAULT: cardDefault, foreground: cardForeground },
+          popover: { DEFAULT: popoverDefault, foreground: popoverForeground },
+          primary: { DEFAULT: primaryDefault, foreground: primaryForeground },
+          secondary: { DEFAULT: secondaryDefault, foreground: secondaryForeground },
+          muted: { DEFAULT: mutedDefault, foreground: mutedForeground },
+          accent: { DEFAULT: accentDefault, foreground: accentForeground },
+          destructive: { DEFAULT: destructiveDefault, foreground: destructiveForeground },
+        },
+      },
+    },
+  };
+}
+
+function ensureRuntimeTailwind() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__blockRuntimeTailwind) return;
+  var config = buildRuntimeTailwindConfig();
+  if (!config) return;
+
+  var applyConfig = function () {
+    if (!window.tailwind) return;
+    window.tailwind.config = config;
+    // The browser build regenerates styles on DOM mutations. Nudge it so it
+    // re-scans with the new config even if candidates were already cached.
+    if (document.body) {
+      document.body.classList.add('_tw-cb-refresh');
+      window.requestAnimationFrame(function () {
+        document.body.classList.remove('_tw-cb-refresh');
+      });
+    }
+  };
+
+  if (runtimeTWInjected) {
+    applyConfig();
+    return;
+  }
+  runtimeTWInjected = true;
+
+  var script = document.createElement('script');
+  script.src = RUNTIME_TW_SRC;
+  script.async = true;
+  script.onload = function () {
+    window.__blockRuntimeTailwind = true;
+    applyConfig();
+  };
+  document.head.appendChild(script);
+}
+
 function CodeBlockInteractive(_ref) {
   var data = _ref.data;
   var runtime = (data && data.runtime) || 'react';
@@ -125,6 +235,7 @@ function ReactCodeBlock(_ref2) {
   var setLoading = _useState3[1];
 
   useEffect(function () {
+    ensureRuntimeTailwind();
     var cancelled = false;
 
     async function run() {

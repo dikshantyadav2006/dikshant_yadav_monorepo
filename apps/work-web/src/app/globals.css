@@ -48,6 +48,27 @@
   --bg: #F2F1ED;
   --text: #111111;
   --border: #E2E0DA;
+
+  /* shadcn-style tokens — used by authored React code blocks */
+  --background: 45 20% 94%;
+  --foreground: 0 0% 7%;
+  --card: 45 20% 96%;
+  --card-foreground: 0 0% 7%;
+  --popover: 45 20% 96%;
+  --popover-foreground: 0 0% 7%;
+  --primary: 0 0% 7%;
+  --primary-foreground: 45 20% 94%;
+  --secondary: 45 12% 90%;
+  --secondary-foreground: 0 0% 7%;
+  --muted: 45 12% 90%;
+  --muted-foreground: 45 6% 45%;
+  --accent: 0 0% 7%;
+  --accent-foreground: 45 20% 94%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 45 20% 94%;
+  --input: 45 12% 88%;
+  --ring: 0 0% 7%;
+  --radius: 0.75rem;
 }
 
 * {
