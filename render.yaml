@@ -16,3 +16,5 @@ services:
         sync: false
       - key: COOKIE_DOMAIN
         value: .dikshantyadav.in
+      - key: CORS_ORIGINS
+        value: https://dikshantyadav.in,https://www.dikshantyadav.in,https://theabhay.in,http://localhost:3000,http://localhost:3002
