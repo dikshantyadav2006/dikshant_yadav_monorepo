@@ -4,7 +4,11 @@ import { motion } from 'framer-motion';
 import DotField from '@/components/ui/DotField';
 import WorksHeader from '@/components/works/WorksHeader';
 
-export default function WorksHero() {
+interface WorksHeroProps {
+  intro?: { script?: string; title?: string } | null;
+}
+
+export default function WorksHero({ intro }: WorksHeroProps) {
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* DotField background */}
@@ -26,7 +30,7 @@ export default function WorksHero() {
 
       {/* Hero content overlay */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
-        <WorksHeader />
+        <WorksHeader intro={intro} />
       </div>
     </section>
   );

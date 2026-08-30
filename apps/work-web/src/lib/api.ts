@@ -2,6 +2,15 @@ import type { Work, WorkContentBlock } from '@dikshant/types';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
+export interface SiteIntro {
+  script?: string;
+  title?: string;
+}
+
+export interface SiteConfigData {
+  worksIntro?: SiteIntro | null;
+}
+
 export interface AdjacentWork {
   slug: string;
   title: string;
@@ -49,6 +58,19 @@ export async function getWork(slug: string): Promise<WorkDetail | null> {
     return (await res.json()) as WorkDetail;
   } catch (err) {
     console.warn('[work-web] Failed to fetch work:', err);
+    return null;
+  }
+}
+
+export async function getSiteConfig(): Promise<SiteConfigData | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site-config`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as SiteConfigData;
+  } catch (err) {
+    console.warn('[work-web] Failed to fetch site config:', err);
     return null;
   }
 }

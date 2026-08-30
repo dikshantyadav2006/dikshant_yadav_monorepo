@@ -1,4 +1,4 @@
-import { getWorks } from '@/lib/api';
+import { getWorks, getSiteConfig } from '@/lib/api';
 import WorksHero from '@/components/works/WorksHero';
 import ProjectGrid from '@/components/works/ProjectGrid';
 import WorksCTA from '@/components/works/WorksCTA';
@@ -8,11 +8,12 @@ import ReachOut from '@/components/works/ReachOut';
 export const revalidate = 60;
 
 export default async function WorksPage() {
-  const works = await getWorks();
+  const [works, siteConfig] = await Promise.all([getWorks(), getSiteConfig()]);
+  const intro = siteConfig?.worksIntro ?? null;
 
   return (
     <main className="min-h-screen">
-      <WorksHero />
+      <WorksHero intro={intro} />
       <div className="max-w-[1800px] mx-auto px-1">
         <ProjectGrid projects={works} />
         <WorksCTA />

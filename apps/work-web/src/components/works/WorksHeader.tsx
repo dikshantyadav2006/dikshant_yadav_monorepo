@@ -2,7 +2,14 @@
 
 import { motion } from 'framer-motion';
 
-export default function WorksHeader() {
+interface WorksHeaderProps {
+  intro?: { script?: string; title?: string } | null;
+}
+
+export default function WorksHeader({ intro }: WorksHeaderProps) {
+  const script = intro?.script?.trim() || 'All';
+  const title = intro?.title?.trim() || 'WORKS';
+
   return (
     <section className="pt-[120px] pb-[10px] px-1">
       <div className="grid grid-cols-[auto_1fr] items-end">
@@ -14,7 +21,7 @@ export default function WorksHeader() {
         >
           <span className="text-[40px] leading-none opacity-80">*</span>
           <span className="font-script italic leading-none text-[clamp(90px,8vw,180px)] font-light">
-            All
+            {script}
           </span>
           <span className="text-[40px] leading-none opacity-80">*</span>
         </motion.div>
@@ -25,7 +32,7 @@ export default function WorksHeader() {
           transition={{ duration: 0.9, delay: 0.1 }}
           className="justify-self-end font-condensed uppercase leading-[0.78] tracking-[-0.04em] font-black text-[clamp(160px,18vw,420px)]"
         >
-          WORKS
+          {title}
         </motion.h1>
       </div>
     </section>
