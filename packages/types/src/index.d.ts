@@ -243,6 +243,27 @@ export interface WorksIntroConfig {
   title?: string;
 }
 
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  phone?: string | null;
+  email: string;
+  message: string;
+  budget?: string | null;
+  source?: string | null;
+  createdAt: string;
+}
+
+export interface ContactSubmissionsResponse {
+  submissions: ContactSubmission[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export interface SiteConfig {
   id: string;
   homepageFeaturedCount: number;
@@ -251,6 +272,7 @@ export interface SiteConfig {
   autosaveIntervalMs: number;
   worksIntro?: WorksIntroConfig | null;
   socialLinks?: SocialLink[] | null;
+  connectUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }
