@@ -240,6 +240,7 @@ model SiteConfig {
   homepageConfig Json? @map("homepage_config")
   autosaveEnabled Boolean @default(true) @map("autosave_enabled")
   autosaveIntervalMs Int @default(60000) @map("autosave_interval_ms")
+  worksIntro Json? @map("works_intro")
   socialLinks Json? @map("social_links")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
