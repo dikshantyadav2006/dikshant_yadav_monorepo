@@ -11,7 +11,7 @@ interface ProjectCardProps {
   index: number;
 }
 
-const SLIDESHOW_INTERVAL_MS = 500;
+const SLIDESHOW_INTERVAL_MS = 250;
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -23,7 +23,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   const previewVideo = project.previewVideo || '';
   const hasMedia = previewImages.length > 0 || Boolean(previewVideo);
 
-  // Fast cover flip (0.5s) through the work's images while hovered.
+  // Fast cover flip (0.25s) through the work's images while hovered.
   useEffect(() => {
     if (!isHovered || previewImages.length < 2) return;
     setImgIndex(0);
