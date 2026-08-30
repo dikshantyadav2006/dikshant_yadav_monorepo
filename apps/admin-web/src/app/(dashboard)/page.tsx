@@ -2,16 +2,20 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import PostsTable from '../../components/posts-table';
+import { PostsCountChip } from '../../components/shared/total-chips';
 
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Posts</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage drafts, published articles, and featured content.
-          </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Posts</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage drafts, published articles, and featured content.
+            </p>
+          </div>
+          <PostsCountChip />
         </div>
         <Link
           href="/posts/new"

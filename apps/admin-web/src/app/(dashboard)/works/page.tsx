@@ -2,16 +2,20 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import WorksTable from '../../../components/works-table';
+import { WorksCountChip } from '../../../components/shared/total-chips';
 
 export default function WorksPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Works</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage portfolio projects, case studies, and featured work.
-          </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Works</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage portfolio projects, case studies, and featured work.
+            </p>
+          </div>
+          <WorksCountChip />
         </div>
         <Link
           href="/works/new"
