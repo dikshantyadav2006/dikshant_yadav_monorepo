@@ -80,6 +80,39 @@ function SaveStatus({ state, idle, onRetry }: { state: SaveState; idle?: string;
   return null;
 }
 
+function GlobalStatus({ status }: { status: Record<string, SaveState> }) {
+  const values = Object.values(status);
+  if (values.includes('saving')) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        Saving…
+      </span>
+    );
+  }
+  if (values.includes('error')) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive">
+        <AlertCircle className="h-3.5 w-3.5" />
+        Save failed
+      </span>
+    );
+  }
+  if (values.includes('saved')) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+        <Check className="h-3.5 w-3.5" />
+        All changes saved
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/20 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+      Auto-saves on change
+    </span>
+  );
+}
+
 export default function SettingsPage() {
   const [error, setError] = useState('');
   const [status, setStatus] = useState<Record<string, SaveState>>({});
@@ -321,11 +354,16 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Configure homepage editorial behavior and editor defaults.
-        </p>
+      <div className="sticky top-16 z-20 -mx-4 border-b border-border/40 bg-background/85 px-4 py-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Configure homepage editorial behavior and editor defaults.
+            </p>
+          </div>
+          <GlobalStatus status={status} />
+        </div>
       </div>
 
       {error && (
