@@ -18,6 +18,7 @@ import { shareLinkRoutes } from './routes/share-links.js';
 import { workRoutes } from './routes/works.js';
 import { workBuilderRoutes } from './routes/works-builder.js';
 import { workLinkRoutes } from './routes/work-links.js';
+import { contactSubmissionRoutes } from './routes/contact-submissions.js';
 
 export function buildApp() {
   const app = Fastify({
@@ -87,6 +88,7 @@ export function buildApp() {
   app.register(workRoutes);
   app.register(workBuilderRoutes);
   app.register(workLinkRoutes);
+  app.register(contactSubmissionRoutes);
 
   // Global Error Handler
 app.setErrorHandler((error: any, request, reply) => {
