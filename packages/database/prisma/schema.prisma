@@ -242,10 +242,25 @@ model SiteConfig {
   autosaveIntervalMs Int @default(60000) @map("autosave_interval_ms")
   worksIntro Json? @map("works_intro")
   socialLinks Json? @map("social_links")
+  connectUrl String? @map("connect_url")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("site_config")
+}
+
+model ContactSubmission {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  phone     String?
+  email     String
+  message   String
+  budget    String?
+  source    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("contact_submissions")
 }
 
 model UserPreferences {
