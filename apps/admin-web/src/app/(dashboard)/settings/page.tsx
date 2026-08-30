@@ -122,9 +122,13 @@ export default function SettingsPage() {
     autosaveEnabled: boolean;
     autosaveIntervalMs: number;
     worksIntro: WorksIntroConfig;
+    connectUrl?: string | null;
   } | null>(null);
   const [socialRows, setSocialRows] = useState<SocialRow[]>([]);
   const [worksIntro, setWorksIntro] = useState<WorksIntroConfig>({ script: 'All', title: 'WORKS' });
+  const [connectUrl, setConnectUrl] = useState('');
+
+  const DEFAULT_CONNECT_URL = 'https://www.dikshantyadav.in/connect';
 
   const { data: settingsData, isLoading } = useQuery<SiteConfig>({
     queryKey: ['settings'],
@@ -140,10 +144,12 @@ export default function SettingsPage() {
         autosaveEnabled: settingsData.autosaveEnabled,
         autosaveIntervalMs: settingsData.autosaveIntervalMs,
         worksIntro: settingsData.worksIntro || { script: 'All', title: 'WORKS' },
+        connectUrl: settingsData.connectUrl ?? null,
       });
       setFeaturedCountStr(String(settingsData.homepageFeaturedCount));
       setSocialRows((settingsData.socialLinks ?? []).map(toSocialRow));
       setWorksIntro(settingsData.worksIntro || { script: 'All', title: 'WORKS' });
+      setConnectUrl(settingsData.connectUrl || DEFAULT_CONNECT_URL);
     }
   }, [settingsData]);
 
@@ -295,6 +301,11 @@ export default function SettingsPage() {
     scheduleSave('worksIntro', { worksIntro: next });
   };
 
+  const handleConnectUrlChange = (value: string) => {
+    setConnectUrl(value);
+    scheduleSave('connectUrl', { connectUrl: value });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-10">
@@ -443,6 +454,31 @@ export default function SettingsPage() {
           </div>
         </div>
         <SaveStatus state={status['worksIntro'] ?? 'idle'} idle="Auto-saves when you stop typing" />
+      </section>
+
+      <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
+        <div>
+          <h2 className="text-lg font-bold">Contact / Connect</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Where the &ldquo;Start a Project&rdquo; / &ldquo;Reach Out&rdquo; buttons on the work
+            site link to. Defaults to the connect page on the main site.
+          </p>
+        </div>
+
+        <div className="space-y-2 max-w-xl">
+          <label htmlFor="connect-url" className="text-sm font-medium">
+            Connect URL
+          </label>
+          <input
+            id="connect-url"
+            type="text"
+            value={connectUrl}
+            onChange={(e) => handleConnectUrlChange(e.target.value)}
+            placeholder={DEFAULT_CONNECT_URL}
+            className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30"
+          />
+          <SaveStatus state={status['connectUrl'] ?? 'idle'} idle="Auto-saves when you stop typing" />
+        </div>
       </section>
 
       <section className="rounded-2xl border border-border/60 bg-card/30 p-6 space-y-6">
