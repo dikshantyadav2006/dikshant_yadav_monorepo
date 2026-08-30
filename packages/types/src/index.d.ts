@@ -238,12 +238,18 @@ export interface SocialLink {
   url: string;
 }
 
+export interface WorksIntroConfig {
+  script?: string;
+  title?: string;
+}
+
 export interface SiteConfig {
   id: string;
   homepageFeaturedCount: number;
   homepageConfig?: HomepageConfig | null;
   autosaveEnabled: boolean;
   autosaveIntervalMs: number;
+  worksIntro?: WorksIntroConfig | null;
   socialLinks?: SocialLink[] | null;
   createdAt: string;
   updatedAt: string;
@@ -450,6 +456,8 @@ export interface Work {
 
   // Derived / populated
   contentBlocks?: WorkContentBlock[] | null;
+  previewImages?: string[] | null;
+  previewVideo?: string | null;
 
   // Relations (optional/populated)
   author?: User;
