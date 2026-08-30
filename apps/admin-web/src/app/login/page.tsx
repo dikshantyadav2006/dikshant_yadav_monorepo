@@ -44,7 +44,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="grid-bg flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent">
@@ -52,7 +52,7 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Admin Login</h1>
           <p className="text-sm text-muted-foreground">
-            Sign in to manage posts on dikshant.post
+            Sign in to manage posts and works on dikshant
           </p>
         </div>
 
@@ -61,7 +61,10 @@ export default function LoginPage() {
           className="space-y-5 rounded-2xl border border-border/60 bg-card/50 p-6 shadow-premium dark:shadow-premium-dark"
         >
           {error && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
               {error}
             </div>
           )}
@@ -74,6 +77,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               required
+              autoFocus
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
