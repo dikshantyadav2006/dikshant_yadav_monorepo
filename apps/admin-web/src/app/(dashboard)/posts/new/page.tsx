@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import apiFetch from '../../../../lib/api';
 import Canvas from '../../../../components/editor/Canvas';
+import { PageLoader } from '../../../../components/shared/PageLoader';
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -45,16 +46,7 @@ export default function NewPostPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground font-medium">
-            Creating new post…
-          </p>
-        </div>
-      </div>
-    );
+    return <PageLoader label="Creating new post…" backHref="/" backLabel="Back to posts" />;
   }
 
   if (error || !postId) {
@@ -73,7 +65,6 @@ export default function NewPostPage() {
       initialPost={null}
       onBack={() => {
         router.push('/');
-        router.refresh();
       }}
     />
   );

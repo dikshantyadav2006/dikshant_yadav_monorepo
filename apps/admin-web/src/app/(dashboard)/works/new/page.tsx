@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import apiFetch from '../../../../lib/api';
 import WorkCanvas from '../../../../components/work-editor/WorkCanvas';
+import { PageLoader } from '../../../../components/shared/PageLoader';
 
 export default function NewWorkPage() {
   const router = useRouter();
@@ -42,14 +43,7 @@ export default function NewWorkPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground font-medium">Creating new work…</p>
-        </div>
-      </div>
-    );
+    return <PageLoader label="Creating new work…" backHref="/works" backLabel="Back to works" />;
   }
 
   if (error || !workId) {

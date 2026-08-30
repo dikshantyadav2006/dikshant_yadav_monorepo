@@ -20,7 +20,7 @@ function PostsTableSkeleton() {
     <div className="overflow-hidden rounded-2xl border border-border/60">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-border/60 bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="sticky top-16 z-10 border-b border-border/60 bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground backdrop-blur">
             <tr>
               <th className="px-4 py-3 font-semibold">Title</th>
               <th className="px-4 py-3 font-semibold">Status</th>
@@ -133,7 +133,7 @@ export function PostsTable() {
     <div className="overflow-hidden rounded-2xl border border-border/60">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-border/60 bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="sticky top-16 z-10 border-b border-border/60 bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground backdrop-blur">
             <tr>
               <th className="px-4 py-3 font-semibold">Title</th>
               <th className="px-4 py-3 font-semibold">Status</th>

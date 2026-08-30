@@ -1,49 +1,26 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import type { Work } from '@dikshant/types';
-import apiFetch from '../../../../../lib/api';
 import WorkCanvas from '../../../../../components/work-editor/WorkCanvas';
+import { useWork } from '../../../../../hooks';
+import { PageLoader } from '../../../../../components/shared/PageLoader';
 
 export default function EditWorkPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const [work, setWork] = useState<Work | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: work, isLoading, error } = useWork(id);
 
-  useEffect(() => {
-    async function loadWork() {
-      try {
-        const data = await apiFetch<Work>(`/works/${id}`);
-        setWork(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load work');
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadWork();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground font-medium">Loading work…</p>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <PageLoader label="Loading work…" backHref="/works" backLabel="Back to works" />;
   }
 
   if (error || !work) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-6 py-4 text-sm text-destructive">
-          {error || 'Work not found'}
+          {error?.message || 'Work not found'}
         </div>
       </div>
     );
@@ -55,7 +32,6 @@ export default function EditWorkPage() {
       initialWork={work}
       onBack={() => {
         router.push('/works');
-        router.refresh();
       }}
     />
   );
