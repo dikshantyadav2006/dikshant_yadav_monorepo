@@ -3,17 +3,34 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, LayoutDashboard, LogOut, Plus, Settings, Briefcase } from 'lucide-react';
+import {
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Plus,
+  Settings,
+  Briefcase,
+  PenSquare,
+} from 'lucide-react';
 import ThemeSelector from '../app/theme-selector';
 import { useAuth } from '../context/auth-provider';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/posts/new', label: 'New Post', icon: Plus },
   { href: '/works', label: 'Works', icon: Briefcase },
-  { href: '/works/new', label: 'New Work', icon: Plus },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
+
+const mobileNavItems = [
+  { href: '/', label: 'Posts', icon: LayoutDashboard },
+  { href: '/works', label: 'Works', icon: Briefcase },
+  { href: '/posts/new', label: 'New', icon: PenSquare },
+  { href: '/settings', label: 'Settings', icon: Settings },
+];
+
+function isActive(pathname: string, href: string) {
+  return href === '/' ? pathname === '/' : pathname.startsWith(href);
+}
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -33,13 +50,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-1 sm:flex">
+            <nav className="hidden items-center gap-1 sm:flex" aria-label="Primary">
               {navItems.map(({ href, label, icon: Icon }) => {
-                const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+                const active = isActive(pathname, href);
                 return (
                   <Link
                     key={href}
                     href={href}
+                    aria-current={active ? 'page' : undefined}
                     className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                       active
                         ? 'bg-accent/10 text-accent'
@@ -51,6 +69,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+              <Link
+                href="/posts/new"
+                className="ml-1 inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-accent"
+              >
+                <Plus className="h-4 w-4" />
+                New Post
+              </Link>
             </nav>
           </div>
 
@@ -74,15 +99,42 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</div>
+        <div className="mx-auto max-w-7xl px-4 py-8 pb-20 sm:px-6 sm:pb-8 lg:px-8">
+          {children}
+        </div>
       </main>
 
-      <footer className="border-t border-border/40 py-4 text-center text-xs text-muted-foreground">
+      <footer className="hidden border-t border-border/40 py-4 text-center text-xs text-muted-foreground sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4">
           <FileText className="h-3.5 w-3.5" />
           <span>Post + Works CMS · connected to dikshant API</span>
         </div>
       </footer>
+
+      {/* Mobile bottom nav */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-border/40 bg-background/90 backdrop-blur-md sm:hidden"
+        aria-label="Mobile"
+      >
+        <div className="grid grid-cols-4">
+          {mobileNavItems.map(({ href, label, icon: Icon }) => {
+            const active = isActive(pathname, href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? 'page' : undefined}
+                className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors ${
+                  active ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
