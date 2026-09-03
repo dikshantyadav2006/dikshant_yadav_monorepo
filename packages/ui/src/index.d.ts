@@ -70,6 +70,46 @@ interface GlowCursorProps {
 
 export declare const GlowCursor: React.FC<GlowCursorProps>;
 
+export interface DepthCarouselItem {
+  image: string;
+  alt?: string;
+}
+
+export interface DepthCarouselRef {
+  setFocus: (index: number, animate?: boolean) => void;
+  navigateBy: (step: number) => void;
+  getActive: () => number;
+}
+
+export interface DepthCarouselProps {
+  items?: Array<string | DepthCarouselItem>;
+  cardWidth?: number;
+  cardHeight?: number;
+  radius?: number;
+  tint?: string;
+  depth?: number;
+  spread?: number;
+  tilt?: number;
+  tiltDirection?: 'left' | 'right';
+  perspective?: number;
+  visibleCards?: number;
+  falloff?: number;
+  blur?: number;
+  duration?: number;
+  ease?: string;
+  autoplay?: boolean;
+  autoplayDelay?: number;
+  loop?: boolean;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  onChange?: (index: number, item: DepthCarouselItem | undefined) => void;
+  className?: string;
+}
+
+export declare const DepthCarousel: React.ForwardRefExoticComponent<
+  DepthCarouselProps & React.RefAttributes<DepthCarouselRef>
+>;
+
 interface NotFoundPageProps {
   LinkComponent?: React.ElementType;
   linkProp?: 'href' | 'to';

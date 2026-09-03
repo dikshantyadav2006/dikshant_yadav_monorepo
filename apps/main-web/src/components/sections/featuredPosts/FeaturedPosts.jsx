@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { DirectionalCursor } from '@dikshant/ui';
+import { useRef, useState, useMemo } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { DirectionalCursor, DepthCarousel } from '@dikshant/ui';
 import { useHomepagePosts } from '@hooks';
 
 const POST_URL = import.meta.env.VITE_POST_URL || 'https://posts.dikshantyadav.in';
@@ -109,41 +109,20 @@ function PostRow({ post, index, onHover, onLeave, active }) {
   );
 }
 
-function HoverCard({ post }) {
-  const image = thumbnail(post);
-
-  return (
-    <motion.div
-      key={post.id}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-0"
-    >
-      {image ? (
-        <div className="w-full h-full overflow-hidden rounded-lg border border-[rgba(18,19,21,0.09)] dark:border-[rgba(238,244,244,0.09)] bg-[#F7F6F3] dark:bg-[#1b1c1f]">
-          <img
-            src={image}
-            alt={post.featuredImage?.alt || post.title}
-            loading="lazy"
-            className="w-full h-full object-cover grayscale contrast-[1.02] hover:grayscale-0 transition-[filter] duration-700 ease-out"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
-        </div>
-      ) : (
-        <div className="w-full h-full flex items-center justify-center rounded-lg border border-[rgba(18,19,21,0.09)] dark:border-[rgba(238,244,244,0.09)] bg-[#F7F6F3] dark:bg-[#1b1c1f] text-center px-8">
-          <span className="font-['font-p-1'] text-[clamp(1.5rem,2.5vw,3rem)] leading-tight uppercase tracking-tight text-[#121315] dark:text-[#EEF4F4]">
-            {post.title}
-          </span>
-        </div>
-      )}
-    </motion.div>
-  );
+function carouselItemsFor(list) {
+  return list
+    .map((post) => {
+      const image = thumbnail(post);
+      return image
+        ? { image, alt: post.title }
+        : null;
+    })
+    .filter(Boolean);
 }
 
 function FeaturedPosts() {
   const sectionRef = useRef(null);
+  const carouselRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const { featured, latest, loading, error } = useHomepagePosts();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -151,7 +130,7 @@ function FeaturedPosts() {
   const [linkHover, setLinkHover] = useState(false);
 
   const displayList = featured.length > 0 ? featured : latest;
-  const activePost = displayList[activeIndex];
+  const carouselItems = useMemo(() => carouselItemsFor(displayList), [displayList]);
 
   return (
     <section
@@ -203,12 +182,29 @@ function FeaturedPosts() {
         {/* Split layout: hover card left, list right */}
         <div className="px-[6vw] md:px-[7vw] lg:px-[8vw] pb-[12vh] md:pb-[16vh]">
           <div className="flex flex-col-reverse lg:flex-row lg:items-start lg:gap-[6vw]">
-            {/* Left: hover card */}
+            {/* Left: depth carousel thumbnail */}
             <div className="lg:w-[38%] lg:sticky lg:top-32 mt-10 lg:mt-0">
-              <div className="relative aspect-[4/3] w-full max-w-[460px]">
-                <AnimatePresence mode="wait">
-                  {activePost && <HoverCard post={activePost} />}
-                </AnimatePresence>
+              <div className="relative w-full max-w-[460px] aspect-[4/3]">
+                <DepthCarousel
+                  ref={carouselRef}
+                  items={carouselItems}
+                  cardWidth={340}
+                  cardHeight={212}
+                  radius={0}
+                  tint="#0b0d12"
+                  depth={200}
+                  spread={64}
+                  tilt={18}
+                  tiltDirection="right"
+                  perspective={1200}
+                  visibleCards={4}
+                  falloff={0.22}
+                  blur={5}
+                  showControls={false}
+                  showIndicators={false}
+                  loop
+                  onChange={(i) => setActiveIndex(i)}
+                />
               </div>
             </div>
 
@@ -239,6 +235,7 @@ function FeaturedPosts() {
                         setActiveIndex(i);
                         setCursorActive(true);
                         setLinkHover(true);
+                        carouselRef.current?.setFocus(i);
                       }}
                       onLeave={() => {
                         setActiveIndex(0);
