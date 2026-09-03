@@ -157,15 +157,21 @@ const DepthCarousel = forwardRef(function DepthCarousel(
   );
 
   const setFocus = useCallback(
-    (rawIndex, animate = true) => {
+    (rawIndex, animate = true, forwardOnly = true) => {
       const cfg = cfgRef.current;
       const n = cfg.count;
       if (!n) return;
       const idx = cfg.loop ? ((rawIndex % n) + n) % n : clamp(rawIndex, 0, n - 1);
       let delta = idx - posRef.current;
       if (cfg.loop && n > 1) {
-        delta = ((delta % n) + n) % n;
-        if (delta > n / 2) delta -= n;
+        if (forwardOnly) {
+          // Always move forward (backward->forward on the fan side), never reverse.
+          delta = ((delta % n) + n) % n;
+        } else {
+          // Shortest bidirectional path (drag / wheel / prev-next buttons).
+          delta = ((delta % n) + n) % n;
+          if (delta > n / 2) delta -= n;
+        }
       }
       tweenTo(posRef.current + delta, animate);
       if (idx !== focusRef.current) {
@@ -176,7 +182,10 @@ const DepthCarousel = forwardRef(function DepthCarousel(
     [tweenTo, notify]
   );
 
-  const navigateBy = useCallback(step => setFocus(focusRef.current + step, true), [setFocus]);
+  const navigateBy = useCallback(
+    step => setFocus(focusRef.current + step, true, false),
+    [setFocus]
+  );
 
   useImperativeHandle(
     ref,
@@ -216,7 +225,7 @@ const DepthCarousel = forwardRef(function DepthCarousel(
       posRef.current += step;
       layout(posRef.current);
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
-      wheelTimerRef.current = setTimeout(() => setFocus(Math.round(posRef.current), true), 130);
+      wheelTimerRef.current = setTimeout(() => setFocus(Math.round(posRef.current), true, false), 130);
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => {
@@ -271,7 +280,7 @@ const DepthCarousel = forwardRef(function DepthCarousel(
     const cfg = cfgRef.current;
     const stepPx = Math.max(cfg.cardWidth * 0.55 * scaleRef.current, 40);
     const projected = posRef.current - (drag.v * 180) / stepPx;
-    setFocus(Math.round(projected), true);
+    setFocus(Math.round(projected), true, false);
   }, [setFocus]);
 
   const onKeyDown = useCallback(
@@ -392,6 +401,18 @@ const DepthCarousel = forwardRef(function DepthCarousel(
               ref={el => (overlayRefs.current[i] = el)}
               style={{ background: tint }}
             />
+            {item.title && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-0.5 border-t border-[var(--light-color)/30] bg-[rgba(9,18,35,0.72)] px-2.5 py-1.5 text-left backdrop-blur-sm">
+                {item.category && (
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--light-color)]/85">
+                    {item.category}
+                  </span>
+                )}
+                <span className="line-clamp-2 text-[13px] font-semibold leading-tight text-[var(--light-color)]">
+                  {item.title}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>

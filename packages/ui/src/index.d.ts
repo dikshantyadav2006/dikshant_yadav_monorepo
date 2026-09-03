@@ -73,6 +73,8 @@ export declare const GlowCursor: React.FC<GlowCursorProps>;
 export interface DepthCarouselItem {
   image: string;
   alt?: string;
+  category?: string;
+  title?: string;
 }
 
 export interface DepthCarouselRef {

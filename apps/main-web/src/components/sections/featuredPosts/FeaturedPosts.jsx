@@ -3,7 +3,7 @@ import { motion, useInView } from 'framer-motion';
 import { DirectionalCursor, DepthCarousel } from '@dikshant/ui';
 import { useHomepagePosts } from '@hooks';
 
-const POST_URL = import.meta.env.VITE_POST_URL || 'https://posts.dikshantyadav.in';
+const POST_URL = import.meta.env.VITE_POST_URL || 'https://post.dikshantyadav.in';
 
 const rowVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -114,7 +114,12 @@ function carouselItemsFor(list) {
     .map((post) => {
       const image = thumbnail(post);
       return image
-        ? { image, alt: post.title }
+        ? {
+            image,
+            alt: post.title,
+            category: post.category?.name || 'ARTICLE',
+            title: post.title,
+          }
         : null;
     })
     .filter(Boolean);
@@ -183,23 +188,23 @@ function FeaturedPosts() {
         <div className="px-[6vw] md:px-[7vw] lg:px-[8vw] pb-[12vh] md:pb-[16vh]">
           <div className="flex flex-col-reverse lg:flex-row lg:items-start lg:gap-[6vw]">
             {/* Left: depth carousel thumbnail */}
-            <div className="lg:w-[38%] lg:sticky lg:top-32 mt-10 lg:mt-0">
-              <div className="relative w-full max-w-[460px] aspect-[4/3]">
+            <div className="lg:w-[50%] lg:sticky lg:top-32 mt-10 lg:mt-0">
+              <div className="relative w-full max-w-[720px] aspect-[16/11]">
                 <DepthCarousel
                   ref={carouselRef}
                   items={carouselItems}
-                  cardWidth={340}
-                  cardHeight={212}
+                  cardWidth={460}
+                  cardHeight={288}
                   radius={0}
                   tint="#0b0d12"
-                  depth={200}
-                  spread={64}
+                  depth={220}
+                  spread={85}
                   tilt={18}
                   tiltDirection="right"
                   perspective={1200}
                   visibleCards={4}
-                  falloff={0.22}
-                  blur={5}
+                  falloff={0.12}
+                  blur={2}
                   showControls={false}
                   showIndicators={false}
                   loop
@@ -209,7 +214,7 @@ function FeaturedPosts() {
             </div>
 
             {/* Right: list */}
-            <div className="lg:w-[52%]">
+            <div className="lg:w-[42%]">
               {loading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 4 }).map((_, i) => (
