@@ -51,6 +51,7 @@ function Connect({ addCursor, removeCursor, cursorModes, isDarkMode }) {
       {/* ─── Domain network ───── */}
       <Section id="network">
         <DomainNetwork
+          isDarkMode={isDarkMode}
           cursorEvents={{ addCursor, removeCursor, cursorModes }}
         />
       </Section>

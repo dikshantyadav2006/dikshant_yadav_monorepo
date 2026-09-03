@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import { useNetworkTheme } from './NetworkTheme.js';
 
 export function DomainText({ prefix, domain, activeColor, domainRef }) {
+  const t = useNetworkTheme();
   return (
     <div ref={domainRef} className="flex items-center gap-5 whitespace-nowrap">
       <motion.span
@@ -28,7 +30,7 @@ export function DomainText({ prefix, domain, activeColor, domainRef }) {
           lineHeight: 1,
         }}
       >
-        <span style={{ color: '#ffffff' }}>{domain}</span>
+        <span style={{ color: t.textPrimary }}>{domain}</span>
       </motion.h1>
     </div>
   );

@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
+import { useNetworkTheme } from './NetworkTheme.js';
 
 const BASE_RAIL_W = 104;
 const BASE_RAIL_H = 500;
@@ -34,6 +35,7 @@ function viewportScale() {
 }
 
 export function CurvedSelector({ domains, activeIndex, activeColor, onHover, onLeave }) {
+  const t = useNetworkTheme();
   const stripRef = useRef(null);
   const glowPathRef = useRef(null);
   const tweenRef = useRef(null);
@@ -185,8 +187,8 @@ export function CurvedSelector({ domains, activeIndex, activeColor, onHover, onL
                     width: 52 * s,
                     height: 52 * s,
                     borderRadius: 16 * s,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    background: t.surface,
+                    border: `1px solid ${t.border}`,
                   }}
                 >
                   <span
@@ -194,7 +196,7 @@ export function CurvedSelector({ domains, activeIndex, activeColor, onHover, onL
             fontFamily: 'Geist, Inter, sans-serif',
             fontWeight: 600,
             fontSize: 22 * s,
-            color: '#ffffff',
+            color: t.textPrimary,
             textShadow: `0 0 10px ${withAlpha(activeColor, 0.9)}, 0 0 26px ${withAlpha(activeColor, 0.5)}, 0 0 48px ${withAlpha(activeColor, 0.3)}`,
           }}
                   >
@@ -214,8 +216,8 @@ export function CurvedSelector({ domains, activeIndex, activeColor, onHover, onL
         style={{
           top: CENTER_Y - 40 * s,
           height: 80 * s,
-          borderTop: '1px solid rgba(255,255,255,0.04)',
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
         }}
       />
     </div>

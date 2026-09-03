@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { motion } from 'framer-motion';
 import { DomainIcon } from './DomainIcon.jsx';
+import { useNetworkTheme } from './NetworkTheme.js';
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -18,6 +19,16 @@ function buildOrganicPath(ox, oy, ex, ey, index) {
   return `M ${ox.toFixed(1)} ${oy.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${ex.toFixed(1)} ${ey.toFixed(1)}`;
 }
 
+function withAlphaHex(hex, alpha) {
+  const clean = String(hex || '#8b5cf6').replace('#', '');
+  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
+  const n = parseInt(full, 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export function NetworkPanel({
   domains,
   activeIndex,
@@ -28,6 +39,7 @@ export function NetworkPanel({
   onLabelHover,
   onLabelLeave,
 }) {
+  const t = useNetworkTheme();
   const localStageRef = useRef(null);
   const stageRef = stageRefProp ?? localStageRef;
   const cardRefs = useRef([]);
@@ -78,13 +90,13 @@ export function NetworkPanel({
       if (!pathEl) return;
       const isActive = i === activeIndex;
       gsap.to(pathEl, {
-        stroke: isActive ? activeColor : 'rgba(255,255,255,0.12)',
+        stroke: isActive ? activeColor : t.line,
         strokeOpacity: isActive ? 1 : 0.35,
         duration: 0.55,
         ease: 'power2.out',
       });
     });
-  }, [activeIndex, activeColor, paths]);
+  }, [activeIndex, activeColor, paths, t.line]);
 
   useEffect(() => {
     if (particleTween.current) {
@@ -146,7 +158,7 @@ export function NetworkPanel({
               fill="none"
               strokeWidth={1.5}
               strokeLinecap="round"
-              stroke={isActive ? activeColor : 'rgba(255,255,255,0.12)'}
+              stroke={isActive ? activeColor : t.line}
               strokeOpacity={isActive ? 1 : 0.35}
               style={isActive ? { filter: `url(#path-glow) drop-shadow(0 0 12px ${activeColor})` } : undefined}
             />
@@ -192,24 +204,24 @@ export function NetworkPanel({
                 height: 'clamp(56px, 9vh, 84px)',
                 borderRadius: 999,
                 padding: '0 16px 0 10px',
-                background: isActive ? 'rgba(18,19,21,0.92)' : 'rgba(18,19,21,0.8)',
+                background: isActive ? t.surfaceHover : t.surface,
                 border: isActive
-                  ? `1px solid rgba(139,92,246,0.55)`
-                  : '1px solid rgba(255,255,255,0.06)',
+                  ? `1px solid ${withAlphaHex(activeColor, 0.55)}`
+                  : `1px solid ${t.border}`,
                 boxShadow: isActive
-                  ? `0 0 32px rgba(139,92,246,0.35), inset 0 0 24px rgba(139,92,246,0.08)`
+                  ? `0 0 32px rgba(139,92,246,0.25), inset 0 0 24px rgba(139,92,246,0.06)`
                   : 'none',
               }}
             >
               <div
-                className="flex items-center justify-center shrink-0 text-white"
+                className="flex items-center justify-center shrink-0"
                 style={{
                   width: 44,
                   height: 44,
                   borderRadius: 999,
-                  background: isActive ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
-                  border: isActive ? `1px solid rgba(139,92,246,0.35)` : '1px solid rgba(255,255,255,0.06)',
-                  color: isActive ? activeColor : 'rgba(255,255,255,0.85)',
+                  background: isActive ? 'rgba(139,92,246,0.15)' : t.surface,
+                  border: isActive ? `1px solid rgba(139,92,246,0.35)` : `1px solid ${t.border}`,
+                  color: isActive ? activeColor : t.textSecondary,
                 }}
               >
                 <DomainIcon name={domain.icon} size={20} />
@@ -220,7 +232,7 @@ export function NetworkPanel({
                     fontFamily: 'Geist, Inter, sans-serif',
                     fontWeight: 600,
                     fontSize: 15,
-                    color: '#ffffff',
+                    color: t.textPrimary,
                     lineHeight: 1.2,
                   }}
                 >
@@ -231,7 +243,7 @@ export function NetworkPanel({
                   style={{
                     fontFamily: 'Geist, Inter, sans-serif',
                     fontSize: 12,
-                    color: 'rgba(255,255,255,0.45)',
+                    color: t.textMuted,
                     marginTop: 2,
                   }}
                 >
