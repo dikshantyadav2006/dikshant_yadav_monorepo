@@ -80,16 +80,8 @@ float fbm(vec2 p){
   float v=0.0; float a=0.5;
   vec2 shift=vec2(100.0);
   mat2 rot=mat2(cos(0.5),sin(0.5),-sin(0.5),cos(0.5));
-  for(int i=0;i<5;i++){v+=a*snoise(p);p=rot*p*2.0+shift;a*=0.5;}
+  for(int i=0;i<4;i++){v+=a*snoise(p);p=rot*p*2.0+shift;a*=0.5;}
   return v;
-}
-
-// marble veining
-float marble(vec2 uv, float t){
-  float n1=fbm(uv*3.0+vec2(t*0.03,t*0.02));
-  float n2=fbm(uv*5.0-vec2(t*0.02,t*0.03)+n1*1.2);
-  float n3=snoise(uv*8.0+vec2(n1*0.6,n2*0.6)+t*0.02);
-  return n1*0.45+n2*0.35+n3*0.2;
 }
 
 void main(){
@@ -100,53 +92,40 @@ void main(){
   float hT=texture2D(uRipple,vUv+vec2(0.0,uTexelSize.y)).r;
   float hC=texture2D(uRipple,vUv).r;
 
-  // surface normal from height gradient
+  // subtle surface normal from height gradient
   vec3 normal = normalize(vec3(
-    (hL - hR) * 1.8,
-    (hB - hT) * 1.8,
+    (hL - hR) * 2.4,
+    (hB - hT) * 2.4,
     1.0
   ));
 
-  // refraction offset — distort marble UVs by surface gradient
-  vec2 refractUV = vUv + normal.xy * 0.018;
+  // small refraction — the ripple gently warps the marble UVs
+  vec2 uv = vUv + normal.xy * 0.05;
 
-  // procedural marble base
-  float t = uTime;
-  float m = marble(refractUV, t);
-  float flow = smoothstep(-0.3, 0.7, m);
-  float veining = smoothstep(0.3, 0.7, m);
+  // low-contrast marble, close to each footer background
+  float t = uTime * 0.04;
+  float m = fbm(uv * 3.0 + vec2(t));
+  float veining = smoothstep(0.15, 0.5, m);
+  float flow = smoothstep(-0.2, 0.4, m);
 
-  // marble color: veiny stone
-  // DARK MODE: dark stone base with clearly visible light veins
-  vec3 darkStone = vec3(0.10, 0.105, 0.11);
-  vec3 darkVein  = vec3(0.42, 0.44, 0.46);   // bright enough to be visible on #121315
-  // LIGHT MODE: light stone base with clearly visible grey veins
-  vec3 lightStone = vec3(0.90, 0.895, 0.88);
-  vec3 lightVein  = vec3(0.62, 0.63, 0.64);
+  // DARK #121315: near-black stone, faint lighter veins
+  vec3 darkStone = vec3(0.070, 0.074, 0.080);
+  vec3 darkVein  = vec3(0.16, 0.17, 0.19);
+  // LIGHT #EEF4F4: near-white stone, faint darker veins
+  vec3 lightStone = vec3(0.933, 0.958, 0.958);
+  vec3 lightVein  = vec3(0.76, 0.79, 0.79);
 
   vec3 darkColor = mix(darkStone, darkVein, veining);
   vec3 lightColor = mix(lightStone, lightVein, veining);
-  vec3 baseColor = mix(darkColor, lightColor, uDark);
+  vec3 baseColor = mix(lightColor, darkColor, uDark);
 
-  // specular: soft light from upper-left
-  vec3 lightDir = normalize(vec3(-0.4, 0.5, 0.8));
-  float spec = pow(max(dot(normal, lightDir), 0.0), 48.0) * 0.18;
+  // soft specular to give the liquid surface a hint of gloss
+  vec3 lightDir = normalize(vec3(-0.4, 0.4, 0.9));
+  float spec = pow(max(dot(normal, lightDir), 0.0), 48.0) * 0.10;
 
-  // Fresnel-like edge brightening from ripple
-  float edge = 1.0 - abs(dot(normal, vec3(0.0, 0.0, 1.0)));
-  float fresnel = edge * edge * 0.12;
+  vec3 finalColor = baseColor + spec;
 
-  // combine
-  vec3 finalColor = baseColor + spec + fresnel;
-
-  // very subtle tint toward white on ripple peaks for liquid-sheen look
-  float peak = max(hC * 6.0, 0.0);
-  finalColor += vec3(peak * 0.06);
-
-  // Make the marble clearly visible as an overlay
-  float alpha = veining * 0.55 + flow * 0.15 + edge * 0.04 + peak * 0.03;
-
-  gl_FragColor = vec4(finalColor, alpha);
+  gl_FragColor = vec4(finalColor, flow * 0.28 + veining * 0.5);
 }`;
 
 /* ─── WebGL Helpers ────────────────────────────────────────────────── */
@@ -181,14 +160,14 @@ function createProgram(gl, vsSource, fsSource) {
   return program;
 }
 
-function createFBO(gl, w, h) {
+function createFBO(gl, w, h, texType) {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, texType, null);
   const fbo = gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
@@ -244,10 +223,13 @@ const MarbleBackground = ({ isDarkMode = false }) => {
     });
     if (!gl) return undefined;
 
-    // Extensions
+    // Extensions — try to get renderable half-float for ripple precision.
+    // Fall back to unsigned byte if not renderable.
     const halfFloatExt = gl.getExtension('OES_texture_half_float');
+    const halfFloatRender = gl.getExtension('EXT_color_buffer_half_float');
     const halfFloatLinear = gl.getExtension('OES_texture_half_float_linear');
-    const texType = halfFloatExt ? halfFloatExt.HALF_FLOAT_OES : gl.UNSIGNED_BYTE;
+    const useHalfFloat = !!(halfFloatExt && halfFloatRender);
+    const texType = useHalfFloat ? halfFloatExt.HALF_FLOAT_OES : gl.UNSIGNED_BYTE;
 
     /* ── Programs ── */
     const dropProg = createProgram(gl, QUAD_VS, DROP_FS);
@@ -269,8 +251,20 @@ const MarbleBackground = ({ isDarkMode = false }) => {
     }
 
     /* ── FBOs ── */
-    let fboA = createFBO(gl, SIM_SIZE, SIM_SIZE);
-    let fboB = createFBO(gl, SIM_SIZE, SIM_SIZE);
+    let fboA = createFBO(gl, SIM_SIZE, SIM_SIZE, texType);
+    let fboB = createFBO(gl, SIM_SIZE, SIM_SIZE, texType);
+
+    // Sanity check: ensure FBOs are complete. If half-float isn't renderable,
+    // destroy and recreate with unsigned byte.
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fboA.fbo);
+    const fboStatus = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    if (useHalfFloat && fboStatus !== gl.FRAMEBUFFER_COMPLETE) {
+      destroyFBO(gl, fboA);
+      destroyFBO(gl, fboB);
+      fboA = createFBO(gl, SIM_SIZE, SIM_SIZE, gl.UNSIGNED_BYTE);
+      fboB = createFBO(gl, SIM_SIZE, SIM_SIZE, gl.UNSIGNED_BYTE);
+    }
 
     // Clear both
     [fboA, fboB].forEach(f => {
@@ -290,6 +284,10 @@ const MarbleBackground = ({ isDarkMode = false }) => {
 
     function onPointerMove(e) {
       const rect = wrapper.getBoundingClientRect();
+      // Ignore pointer events that are outside the footer area
+      if (e.clientX < rect.left || e.clientX > rect.right ||
+          e.clientY < rect.top || e.clientY > rect.bottom) return;
+
       const nx = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       const ny = Math.max(0, Math.min(1, 1.0 - (e.clientY - rect.top) / rect.height));
 
@@ -306,13 +304,13 @@ const MarbleBackground = ({ isDarkMode = false }) => {
       pointer.vy = dy;
       pointer.active = true;
 
-      if (speed > 0.001 && !reducedMotion) {
-        const strength = Math.min(speed * 15.0, 1.0);
+      if (speed > 0.0025 && !reducedMotion) {
+        const strength = Math.min(speed * 6.0, 1.0);
         dropData = {
           cx: nx,
           cy: ny,
-          r: 0.012 + speed * 0.03,
-          s: strength * 0.45,
+          r: 0.03 + speed * 0.02,
+          s: 0.14 + strength * 0.15,
         };
         hasDrop = true;
       }
@@ -322,8 +320,10 @@ const MarbleBackground = ({ isDarkMode = false }) => {
       pointer.active = false;
     }
 
-    wrapper.addEventListener('pointermove', onPointerMove, { passive: true });
-    wrapper.addEventListener('pointerleave', onPointerLeave, { passive: true });
+    // Listen on window — the wrapper/canvas are pointer-events:none, so we
+    // capture globally and gate by the footer's bounding rect.
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerup', onPointerLeave, { passive: true });
 
     /* ── Simulation loop ── */
     let running = true;
@@ -382,17 +382,8 @@ const MarbleBackground = ({ isDarkMode = false }) => {
       lastFrame = now - (elapsed % FRAME_BUDGET);
 
       if (reducedMotion) {
-        // Static render, no simulation
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        bindQuad(displayProg);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, currentFBO.texture);
-        gl.uniform1i(gl.getUniformLocation(displayProg, 'uRipple'), 0);
-        gl.uniform2f(gl.getUniformLocation(displayProg, 'uTexelSize'), texelSize[0], texelSize[1]);
-        gl.uniform1f(gl.getUniformLocation(displayProg, 'uTime'), performance.now() * 0.001);
-        gl.uniform1f(gl.getUniformLocation(displayProg, 'uDark'), isDarkMode ? 1.0 : 0.0);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        // Static marble render (no ripple simulation)
+        renderDisplay();
         return;
       }
 
@@ -422,8 +413,8 @@ const MarbleBackground = ({ isDarkMode = false }) => {
     return () => {
       running = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      wrapper.removeEventListener('pointermove', onPointerMove);
-      wrapper.removeEventListener('pointerleave', onPointerLeave);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerLeave);
       ro.disconnect();
 
       // Delete everything
