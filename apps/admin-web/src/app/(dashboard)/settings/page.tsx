@@ -117,8 +117,10 @@ export default function SettingsPage() {
   const [error, setError] = useState('');
   const [status, setStatus] = useState<Record<string, SaveState>>({});
   const [featuredCountStr, setFeaturedCountStr] = useState('1');
+  const [latestCountStr, setLatestCountStr] = useState('3');
   const [form, setForm] = useState<{
     homepageFeaturedCount: number;
+    homepageLatestCount: number;
     autosaveEnabled: boolean;
     autosaveIntervalMs: number;
     worksIntro: WorksIntroConfig;
@@ -141,12 +143,14 @@ export default function SettingsPage() {
     if (settingsData) {
       setForm({
         homepageFeaturedCount: settingsData.homepageFeaturedCount,
+        homepageLatestCount: settingsData.homepageLatestCount,
         autosaveEnabled: settingsData.autosaveEnabled,
         autosaveIntervalMs: settingsData.autosaveIntervalMs,
         worksIntro: settingsData.worksIntro || { script: 'All', title: 'WORKS' },
         connectUrl: settingsData.connectUrl ?? null,
       });
       setFeaturedCountStr(String(settingsData.homepageFeaturedCount));
+      setLatestCountStr(String(settingsData.homepageLatestCount));
       setSocialRows((settingsData.socialLinks ?? []).map(toSocialRow));
       setWorksIntro(settingsData.worksIntro || { script: 'All', title: 'WORKS' });
       setConnectUrl(settingsData.connectUrl || DEFAULT_CONNECT_URL);
@@ -200,6 +204,13 @@ export default function SettingsPage() {
           JSON.stringify(latest.homepageFeaturedCount) === JSON.stringify(payload.homepageFeaturedCount)
         ) {
           setFeaturedCountStr(String(saved.homepageFeaturedCount));
+        }
+
+        if (
+          key === 'homepageLatestCount' &&
+          JSON.stringify(latest.homepageLatestCount) === JSON.stringify(payload.homepageLatestCount)
+        ) {
+          setLatestCountStr(String(saved.homepageLatestCount));
         }
       }
 
@@ -285,6 +296,25 @@ export default function SettingsPage() {
     }
   };
 
+  const handleLatestCountChange = (value: string) => {
+    setLatestCountStr(value);
+    if (value.trim() === '') return;
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 1 || n > 10) {
+      setStatusFor('homepageLatestCount', 'idle');
+      return;
+    }
+    scheduleSave('homepageLatestCount', { homepageLatestCount: n });
+  };
+
+  const handleLatestCountBlur = () => {
+    if (!form) return;
+    const n = Number(latestCountStr);
+    if (latestCountStr.trim() === '' || !Number.isFinite(n) || n < 1 || n > 10) {
+      setLatestCountStr(String(form.homepageLatestCount));
+    }
+  };
+
   const handleAutosaveToggle = (checked: boolean) => {
     setForm((f) => (f ? { ...f, autosaveEnabled: checked } : f));
     scheduleSave('autosaveEnabled', { autosaveEnabled: checked }, 0);
@@ -362,6 +392,7 @@ export default function SettingsPage() {
   }
 
   const countOutOfRange = featuredCountStr.trim() !== '' && (Number(featuredCountStr) < 1 || Number(featuredCountStr) > 5);
+  const latestCountOutOfRange = latestCountStr.trim() !== '' && (Number(latestCountStr) < 1 || Number(latestCountStr) > 10);
 
   return (
     <div className="space-y-10">
@@ -387,7 +418,7 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-lg font-bold">Homepage Settings</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Control how many featured posts appear in the hero + grid section.
+            Control how many featured and latest posts appear on the main portfolio site.
           </p>
         </div>
 
@@ -412,6 +443,29 @@ export default function SettingsPage() {
               <p className="text-xs text-destructive">Enter a number between 1 and 5.</p>
             ) : (
               <SaveStatus state={status['homepageFeaturedCount'] ?? 'idle'} idle="Auto-saves when you stop typing" />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="latest-count" className="text-sm font-medium">
+              Latest Posts Count (1–10)
+            </label>
+            <input
+              id="latest-count"
+              type="number"
+              min={1}
+              max={10}
+              step={1}
+              value={latestCountStr}
+              onChange={(e) => handleLatestCountChange(e.target.value)}
+              onBlur={handleLatestCountBlur}
+              aria-invalid={latestCountOutOfRange}
+              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30"
+            />
+            {latestCountOutOfRange ? (
+              <p className="text-xs text-destructive">Enter a number between 1 and 10.</p>
+            ) : (
+              <SaveStatus state={status['homepageLatestCount'] ?? 'idle'} idle="Auto-saves when you stop typing" />
             )}
           </div>
         </div>

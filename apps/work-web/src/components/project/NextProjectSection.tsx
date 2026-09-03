@@ -2,7 +2,8 @@
 
 import { useRef, useState, useCallback } from 'react';
 import TransitionLink from '@/components/ui/transition/TransitionLink';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { DirectionalCursor } from '@dikshant/ui';
 import { AdjacentWork } from '@/types/project';
 import { useAccent } from './AccentContext';
 
@@ -137,20 +138,6 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
   const [isActive, setIsActive] = useState(false);
   const [hasClicked, setHasClicked] = useState(false);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const smoothX = useSpring(mouseX, { stiffness: 500, damping: 28, mass: 0.5 });
-  const smoothY = useSpring(mouseY, { stiffness: 500, damping: 28, mass: 0.5 });
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    },
-    [mouseX, mouseY],
-  );
-
   const handleSectionEnter = useCallback(() => setIsActive(true), []);
   const handleSectionLeave = useCallback(() => {
     setIsActive(false);
@@ -162,86 +149,26 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
   const handleProjectLeave = useCallback(() => setHoverSide('down'), []);
   const handleProjectClick = useCallback(() => setHasClicked(true), []);
 
+  const cursorLabel = hoverSide === 'left' ? 'Prev' : hoverSide === 'right' ? 'Next' : 'Scroll';
+  const cursorRotation = hoverSide === 'left' ? 90 : hoverSide === 'right' ? -90 : 0;
+
   if (!prevProject && !nextProject) return null;
 
   return (
     <section
       ref={sectionRef}
       className="relative py-[60px] md:py-[80px] border-t border-border cursor-none"
-      onMouseMove={handleMouseMove}
       onMouseEnter={handleSectionEnter}
       onMouseLeave={handleSectionLeave}
     >
-      {/* Custom Cursor */}
-      <motion.div
-        className="
-          pointer-events-none
-          fixed
-          left-0
-          top-0
-          z-[9999]
-          mix-blend-difference
-        "
-        style={{ x: smoothX, y: smoothY }}
-      >
-        <motion.div
-          className="
-            -ml-8
-            -mt-8
-            w-16
-            h-16
-            rounded-full
-            flex
-            items-center
-            justify-center
-            backdrop-blur-xl
-            border
-            border-white/20
-            bg-white
-            origin-center
-          "
-          animate={{
-            opacity: isActive && !hasClicked ? 1 : 0,
-            scale: hasClicked ? 0 : hoverSide === 'down' ? 1 : 1.1,
-            rotate: hoverSide === 'left' ? 90 : hoverSide === 'right' ? -90 : 0,
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 450,
-            damping: 28,
-          }}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="black"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 4V20" />
-            <path d="M6 14L12 20L18 14" />
-          </svg>
-
-          <motion.span
-            className="
-              absolute
-              -bottom-[22px]
-              text-[9px]
-              uppercase
-              tracking-[0.25em]
-              text-white
-              whitespace-nowrap
-            "
-            animate={{ opacity: isActive ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {hoverSide === 'left' ? 'Prev' : hoverSide === 'right' ? 'Next' : 'Scroll'}
-          </motion.span>
-        </motion.div>
-      </motion.div>
+      {/* Shared custom cursor */}
+      <DirectionalCursor
+        active={isActive}
+        clicked={hasClicked}
+        label={cursorLabel}
+        rotation={cursorRotation}
+        scaled={hoverSide !== 'down'}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 40 }}

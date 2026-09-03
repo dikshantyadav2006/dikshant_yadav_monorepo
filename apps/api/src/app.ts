@@ -19,6 +19,7 @@ import { workRoutes } from './routes/works.js';
 import { workBuilderRoutes } from './routes/works-builder.js';
 import { workLinkRoutes } from './routes/work-links.js';
 import { contactSubmissionRoutes } from './routes/contact-submissions.js';
+import { homepagePostsRoutes } from './routes/homepage-posts.js';
 
 export function buildApp() {
   const app = Fastify({
@@ -89,6 +90,7 @@ export function buildApp() {
   app.register(workBuilderRoutes);
   app.register(workLinkRoutes);
   app.register(contactSubmissionRoutes);
+  app.register(homepagePostsRoutes);
 
   // Global Error Handler
 app.setErrorHandler((error: any, request, reply) => {

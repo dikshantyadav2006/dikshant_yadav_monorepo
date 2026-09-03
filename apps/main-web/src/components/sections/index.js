@@ -3,3 +3,4 @@ export {default as LogoMarquee} from './logoMarquee/LogoMarquee';
 export {default as ThinkingNote} from './thinkingNote/ThinkingNote';
 export {default as BentoGrid} from './bentoGrid/BentoGrid';
 export {default as Services} from './services/Services';
+export {default as FeaturedPosts} from './featuredPosts/FeaturedPosts';

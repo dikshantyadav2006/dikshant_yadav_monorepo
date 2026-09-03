@@ -237,6 +237,7 @@ model PostWorkLink {
 model SiteConfig {
   id String @id @default("default")
   homepageFeaturedCount Int @default(1) @map("homepage_featured_count")
+  homepageLatestCount Int @default(3) @map("homepage_latest_count")
   homepageConfig Json? @map("homepage_config")
   autosaveEnabled Boolean @default(true) @map("autosave_enabled")
   autosaveIntervalMs Int @default(60000) @map("autosave_interval_ms")

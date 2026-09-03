@@ -1,6 +1,6 @@
 import MainHero from "../components/landing/MainHero";
 import { Footer } from '@components/footer';
-import { ThinkingNote, LogoMarquee, Services } from '@sections';
+import { ThinkingNote, LogoMarquee, Services, FeaturedPosts } from '@sections';
 import { DomainNetwork } from '@dikshant/ui';
 import { Section } from '@layout';
 
@@ -23,6 +23,9 @@ function Home({ addCursor, removeCursor, cursorModes, isDarkMode, isDesktop }) {
         </Section>
         <Section id="services">
           <Services isDesktop={isDesktop} />
+        </Section>
+        <Section id="featuredPosts">
+          <FeaturedPosts />
         </Section>
         <Section id="footer">
           <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} isDarkMode={isDarkMode} />

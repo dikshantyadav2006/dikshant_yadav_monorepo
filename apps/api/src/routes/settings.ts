@@ -53,7 +53,7 @@ function normalizeHomepageConfig(config: unknown) {
 
 export async function settingsRoutes(fastify: FastifyInstance) {
   fastify.get('/site-config', async (request, reply) => {
-    const cached = getCached<{ homepageFeaturedCount: number; homepageConfig: any; socialLinks: any }>('site-config');
+    const cached = getCached<{ homepageFeaturedCount: number; homepageLatestCount: number; homepageConfig: any; socialLinks: any }>('site-config');
     if (cached) {
       reply.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
       return cached;
@@ -67,6 +67,7 @@ export async function settingsRoutes(fastify: FastifyInstance) {
 
     const result = {
       homepageFeaturedCount: config.homepageFeaturedCount,
+      homepageLatestCount: config.homepageLatestCount,
       homepageConfig: normalizeHomepageConfig(config.homepageConfig),
       worksIntro: normalizeWorksIntro(config.worksIntro),
       socialLinks: config.socialLinks ?? [],
@@ -123,6 +124,14 @@ export async function settingsRoutes(fastify: FastifyInstance) {
         return reply.status(400).send({ error: 'Bad Request', message: 'homepageFeaturedCount must be a number between 1 and 5' });
       }
       data.homepageFeaturedCount = nextCount;
+    }
+
+    if (body.homepageLatestCount !== undefined) {
+      const nextCount = clampInt(body.homepageLatestCount, 1, 10);
+      if (nextCount == null) {
+        return reply.status(400).send({ error: 'Bad Request', message: 'homepageLatestCount must be a number between 1 and 10' });
+      }
+      data.homepageLatestCount = nextCount;
     }
 
     if (body.homepageConfig !== undefined) {

@@ -32,6 +32,16 @@ export declare const Button: React.FC<{ children?: React.ReactNode; onClick?: ()
 
 export declare const TextSwap: React.FC<{ text: string; stagger?: number; className?: string }>;
 
+interface DirectionalCursorProps {
+  active?: boolean;
+  clicked?: boolean;
+  label?: string;
+  rotation?: number;
+  scaled?: boolean;
+}
+
+export declare const DirectionalCursor: React.FC<DirectionalCursorProps>;
+
 interface NotFoundPageProps {
   LinkComponent?: React.ElementType;
   linkProp?: 'href' | 'to';

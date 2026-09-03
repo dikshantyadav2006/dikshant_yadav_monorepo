@@ -267,6 +267,7 @@ export interface ContactSubmissionsResponse {
 export interface SiteConfig {
   id: string;
   homepageFeaturedCount: number;
+  homepageLatestCount: number;
   homepageConfig?: HomepageConfig | null;
   autosaveEnabled: boolean;
   autosaveIntervalMs: number;

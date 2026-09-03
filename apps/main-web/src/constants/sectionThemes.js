@@ -54,6 +54,12 @@ export const sectionThemes = {
     dark: '#0a0f1a',
     light: '#e8eeee',
   },
+
+  // Featured Posts — dark charcoal in dark, soft blue-gray in light
+  featuredPosts: {
+    dark: '#121315',
+    light: '#EEF4F4',
+  },
 };
 
 export const defaultSectionTheme = sectionThemes.default;
