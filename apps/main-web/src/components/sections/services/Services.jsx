@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useReducedMotion } from 'framer-motion';
+import { DirectionalCursor } from '@dikshant/ui';
 import ServicesHeader from './ServicesHeader';
 import ServiceCard from './ServiceCard';
 import ServiceAccordion from './ServiceAccordion';
-import ServiceCursor from './ServiceCursor';
 import services from './servicesData';
 
 function Services({ isDesktop }) {
@@ -11,6 +11,7 @@ function Services({ isDesktop }) {
   const [activeService, setActiveService] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(null);
   const [cursorActive, setCursorActive] = useState(false);
+  const [linkHover, setLinkHover] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const hoverTimer = useRef(null);
 
@@ -35,6 +36,7 @@ function Services({ isDesktop }) {
     clearTimeout(hoverTimer.current);
     setHoveredService(-1);
     setCursorActive(false);
+    setLinkHover(false);
     document.body.style.cursor = '';
   }, []);
 
@@ -57,15 +59,22 @@ function Services({ isDesktop }) {
 
   return (
     <div
-      className={`w-full flex flex-col${isDesktop ? ' cursor-none' : ''}`}
+      className={`w-full flex flex-col${isDesktop ? ' cursor-none' : ''} min-h-[110vh]`}
       onMouseEnter={handleSectionEnter}
       onMouseLeave={handleSectionLeave}
     >
-      <ServiceCursor active={cursorActive} />
+      {/* Shared directional cursor (same as work-site project nav)
+          Active over the whole section; arrow rotates 45° right + small scale on link hover */}
+      <DirectionalCursor
+        active={cursorActive}
+        label={linkHover ? 'Open' : 'Scroll'}
+        rotation={linkHover ? 45 : 0}
+        scaled={linkHover}
+      />
       <ServicesHeader />
 
       {isDesktop ? (
-        <div className="w-full flex min-h-[55vh]">
+        <div className="w-full flex flex-1">
           {services.map((service, i) => {
             const isExpanded = expandedIndex === i;
             return (
@@ -82,8 +91,14 @@ function Services({ isDesktop }) {
                     ? 'none'
                     : 'flex-grow 0.75s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
-                onMouseEnter={() => scheduleHover(i)}
-                onMouseLeave={cancelHover}
+                onMouseEnter={() => {
+                  scheduleHover(i);
+                  setLinkHover(true);
+                }}
+                onMouseLeave={() => {
+                  cancelHover();
+                  setLinkHover(false);
+                }}
               >
                 <ServiceCard
                   service={service}

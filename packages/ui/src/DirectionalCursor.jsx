@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 /**
@@ -47,7 +48,13 @@ export default function DirectionalCursor({
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [handleMouseMove]);
 
-  return (
+  // Render via portal to document.body so the cursor escapes any transform
+  // ancestor (e.g. locomotive-scroll containers) that would otherwise break
+  // position:fixed tracking. Preserves the exact visuals/behavior of the
+  // original work-site cursor.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <motion.div
       className="pointer-events-none fixed left-0 top-0 z-[9999] mix-blend-difference"
       style={{ x: smoothX, y: smoothY }}
@@ -109,6 +116,7 @@ export default function DirectionalCursor({
           {label}
         </motion.span>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }
