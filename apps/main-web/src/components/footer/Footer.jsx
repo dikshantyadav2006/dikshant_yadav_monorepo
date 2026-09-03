@@ -1,11 +1,19 @@
-import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import FooterBrand from "./FooterBrand";
-import FooterNav from "./FooterNav";
-import FooterContacts from "./FooterContacts";
-import EditorialContactForm from "./EditorialContactForm";
-import { footerContent } from "@/constants/footerLinks";
-import { ElasticString, ClockAnimation } from "@animation";
+import { useRef, useEffect, useState, useMemo, Suspense, lazy } from 'react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import FooterBrand from './FooterBrand';
+import FooterNav from './FooterNav';
+import FooterTaglines from './FooterTaglines';
+import FooterContactLinks from './FooterContactLinks';
+import FooterStatement from './FooterStatement';
+import FooterBottom from './FooterBottom';
+import EditorialContactForm from './EditorialContactForm';
+import { footerContent } from '@/constants/footerLinks';
+
+const MarbleBackground = lazy(() => import('./MarbleBackground'));
+
+gsap.registerPlugin(ScrollTrigger);
 
 const CONTACT_API_URL = `${import.meta.env.VITE_API_URL || "https://api.dikshantyadav.in"}/contact-submissions`;
 
@@ -28,7 +36,7 @@ async function submitContactForm(data) {
         try {
             const body = await response.json();
             message = body.message || message;
-        } catch (e) {
+        } catch {
             // ignore parse failure, fall back to generic message
         }
         throw new Error(message);
@@ -37,142 +45,252 @@ async function submitContactForm(data) {
 
 /**
  * Footer Component
- * Main footer orchestrating all sub-components with Swiss design principles
- * - Typography-driven layout
- * - Minimal, clean spacing
- * - Fully responsive (mobile, tablet, desktop)
- * - Smooth Framer Motion animations
+ * Ultra-minimal, typography-first, Awwwards-grade footer.
+ * - Massive brand typography
+ * - Interactive marble/stone texture background (WebGL)
+ * - Scroll-driven reveals via GSAP
  *
  * @component
  */
-const Footer = ({ addCursor, removeCursor, cursorModes }) => {
+const Footer = ({ addCursor, removeCursor, cursorModes, isDarkMode }) => {
     const ref = useRef(null);
     const currentYear = new Date().getFullYear();
+    const [showTexture, setShowTexture] = useState(false);
+
+    const reducedMotion = useMemo(() => {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }, []);
+
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
 
-        // Direct imperative event handlers (NO STATE)
-        // On hover: ADD target cursor (both SPLASH + TARGET visible)
-        const handleEnter = () => addCursor(cursorModes.TARGET);
-        // On leave: REMOVE target cursor (only SPLASH visible)
-        const handleLeave = () => removeCursor(cursorModes.TARGET);
+        const handleEnter = () => addCursor(cursorModes.FOLLOWER);
+        const handleLeave = () => removeCursor(cursorModes.FOLLOWER);
 
-        el.addEventListener("mouseenter", handleEnter);
-        el.addEventListener("mouseleave", handleLeave);
+        el.addEventListener('mouseenter', handleEnter);
+        el.addEventListener('mouseleave', handleLeave);
 
         return () => {
-            el.removeEventListener("mouseenter", handleEnter);
-            el.removeEventListener("mouseleave", handleLeave);
+            el.removeEventListener('mouseenter', handleEnter);
+            el.removeEventListener('mouseleave', handleLeave);
         };
     }, [addCursor, removeCursor, cursorModes]);
+
+    // Defer mounting the WebGL marble texture until the footer scrolls near view
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return undefined;
+
+        const io = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setShowTexture(true);
+                        io.disconnect();
+                    }
+                });
+            },
+            { rootMargin: '0px 0px 200px 0px', threshold: 0 }
+        );
+
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const root = ref.current;
+        if (!root || reducedMotion) return undefined;
+
+        const els = {
+            nav: root.querySelector('[data-footer-nav]'),
+            taglines: root.querySelector('[data-footer-taglines]'),
+            contacts: root.querySelector('[data-footer-contacts]'),
+            divider: root.querySelector('[data-footer-divider]'),
+            bottom: root.querySelector('[data-footer-bottom]'),
+        };
+
+        const ctx = gsap.context(() => {
+            // Navigation slides upward slightly
+            if (els.nav) {
+                gsap.fromTo(
+                    els.nav,
+                    { y: 24, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.9,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: root,
+                            start: 'top 92%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            }
+
+            // Contact links + taglines fade in
+            if (els.taglines) {
+                gsap.fromTo(
+                    els.taglines,
+                    { opacity: 0, y: 14 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power2.out',
+                        delay: 0.2,
+                        scrollTrigger: {
+                            trigger: root,
+                            start: 'top 82%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            }
+
+            if (els.contacts) {
+                gsap.fromTo(
+                    els.contacts,
+                    { opacity: 0, y: 16 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.9,
+                        ease: 'power2.out',
+                        delay: 0.3,
+                        scrollTrigger: {
+                            trigger: root,
+                            start: 'top 78%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            }
+
+            if (els.divider) {
+                gsap.fromTo(
+                    els.divider,
+                    { scaleX: 0 },
+                    {
+                        scaleX: 1,
+                        duration: 1.4,
+                        ease: 'power3.inOut',
+                        scrollTrigger: {
+                            trigger: els.divider,
+                            start: 'top 95%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            }
+
+            if (els.bottom) {
+                gsap.fromTo(
+                    els.bottom,
+                    { opacity: 0 },
+                    {
+                        opacity: 1,
+                        duration: 1,
+                        ease: 'power1.out',
+                        delay: 0.5,
+                        scrollTrigger: {
+                            trigger: els.bottom,
+                            start: 'top 98%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            }
+        }, root);
+
+        return () => ctx.revert();
+    }, [reducedMotion]);
+
     return (
-        <div ref={ref}>
-            {/* <div
-                className="relative"
-                style={{ width: "100vw", mixBlendMode: "difference" }}
-            >
-                <div className="absolute  -bottom-[420%] md:-bottom-[355%] scale-[.4] left-[55%] md:left-[20%] -translate-x-1/2 w-[400px] h-[400px] pointer-events-none select-none opacity-90">
-                    <ClockAnimation />
-                </div>
-            </div> */}
+        <div ref={ref} className="relative">
+            {/* Interactive marble texture background - spans entire footer area */}
+            {showTexture && (
+                <Suspense fallback={null}>
+                    <MarbleBackground isDarkMode={isDarkMode} />
+                </Suspense>
+            )}
 
             {/* CTA Section - Editorial Contact Form */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                className="py-16 sm:py-20 md:py-24 lg:py-32"
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+                className="relative z-10 py-8 sm:py-10 md:py-12 lg:py-16"
             >
                 <EditorialContactForm
                     title="Let's work together!"
-                    budgets={["5K–10K", "10K–20K", "20K–50K", "Custom"]}
+                    budgets={['5K–10K', '10K–20K', '20K–50K', 'Custom']}
                     onSubmit={(data) => submitContactForm(data)}
                 />
             </motion.div>
 
-            <motion.footer
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-                className="  font-['font-p-3']      pb-16 md:pb-20 lg:pb-24 "
-            >
-                   <ElasticString color="black" height={300} />
-                <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12">
-                    {/* Brand + Content Grid */}
-                    <div className="space-y-12 lg:space-y-0">
-                        {/* Content Grid: Navigation (Left) + Contacts (Right) */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
-                            {/* Left Column: Navigation Sections */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: 0.1 }}
-                                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                                className="space-y-10"
-                            >
-                                {/* Internal Navigation */}
-                                <div>
-                                    <h2 className="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-6">
-                                        Navigation
-                                    </h2>
-                                    <FooterNav links={footerContent.navigation} />
-                                </div>
+            <footer className="relative font-['font-p-3']">
+                {/* Content */}
+                <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-8 lg:px-12 pt-8 md:pt-12">
+                    <div data-footer-divider className="mx-auto mb-5 max-w-md origin-center border-t border-current/10" />
 
-                                {/* External Links */}
-                                <div>
-                                    <FooterNav links={footerContent.externalLinks} />
-                                </div>
-                            </motion.div>
+                    <div className="flex flex-col items-center text-center">
+                        {/* Top Navigation Row */}
+                        <div
+                            data-footer-nav
+                            className="mb-8 md:mb-12"
+                        >
+                            <FooterNav links={footerContent.navigation} />
+                        </div>
 
-                            {/* Right Column: Contact Information */}
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: 0.15 }}
-                                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                                className="lg:col-start-3"
+                        {/* Main Section */}
+                        <div className="w-full">
+                            <div data-footer-name>
+                                <FooterBrand name={footerContent.brand.name} />
+                            </div>
+
+                            <div
+                                data-footer-taglines
+                                className="mt-3 md:mt-4"
                             >
-                                <FooterContacts
-                                    contact={footerContent.contact}
-                                    socials={footerContent.socials}
-                                />
-                            </motion.div>
+                                <FooterTaglines taglines={footerContent.brand.taglines} />
+                            </div>
+
+                            <div
+                                data-footer-contacts
+                                className="mt-6 md:mt-8"
+                            >
+                                <FooterContactLinks links={footerContent.contactLinks} />
+                            </div>
+                        </div>
+
+                        {/* Massive Statement */}
+                        <div
+                            data-footer-statement
+                            className="mt-10 w-full md:mt-14"
+                        >
+                            <FooterStatement text={footerContent.brand.statement} />
+                        </div>
+
+                        {/* Bottom Row */}
+                        <div
+                            data-footer-bottom
+                            className="mt-8 md:mt-12"
+                        >
+                            <FooterBottom
+                                currentYear={currentYear}
+                                fullName={footerContent.brand.fullName}
+                                builtWith={footerContent.brand.builtWith}
+                                legal={footerContent.legal}
+                            />
                         </div>
                     </div>
-                    <FooterBrand name={footerContent.brand.name} />
-
-                    {/* Footer Bottom: Copyright & Legal */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                        className="    border-gray-200    flex     flex-col      font-['font-p-2']     md:flex-row     md:items-center     md:justify-between      border-t      gap-4"
-                    >
-                        <p className="  hover:text-[--dark-color]  cursor-target cursor-none dark:hover:text-[--light-color] text-xs md:text-sm text-gray-500 uppercase tracking-wide">
-                            © {currentYear} {footerContent.brand.fullName}. All rights
-                            reserved.
-                        </p>
-                        <nav className="flex gap-6">
-                            <a
-                                href="#privacy"
-                                className="  text-xs md:text-sm   text-gray-500   uppercase   tracking-wide  transition-colors  duration-300  hover:text-[--dark-color] dark:hover:text-[--light-color]            cursor-target cursor-none "
-                            >
-                                Privacy
-                            </a>
-                            <a
-                                href="#terms"
-                                className="    uppercase    text-gray-500    tracking-wide    transition-colors    duration-300    hover:text-[--dark-color]    dark:hover:text-[--light-color]    cursor-target    text-xs md:text-sm   cursor-none "
-                            >
-                                Terms
-                            </a>
-                        </nav>
-                    </motion.div>
                 </div>
-            </motion.footer>
+            </footer>
         </div>
     );
 };

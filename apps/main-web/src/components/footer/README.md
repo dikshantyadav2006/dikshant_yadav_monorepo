@@ -1,74 +1,78 @@
 /**
  * FOOTER INTEGRATION GUIDE
- * 
+ *
  * Quick Start:
  * -----------
- * 
+ *
  * 1. Import the Footer component:
  *    import { Footer } from '@components/footer';
- * 
- * 2. Add it to your app:
- *    function App() {
- *      return (
- *        <>
- *          <main>{/* Your content */}</main>
- *          <Footer />
- *        </>
- *      );
- *    }
- * 
+ *
+ * 2. Add it to your app (wrapped in a themed Section):
+ *    import { Section } from '@layout';
+ *
+ *    <Section id="footer">
+ *      <Footer addCursor={...} removeCursor={...} cursorModes={...} isDarkMode={...} />
+ *    </Section>
+ *
  * FILE STRUCTURE:
  * ---------------
- * 
+ *
  * /src/components/footer/
- *   ├── Footer.jsx           - Main footer component (orchestrates all sub-components)
- *   ├── FooterBrand.jsx      - Large brand name display
- *   ├── FooterNav.jsx        - Navigation links with underline hover effect
- *   ├── FooterContacts.jsx   - Phone, email, address section
- *   ├── FooterSocials.jsx    - Social media links with arrow icons
- *   └── index.js             - Barrel exports
- * 
+ *   ├── Footer.jsx              - Orchestrator: contact form + editorial footer + GSAP timeline
+ *   ├── FooterBrand.jsx         - Massive centered name, word-wise wipe reveal (GSAP)
+ *   ├── FooterNav.jsx           - Centered top nav row (About / Works / Posts / Contact)
+ *   ├── FooterTaglines.jsx      - Small uppercase role descriptors
+ *   ├── FooterContactLinks.jsx  - Email + socials with minimal underline hover
+ *   ├── FooterStatement.jsx     - Full-width statement, word-by-word mask reveal
+ *   ├── FooterBottom.jsx        - Copyright / built-with / legal row
+ *   ├── MarbleBackground.jsx    - Interactive WebGL marble texture (lazy-loaded, R3F)
+ *   ├── EditorialContactForm.jsx- "Let's work together" inquiry form
+ *   └── index.js                - Barrel exports
+ *
  * /src/constants/
- *   └── footerLinks.js       - All footer content (links, phone, email, etc.)
- * 
+ *   └── footerLinks.js          - All footer content (nav, contact, socials, legal)
+ *
+ * /src/constants/
+ *   └── sectionThemes.js        - `footer` theme (dark: #121315 / light: #EEF4F4)
+ *
  * /src/types/
- *   └── footer.js            - JSDoc type definitions
- * 
+ *   └── footer.js               - JSDoc type definitions
+ *
  * CUSTOMIZATION:
  * ---------------
- * 
+ *
  * Edit /src/constants/footerLinks.js to change:
- *   - Brand name
- *   - Navigation links (About, Services, Works)
- *   - External links (Dribbble, Behance, LinkedIn)
- *   - Contact info (phone, email, address)
- *   - Social media links (Instagram, Telegram, Facebook)
- * 
+ *   - Brand name + taglines
+ *   - Statement text
+ *   - Navigation links (About / Works / Posts / Contact)
+ *   - Contact links (email, Instagram, GitHub, LinkedIn)
+ *   - Legal links (Privacy / Terms)
+ *   - Built-with line
+ *
  * FEATURES:
  * ---------
- * ✓ Fully responsive (mobile, tablet, desktop)
- * ✓ Framer Motion animations (fade-in, stagger, hover effects)
- * ✓ Semantic HTML (footer, nav, address)
- * ✓ Accessibility-friendly
- * ✓ Swiss design principles (minimal, typography-driven)
- * ✓ Lucide-react icons (arrow icons for socials)
- * ✓ Tailwind CSS styling
- * ✓ No hardcoded content
- * 
+ * ✓ Typography-first, ultra-minimal editorial layout
+ * ✓ Interactive marble/stone texture (WebGL, mouse parallax, extremely subtle)
+ * ✓ GSAP ScrollTrigger reveals (nav slide-up, text fades, statement mask)
+ * ✓ Lazy-loaded Three.js — only fetched when the footer nears the viewport
+ * ✓ Reduced-motion support (static texture, no movement)
+ * ✓ 60fps / GPU-accelerated (transform + opacity only)
+ * ✓ Mobile optimized (no parallax on coarse pointers, capped DPR)
+ *
  * STYLING:
  * --------
- * - Background: white
- * - Text: black / dark gray
- * - Accents: subtle neutral gray
- * - Font: Extra-bold for brand, semibold uppercase for links
- * - Letter-spacing: wide for editorial feel
- * 
+ * - Background: #EEF4F4 (light) / #121315 (dark), per section theme
+ * - Text: contrast of the same pair
+ * - Font: font-p-1 (display), font-p-2 (mono, bottom row), font-p-3 (sans, nav/links)
+ * - Letter-spacing: wide tracking on labels, tight negative tracking on display text
+ *
  * ANIMATIONS:
  * -----------
- * - Footer fades in on scroll into view
- * - Navigation links slide up and underline on hover
- * - Social arrows translate on hover
- * - Staggered entrance animations for grouped elements
+ * - Navigation row slides upward slightly on entry
+ * - Brand name wipes in word-by-word
+ * - Taglines / contact links fade with slight y-offset
+ * - Statement reveals word-by-word with clip-path masks
+ * - Bottom row and divider fade in last
  */
 
 export {};

@@ -1,95 +1,77 @@
-import React from 'react';
-import { motion } from 'framer-motion';
 import { TransitionLink } from '@animation';
 import { TextSwap } from '@dikshant/ui';
 
 /**
- * Framer Motion variants for container and items
- */
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.4, ease: 'easeOut' },
-    },
-};
-
-/**
  * FooterNav Component
- * Displays navigation links with hover effects and underline animations
+ * Ultra-minimal centered navigation row.
+ * Links slide upward slightly on scroll entry (handled by parent GSAP timeline).
  *
  * @param {Object} props
- * @param {Array<{label: string, href: string, target?: string, rel?: string, external?: boolean}>} props.links - Navigation links
+ * @param {Array<{label: string, href: string, external?: boolean, target?: string, rel?: string}>} props.links
  */
 const FooterNav = ({ links }) => {
-    return (
-        <motion.nav
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '0px 0px -100px 0px' }}
-            className="flex flex-col gap-4 md:gap-6"
-        >
-            {links.map((link) => {
-                const MotionEl = link.external ? motion.a : TransitionLink;
-                return (
-                <MotionEl
-                    key={link.href}
-                    variants={itemVariants}
-                    href={link.href}
-                    to={link.external ? undefined : link.href}
-                    target={link.external ? '_blank' : link.target}
-                    rel={link.external ? 'noopener noreferrer' : link.rel}
-                    className="
-            group
-            inline-block
-            text-sm md:text-base
-            font-semibold
-            uppercase
-            tracking-wide
-            hover:text-[--secondary-dark-color]
-            dark:hover:text-[--secondary-light-color]
-            relative
-            w-fit
-            cursor-target
-
-          "
-                >
-                    <span className="relative">
-                        <TextSwap text={link.label} />
-                        <motion.span
-                            className="
-                absolute
-                bottom-0
-                left-0
-                h-px
-                origin-left
-                 hover:text-[--primary-dark-color]
-                             dark:hover:text-[--primary-light-color]
-              "
-                            initial={{ scaleX: 0 }}
-                            whileHover={{ scaleX: 1 }}
-                            transition={{ duration: 0.3 }}
-                            style={{ width: '100%' }}
-                        />
-                    </span>
-                </MotionEl>
-                );
-            })}
-        </motion.nav>
-    );
+  return (
+    <nav
+      aria-label="Footer navigation"
+      className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 md:gap-x-16"
+    >
+      {links.map((link) => {
+        const El = link.external ? 'a' : TransitionLink;
+        const base = link.external
+          ? {
+              href: link.href,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }
+          : { href: link.href };
+        return (
+          <El
+            key={link.href + link.label}
+            {...base}
+            className="
+              group
+              relative
+              font-['font-p-3']
+              text-xs md:text-sm
+              font-medium
+              uppercase
+              tracking-[0.22em]
+              text-[var(--dark-color)]/60
+              dark:text-[var(--light-color)]/60
+              transition-colors
+              duration-300
+              hover:text-[var(--dark-color)]
+              dark:hover:text-[var(--light-color)]
+              cursor-target
+              cursor-none
+              pb-1
+            "
+          >
+            <span className="relative inline-block">
+              <TextSwap text={link.label} stagger={0.025} />
+              <span
+                aria-hidden="true"
+                className="
+                  absolute
+                  bottom-[-2px]
+                  left-0
+                  h-px
+                  w-full
+                  origin-left
+                  scale-x-0
+                  bg-current
+                  transition-transform
+                  duration-300
+                  ease-out
+                  group-hover:scale-x-100
+                "
+              />
+            </span>
+          </El>
+        );
+      })}
+    </nav>
+  );
 };
 
 export default FooterNav;

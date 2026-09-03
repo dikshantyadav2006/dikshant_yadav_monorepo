@@ -37,10 +37,10 @@ export const sectionThemes = {
     light: '#121315',
   },
 
-  // Footer — deepest navy in dark, deeper mint in light
+  // Footer — refined charcoal in dark, porcelain in light
   footer: {
-    dark: '#05070d',
-    light: '#c2dcdc',
+    dark: '#121315',
+    light: '#EEF4F4',
   },
 
   // Connect page hero — cream in light, navy in dark

@@ -25,7 +25,7 @@ function Home({ addCursor, removeCursor, cursorModes, isDarkMode, isDesktop }) {
           <Services isDesktop={isDesktop} />
         </Section>
         <Section id="footer">
-          <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} />
+          <Footer addCursor={addCursor} removeCursor={removeCursor} cursorModes={cursorModes} isDarkMode={isDarkMode} />
         </Section>
       </div>
     </>

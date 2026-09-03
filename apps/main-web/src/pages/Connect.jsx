@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Footer, FooterContacts, FooterSocials } from '@components/footer';
+import { Footer } from '@components/footer';
 import { LogoMarquee } from '@sections';
 import { DomainNetwork } from '@dikshant/ui';
 import { ScrambledText } from '@animation';
@@ -61,6 +61,7 @@ function Connect({ addCursor, removeCursor, cursorModes, isDarkMode }) {
           addCursor={addCursor}
           removeCursor={removeCursor}
           cursorModes={cursorModes}
+          isDarkMode={isDarkMode}
         />
       </Section>
     </div>

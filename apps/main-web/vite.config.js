@@ -30,6 +30,8 @@ export default defineConfig({
           "gsap-plugins": ["gsap/ScrollTrigger", "gsap/SplitText", "gsap/ScrambleTextPlugin"],
           "framer-motion": ["framer-motion"],
           locomotive: ["locomotive-scroll"],
+          three: ["three"],
+          "react-three": ["@react-three/fiber"],
         },
       },
     },

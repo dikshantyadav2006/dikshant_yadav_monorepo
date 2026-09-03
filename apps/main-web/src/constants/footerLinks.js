@@ -9,47 +9,59 @@ export const footerContent = {
   brand: {
     name: 'Dikshant Yadav',
     fullName: 'Dikshant Yadav',
+    taglines: [
+      'Frontend Developer',
+      'Creative Technologist',
+      'Cybersecurity Enthusiast',
+    ],
+    statement: 'Frontend Developer',
+    builtWith: 'Built with React, Next.js, GSAP',
   },
 
   navigation: [
     {
-      label: 'Home',
+      label: 'About',
       href: '/',
-    },
-    {
-      label: 'Connect',
-      href: '/connect',
     },
     {
       label: 'Works',
       href: 'https://work.dikshantyadav.in',
       external: true,
     },
-    // {
-    //   label: 'Contact',
-    //   href: 'contact',
-    // },
+    {
+      label: 'Posts',
+      href: 'https://post.dikshantyadav.in',
+      external: true,
+    },
+    {
+      label: 'Contact',
+      href: '/connect',
+    },
   ],
 
-  externalLinks: [
+  contactLinks: [
+    {
+      label: 'hello@dikshantyadav.in',
+      href: 'mailto:hello@dikshantyadav.in',
+    },
+    {
+      label: 'Instagram',
+      href: 'https://instagram.com/dikshantyadav.in',
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    },
     {
       label: 'GitHub',
       href: 'https://github.com/dikshantyadav2006',
       target: '_blank',
       rel: 'noopener noreferrer',
     },
-    // {
-    //   label: 'LinkedIn',
-    //   href: 'https://linkedin.com/in/dikshant-yadav',
-    //   target: '_blank',
-    //   rel: 'noopener noreferrer',
-    // },
-    // {
-    //   label: 'Resume',
-    //   href: '/resume.pdf',
-    //   target: '_blank',
-    //   rel: 'noopener noreferrer',
-    // },
+    {
+      label: 'LinkedIn',
+      href: 'https://linkedin.com/in/dikshant-yadav',
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    },
   ],
 
   socials: [
@@ -58,21 +70,27 @@ export const footerContent = {
       label: 'Instagram',
       href: 'https://instagram.com/dikshantyadav.in',
     },
-    // {
-    //   platform: 'X',
-    //   label: 'X / Twitter',
-    //   href: 'https://x.com/dikshantyadav',
-    // },
     {
       platform: 'GitHub',
       label: 'GitHub',
       href: 'https://github.com/dikshantyadav2006',
     },
-    // {
-    //   platform: 'LinkedIn',
-    //   label: 'LinkedIn',
-    //   href: 'https://linkedin.com/in/dikshant',
-    // },
+    {
+      platform: 'LinkedIn',
+      label: 'LinkedIn',
+      href: 'https://linkedin.com/in/dikshant-yadav',
+    },
+  ],
+
+  legal: [
+    {
+      label: 'Privacy',
+      href: '/privacy',
+    },
+    {
+      label: 'Terms',
+      href: '/terms',
+    },
   ],
 
   contact: {

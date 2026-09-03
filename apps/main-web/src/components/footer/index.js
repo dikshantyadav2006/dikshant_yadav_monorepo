@@ -1,8 +1,11 @@
 export { default as Footer } from './Footer';
 export { default as FooterBrand } from './FooterBrand';
 export { default as FooterNav } from './FooterNav';
-export { default as FooterContacts } from './FooterContacts';
-export { default as FooterSocials } from './FooterSocials';
+export { default as FooterTaglines } from './FooterTaglines';
+export { default as FooterContactLinks } from './FooterContactLinks';
+export { default as FooterStatement } from './FooterStatement';
+export { default as FooterBottom } from './FooterBottom';
+export { default as MarbleBackground } from './MarbleBackground';
 export { default as EditorialContactForm } from './EditorialContactForm';
 export { default as EditorialField } from './EditorialField';
 export { default as EditorialTextarea } from './EditorialTextarea';

@@ -29,6 +29,27 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // React Three Fiber extends JSX with its own props; ignore them globally
+      'react/no-unknown-property': [
+        'error',
+        {
+          ignore: [
+            'args',
+            'attach',
+            'position',
+            'uniforms',
+            'vertexShader',
+            'fragmentShader',
+            'transparent',
+            'depthWrite',
+            'frameloop',
+            'gl',
+            'camera',
+            'dpr',
+            'rotation',
+          ],
+        },
+      ],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
