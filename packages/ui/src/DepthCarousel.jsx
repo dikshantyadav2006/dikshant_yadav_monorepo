@@ -137,7 +137,13 @@ const DepthCarousel = forwardRef(function DepthCarousel(
       tweenRef.current?.kill();
       const cfg = cfgRef.current;
       const proxy = { p: posRef.current };
-      const dur = animate && !reducedRef.current ? cfg.duration / 1000 : 0;
+      // Duration scales with how many positions we cross so it feels smooth,
+      // never snappy: ~0.85s for 1 step, ~1.9s for 3, capped at 2.5s for larger jumps.
+      let dur = 0;
+      if (animate && !reducedRef.current) {
+        const steps = Math.abs(target - posRef.current);
+        dur = Math.min(Math.max(0.85 + (steps - 1) * 0.55, 0.7), 2.5);
+      }
       tweenRef.current = gsap.to(proxy, {
         p: target,
         duration: dur,
