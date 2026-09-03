@@ -6,16 +6,17 @@ import ServiceCard from './ServiceCard';
 import ServiceAccordion from './ServiceAccordion';
 import services from './servicesData';
 
+const WORK_URL = 'https://work.dikshantyadav.in';
+
 function Services({ isDesktop }) {
   const [hoveredService, setHoveredService] = useState(-1);
-  const [activeService, setActiveService] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(null);
   const [cursorActive, setCursorActive] = useState(false);
   const [linkHover, setLinkHover] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const hoverTimer = useRef(null);
 
-  const expandedIndex = hoveredService !== -1 ? hoveredService : activeService;
+  const expandedIndex = hoveredService;
 
   useEffect(() => {
     return () => clearTimeout(hoverTimer.current);
@@ -49,8 +50,7 @@ function Services({ isDesktop }) {
 
   const handleCardClick = useCallback((index) => {
     clearTimeout(hoverTimer.current);
-    setActiveService((prev) => (prev === index ? -1 : index));
-    setHoveredService(-1);
+    window.open(WORK_URL, '_blank', 'noopener,noreferrer');
   }, []);
 
   const handleAccordionToggle = useCallback((index) => {
@@ -64,11 +64,12 @@ function Services({ isDesktop }) {
       onMouseLeave={handleSectionLeave}
     >
       {/* Shared directional cursor (same as work-site project nav)
-          Active over the whole section; arrow rotates 45° right + small scale on link hover */}
+          Active over the whole section; arrow rotates up-right + small scale on link hover */}
       <DirectionalCursor
         active={cursorActive}
-        label={linkHover ? 'Open' : 'Scroll'}
-        rotation={linkHover ? 45 : 0}
+        label={linkHover ? 'Open Work' : 'Scroll'}
+        rotation={0}
+        arrowRotation={linkHover ? 225 : 0}
         scaled={linkHover}
       />
       <ServicesHeader />

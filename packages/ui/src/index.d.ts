@@ -38,6 +38,7 @@ interface DirectionalCursorProps {
   label?: string;
   rotation?: number;
   scaled?: boolean;
+  arrowRotation?: number;
 }
 
 export declare const DirectionalCursor: React.FC<DirectionalCursorProps>;

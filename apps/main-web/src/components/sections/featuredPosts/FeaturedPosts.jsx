@@ -165,11 +165,12 @@ function FeaturedPosts() {
       }}
     >
       {/* Shared directional cursor (same as work-site project nav)
-          Active over the whole section; arrow rotates 45° right + small scale on link hover */}
+          Active over the whole section; arrow rotates up-right + small scale on link hover */}
       <DirectionalCursor
         active={cursorActive}
-        label={linkHover ? 'Open' : 'Scroll'}
-        rotation={linkHover ? 45 : 0}
+        label={linkHover ? 'Read Post' : 'Scroll'}
+        rotation={0}
+        arrowRotation={linkHover ? 225 : 0}
         scaled={linkHover}
       />
       <div className="relative z-10">
