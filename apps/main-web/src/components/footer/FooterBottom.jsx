@@ -37,8 +37,7 @@ const FooterBottom = ({ currentYear, fullName, builtWith, legal }) => {
                 duration-300
                 hover:text-[var(--dark-color)]
                 dark:hover:text-[var(--light-color)]
-                cursor-target
-                cursor-none
+                cursor-pointer
               "
             >
               {link.label}

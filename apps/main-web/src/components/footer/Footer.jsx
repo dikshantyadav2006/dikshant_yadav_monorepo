@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { GlowCursor } from '@dikshant/ui';
 import FooterBrand from './FooterBrand';
 import FooterNav from './FooterNav';
 import FooterTaglines from './FooterTaglines';
@@ -52,7 +53,7 @@ async function submitContactForm(data) {
  *
  * @component
  */
-const Footer = ({ addCursor, removeCursor, cursorModes, isDarkMode }) => {
+const Footer = ({ isDarkMode }) => {
     const ref = useRef(null);
     const currentYear = new Date().getFullYear();
     const [showTexture, setShowTexture] = useState(false);
@@ -61,22 +62,6 @@ const Footer = ({ addCursor, removeCursor, cursorModes, isDarkMode }) => {
         if (typeof window === 'undefined') return false;
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }, []);
-
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-
-        const handleEnter = () => addCursor(cursorModes.FOLLOWER);
-        const handleLeave = () => removeCursor(cursorModes.FOLLOWER);
-
-        el.addEventListener('mouseenter', handleEnter);
-        el.addEventListener('mouseleave', handleLeave);
-
-        return () => {
-            el.removeEventListener('mouseenter', handleEnter);
-            el.removeEventListener('mouseleave', handleLeave);
-        };
-    }, [addCursor, removeCursor, cursorModes]);
 
     // Defer mounting the WebGL marble texture until the footer scrolls near view
     useEffect(() => {
@@ -218,6 +203,25 @@ const Footer = ({ addCursor, removeCursor, cursorModes, isDarkMode }) => {
                 </Suspense>
             )}
 
+            <GlowCursor
+                color={isDarkMode ? '#c9e7e7' : '#1d1e20'}
+                secondaryColor={isDarkMode ? '#8dc8db' : '#3a3b3d'}
+                trailLength={40}
+                trailWidth={6}
+                trailTaper={0.8}
+                followSpeed={0.16}
+                glowIntensity={1.4}
+                glowSpread={1.0}
+                hotspot={0.4}
+                brightness={0.9}
+                opacity={0.4}
+                pulseSpeed={0.7}
+                noiseStrength={0.03}
+                idleFade
+                idleTimeout={700}
+                fadeDuration={900}
+                blendMode={isDarkMode ? 'screen' : 'multiply'}
+            >
             {/* CTA Section - Editorial Contact Form */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -291,6 +295,7 @@ const Footer = ({ addCursor, removeCursor, cursorModes, isDarkMode }) => {
                     </div>
                 </div>
             </footer>
+            </GlowCursor>
         </div>
     );
 };

@@ -5,6 +5,8 @@ export { default as TextSwap } from './TextSwap.jsx';
 
 export { default as DirectionalCursor } from './DirectionalCursor.jsx';
 
+export { default as GlowCursor } from './GlowCursor.jsx';
+
 export { default as NotFoundPage } from './pages/NotFoundPage.jsx';
 
 export { default as ContentRenderer } from './blocks/ContentRenderer.jsx';

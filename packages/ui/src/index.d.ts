@@ -43,6 +43,33 @@ interface DirectionalCursorProps {
 
 export declare const DirectionalCursor: React.FC<DirectionalCursorProps>;
 
+interface GlowCursorProps {
+  color?: string;
+  secondaryColor?: string;
+  trailLength?: number;
+  trailWidth?: number;
+  trailTaper?: number;
+  followSpeed?: number;
+  glowIntensity?: number;
+  glowSpread?: number;
+  hotspot?: number;
+  brightness?: number;
+  opacity?: number;
+  pulseSpeed?: number;
+  noiseStrength?: number;
+  idleFade?: boolean;
+  idleTimeout?: number;
+  fadeDuration?: number;
+  blendMode?: 'normal' | 'screen' | 'plus-lighter';
+  maxDevicePixelRatio?: number;
+  enabled?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export declare const GlowCursor: React.FC<GlowCursorProps>;
+
 interface NotFoundPageProps {
   LinkComponent?: React.ElementType;
   linkProp?: 'href' | 'to';

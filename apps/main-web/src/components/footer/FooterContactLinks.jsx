@@ -31,8 +31,7 @@ const FooterContactLinks = ({ links }) => {
             duration-300
             hover:text-[var(--dark-color)]
             dark:hover:text-[var(--light-color)]
-            cursor-target
-            cursor-none
+            cursor-pointer
             pb-0.5
           "
         >
