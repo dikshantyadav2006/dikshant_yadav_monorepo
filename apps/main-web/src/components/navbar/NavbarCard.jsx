@@ -34,9 +34,9 @@ const NavLinkRow = ({ link, onNavigate, onEnter, onLeave }) => {
     overflow-hidden
     rounded-2xl
     px-4
-    py-4
+    py-2.5
     md:px-8
-    md:py-5
+    md:py-3.5
     cursor-default
     outline-none
     transition-transform
@@ -58,7 +58,7 @@ const NavLinkRow = ({ link, onNavigate, onEnter, onLeave }) => {
           {link.index}
         </span>
         <span className="relative z-10 inline-block">
-          <span className="inline-block font-['font-p-1'] text-[clamp(38px,7.5vw,110px)] uppercase leading-[0.95] tracking-tight text-current transition-all duration-500 ease-out group-hover:translate-x-3 group-hover:text-[var(--light-color)] dark:group-hover:text-[var(--dark-color)]">
+          <span className="inline-block font-['font-p-1'] text-[clamp(34px,6vw,64px)] uppercase leading-[0.95] tracking-tight text-current transition-all duration-500 ease-out group-hover:translate-x-3 group-hover:text-[var(--light-color)] dark:group-hover:text-[var(--dark-color)]">
             {link.label}
           </span>
         </span>
@@ -152,7 +152,7 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
         Menu
       </span>
 
-      <nav aria-label="Primary" className="relative z-10 mx-auto flex min-h-full max-w-7xl flex-col justify-between px-6 pb-10 pt-[9vh] md:px-12 md:pb-16 lg:px-16">
+      <nav aria-label="Primary" className="relative z-10 mx-auto flex min-h-full max-w-7xl flex-col justify-between px-6 pb-4 pt-16 md:px-12 md:pb-6 md:pt-20 lg:px-16">
         <motion.div
           initial="hidden"
           animate={showNav ? 'show' : 'hidden'}
@@ -175,7 +175,7 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
             </div>
           </motion.div>
 
-          <motion.ul variants={listVariants} className="flex flex-col pt-[5vh] md:pt-[9vh]">
+          <motion.ul variants={listVariants} className="flex flex-col pt-2 md:pt-4">
             {NAV_LINKS.map((link) => (
               <NavLinkRow
                 key={link.href + link.label}
@@ -189,7 +189,7 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
 
           <motion.div
             variants={itemVariants}
-            className="mt-[6vh] grid gap-6 border-t border-current/10 pt-6 md:grid-cols-3 md:gap-8 md:pt-8"
+            className="mt-6 grid gap-6 border-t border-current/10 pt-5 md:grid-cols-3 md:gap-8 md:pt-6"
           >
             <div className="font-['font-p-3']">
               <p className="mb-2 text-[10px] uppercase tracking-[0.35em] text-current/40 md:text-xs">

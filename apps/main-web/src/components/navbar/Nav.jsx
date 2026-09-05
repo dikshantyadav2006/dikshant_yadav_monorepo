@@ -43,7 +43,7 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
           </div>
         </nav>
       </GlowCursor>
-      <div  ref={navCardRef} className={`z-[-1] left-0 top-0 absolute w-full min-h-[100dvh] ${showNav ? "bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "pointer-events-none bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
+      <div  ref={navCardRef} className={`z-[-1] left-0 top-0 absolute w-full min-h-[90vh] ${showNav ? "bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "pointer-events-none bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
       <NavbarCard 
             showNav={showNav}
             isDarkMode={isDarkMode}
