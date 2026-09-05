@@ -1,20 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 const BentoGrid = ({ addCursor, removeCursor, cursorModes }) => {
   const ref = useRef(null)
-
-  // useEffect(() => {
-  //   const el = ref.current
-  //   if (!el) return
-  //   // const handleEnter = () => addCursor(cursorModes.TARGET)
-  //   // const handleLeave = () => removeCursor(cursorModes.TARGET)
-  //   el.addEventListener('mouseenter', handleEnter)
-  //   el.addEventListener('mouseleave', handleLeave)
-  //   return () => {
-  //     el.removeEventListener('mouseenter', handleEnter)
-  //     el.removeEventListener('mouseleave', handleLeave)
-  //   }
-  // }, [addCursor, removeCursor, cursorModes])
 
   return (
     <section ref={ref} className="w-full pt-[9vh] px-1">
