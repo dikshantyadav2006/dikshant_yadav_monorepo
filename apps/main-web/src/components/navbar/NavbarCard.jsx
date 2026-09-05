@@ -37,7 +37,7 @@ const NavLinkRow = ({ link, onNavigate, onEnter, onLeave }) => {
     py-4
     md:px-8
     md:py-5
-    cursor-pointer
+    cursor-default
     outline-none
     transition-transform
     duration-200
