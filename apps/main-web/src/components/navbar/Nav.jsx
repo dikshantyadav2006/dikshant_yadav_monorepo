@@ -28,17 +28,17 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
         <nav className="relative w-full cursor-default px-2 md:px-20 py-2 flex justify-between items-center">
           <h1 className="text-[.8rem] uppercase font-thin font-['boldtext'] text-[#F94A13]">Dikshant</h1>
           <div  className={`flex cursor-target justify-between min-h-[26px] transition-all items-center gap-1 bg-[--dark-color] dark:bg-[--light-color] ${showNav ? "rounded-sm pr-10" : "pr-2 rounded-lg"} pl-2 py-2`}>
-            <button onClick={toggleDarkMode} className="px-2 cursor-target cursor-default ">
+            <button onClick={toggleDarkMode} className="px-2 cursor-target cursor-pointer ">
             {isDarkMode ? (
               <img className="p-[5px] rounded-full h-7 bg-[#1d1e20] opacity-70" src={light} alt="light mode icon" />
             ) : (
               <img className="p-[5px] rounded-full h-7 bg-[--dark-color] opacity-70 mix-blend-difference" src={dark} alt="dark mode icon" />
             )}
             </button>
-            <div onClick={navCardToggleButton} className={`flex cursor-default items-center flex-col ${showNav ? "gap-[0px]" : "gap-[4px]"}`}>
-              <span ref={(el) => (spanRefs.current[0] = el)} className={`w-8 h-[4px] inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
-              <span ref={(el) => (spanRefs.current[1] = el)} className={`w-8 h-[4px] inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
-              <span ref={(el) => (spanRefs.current[2] = el)} className={`w-8 h-[4px] inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
+            <div onClick={navCardToggleButton} className={`flex cursor-pointer items-center flex-col ${showNav ? "gap-[0px]" : "gap-[4px]"}`}>
+              <span ref={(el) => (spanRefs.current[0] = el)} className={`w-8 h-[4px] cursor-pointer inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
+              <span ref={(el) => (spanRefs.current[1] = el)} className={`w-8 h-[4px] cursor-pointer inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
+              <span ref={(el) => (spanRefs.current[2] = el)} className={`w-8 h-[4px] cursor-pointer inline-block bg-[--light-color] dark:bg-[--dark-color] ${showNav ? "rounded-full" : "rounded-none"}`}></span>
             </div>
           </div>
         </nav>
