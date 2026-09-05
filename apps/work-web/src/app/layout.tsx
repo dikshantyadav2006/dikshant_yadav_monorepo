@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import SmoothScrollProvider from '@/components/ui/SmoothScrollProvider';
 import TransitionShell from '@/components/ui/transition/TransitionShell';
+import GlobalCursor from '@/components/ui/GlobalCursor';
 import './globals.css';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://work.dikshantyadav.in';
@@ -75,6 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <GlobalCursor />
         <TransitionShell>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </TransitionShell>

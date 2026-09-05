@@ -13,6 +13,8 @@ interface TransitionLinkProps {
   onMouseLeave?: () => void;
   target?: string;
   rel?: string;
+  'data-cursor-prev'?: string;
+  'data-cursor-next'?: string;
 }
 
 export default function TransitionLink({
@@ -24,6 +26,7 @@ export default function TransitionLink({
   onMouseLeave,
   target,
   rel,
+  ...rest
 }: TransitionLinkProps) {
   const { startTransition, phase } = useTransition();
   const pathname = usePathname();
@@ -53,6 +56,7 @@ export default function TransitionLink({
       onMouseLeave={onMouseLeave}
       target={target}
       rel={rel}
+      {...rest}
     >
       {children}
     </Link>

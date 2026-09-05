@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global custom directional cursor — hide the native pointer everywhere */
+html,
+body,
+html * {
+  cursor: none !important;
+}
+
 @font-face {
   font-family: "font-p-1";
   src: url("/fonts/font-portfolio-f1.woff2") format("woff2");

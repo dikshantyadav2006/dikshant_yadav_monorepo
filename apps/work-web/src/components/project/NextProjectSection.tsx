@@ -1,9 +1,7 @@
 'use client';
 
-import { useRef, useState, useCallback } from 'react';
 import TransitionLink from '@/components/ui/transition/TransitionLink';
 import { motion } from 'framer-motion';
-import { DirectionalCursor } from '@dikshant/ui';
 import { AdjacentWork } from '@/types/project';
 import { useAccent } from './AccentContext';
 
@@ -12,8 +10,6 @@ interface NextProjectProps {
   nextProject: AdjacentWork | null;
 }
 
-type HoverSide = 'down' | 'left' | 'right';
-
 function projectImage(project: AdjacentWork): string | null {
   return project.imageUrl ?? project.heroImageUrl ?? null;
 }
@@ -21,15 +17,11 @@ function projectImage(project: AdjacentWork): string | null {
 function ProjectLink({
   project,
   label,
-  onEnter,
-  onLeave,
-  onClick,
+  direction,
 }: {
   project: AdjacentWork;
   label: string;
-  onEnter: () => void;
-  onLeave: () => void;
-  onClick?: () => void;
+  direction: 'prev' | 'next';
 }) {
   const { accent } = useAccent();
   const image = projectImage(project);
@@ -39,9 +31,8 @@ function ProjectLink({
     <TransitionLink
       href={`/project/${project.slug}`}
       className="group relative block overflow-hidden"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-      onClick={onClick}
+      data-cursor-prev={direction === 'prev' ? '' : undefined}
+      data-cursor-next={direction === 'next' ? '' : undefined}
     >
       {/* Accent base — used as the tile color when no image exists */}
       <span className="absolute inset-0" style={{ backgroundColor: fallback }} />
@@ -133,43 +124,10 @@ function ProjectLink({
 }
 
 export default function NextProjectSection({ prevProject, nextProject }: NextProjectProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [hoverSide, setHoverSide] = useState<HoverSide>('down');
-  const [isActive, setIsActive] = useState(false);
-  const [hasClicked, setHasClicked] = useState(false);
-
-  const handleSectionEnter = useCallback(() => setIsActive(true), []);
-  const handleSectionLeave = useCallback(() => {
-    setIsActive(false);
-    setHoverSide('down');
-  }, []);
-
-  const handlePrevEnter = useCallback(() => setHoverSide('left'), []);
-  const handleNextEnter = useCallback(() => setHoverSide('right'), []);
-  const handleProjectLeave = useCallback(() => setHoverSide('down'), []);
-  const handleProjectClick = useCallback(() => setHasClicked(true), []);
-
-  const cursorLabel = hoverSide === 'left' ? 'Prev' : hoverSide === 'right' ? 'Next' : 'Scroll';
-  const cursorRotation = hoverSide === 'left' ? 90 : hoverSide === 'right' ? -90 : 0;
-
   if (!prevProject && !nextProject) return null;
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative py-[60px] md:py-[80px] border-t border-border cursor-none"
-      onMouseEnter={handleSectionEnter}
-      onMouseLeave={handleSectionLeave}
-    >
-      {/* Shared custom cursor */}
-      <DirectionalCursor
-        active={isActive}
-        clicked={hasClicked}
-        label={cursorLabel}
-        rotation={cursorRotation}
-        scaled={hoverSide !== 'down'}
-      />
-
+    <section className="relative py-[60px] md:py-[80px] border-t border-border">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -178,13 +136,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-border">
           {prevProject ? (
-            <ProjectLink
-              project={prevProject}
-              label="Previous Project"
-              onEnter={handlePrevEnter}
-              onLeave={handleProjectLeave}
-              onClick={handleProjectClick}
-            />
+            <ProjectLink project={prevProject} label="Previous Project" direction="prev" />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
               <TransitionLink
@@ -205,13 +157,7 @@ export default function NextProjectSection({ prevProject, nextProject }: NextPro
           )}
 
           {nextProject ? (
-            <ProjectLink
-              project={nextProject}
-              label="Next Project"
-              onEnter={handleNextEnter}
-              onLeave={handleProjectLeave}
-              onClick={handleProjectClick}
-            />
+            <ProjectLink project={nextProject} label="Next Project" direction="next" />
           ) : (
             <div className="min-h-[320px] md:min-h-[420px] bg-bg flex items-center justify-center p-8">
               <TransitionLink
