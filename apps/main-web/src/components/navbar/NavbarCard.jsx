@@ -125,8 +125,10 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
     ['Instagram', 'GitHub', 'LinkedIn'].includes(l.label),
   )
 
-  const handleLinkEnter = () =>
-    setCursorMeta({ label: 'Open', rotation: 0, arrowRotation: 45, scaled: true })
+  const handleMetaEnter = (label) =>
+    setCursorMeta({ label, rotation: 0, arrowRotation: 45, scaled: true })
+
+  const handleLinkEnter = () => handleMetaEnter('Open')
 
   const handleLinkLeave = () =>
     setCursorMeta({ label: '', rotation: 0, arrowRotation: 0, scaled: false })
@@ -197,6 +199,8 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
               </p>
               <a
                 href={`mailto:${footerContent.contact.email}`}
+                onMouseEnter={() => handleMetaEnter('Mail')}
+                onMouseLeave={handleLinkLeave}
                 className="inline-block text-sm tracking-wide text-current/80 transition-colors duration-300 hover:text-current md:text-base"
               >
                 <TextSwap text={footerContent.contact.email} stagger={0.03} />
@@ -223,6 +227,8 @@ const NavbarCard = ({ showNav, isDarkMode, navCardToggleButton }) => {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onMouseEnter={() => handleMetaEnter('Social')}
+                    onMouseLeave={handleLinkLeave}
                     className="group relative inline-block text-sm tracking-wide text-current/80 transition-colors duration-300 hover:text-current md:text-base"
                   >
                     <TextSwap text={social.label} stagger={0.03} />
