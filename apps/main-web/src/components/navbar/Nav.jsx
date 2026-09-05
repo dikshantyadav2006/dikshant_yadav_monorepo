@@ -1,9 +1,28 @@
+import { useState, useLayoutEffect, useRef } from 'react';
 import light from '../../assets/images/light.png';
 import dark from '../../assets/images/dark.png';
 import { GlowCursor } from '@dikshant/ui';
 import NavbarCard from './NavbarCard.jsx';
 
 const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCardRef, spanRefs }) => {
+  const topBarRef = useRef(null);
+  const [cardInset, setCardInset] = useState(0);
+
+  const measureCardInset = () => {
+    setCardInset(topBarRef.current ? topBarRef.current.offsetHeight : 0);
+  };
+
+  useLayoutEffect(() => {
+    measureCardInset();
+    window.addEventListener('resize', measureCardInset);
+    return () => window.removeEventListener('resize', measureCardInset);
+  }, []);
+
+  const cardStyle = {
+    top: cardInset,
+    height: `calc(100dvh - ${cardInset}px)`,
+  };
+
   return (
     <>
       <GlowCursor
@@ -25,7 +44,7 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
         fadeDuration={900}
         blendMode={isDarkMode ? 'screen' : 'multiply'}
       >
-        <nav className="relative w-full cursor-default px-2 md:px-20 py-2 flex justify-between items-center">
+        <nav ref={topBarRef} className="relative w-full cursor-default px-2 md:px-20 py-2 flex justify-between items-center">
           <h1 className="text-[.8rem] uppercase font-thin font-['boldtext'] text-[#F94A13]">Dikshant</h1>
           <div  className={`flex cursor-target justify-between min-h-[26px] transition-all items-center gap-1 bg-[--dark-color] dark:bg-[--light-color] ${showNav ? "rounded-sm pr-10" : "pr-2 rounded-lg"} pl-2 py-2`}>
             <button onClick={toggleDarkMode} className="px-2 cursor-target cursor-pointer ">
@@ -43,7 +62,7 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
           </div>
         </nav>
       </GlowCursor>
-      <div  ref={navCardRef} className={`z-[-1] left-0 top-0 absolute w-full min-h-[90vh] ${showNav ? "bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "pointer-events-none bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
+      <div ref={navCardRef} style={cardStyle} className={`z-[-1] left-0 absolute w-full ${showNav ? "bg-[--light-color] dark:bg-[--dark-color] text-[--dark-color] dark:text-[--light-color]" : "pointer-events-none bg-[--dark-color] dark:bg-[--light-color] text-[--light-color] dark:text-[--dark-color] "} border-b-2 border-[--dark-color] dark:border-[--light-color] `}  >
       <NavbarCard 
             showNav={showNav}
             isDarkMode={isDarkMode}
