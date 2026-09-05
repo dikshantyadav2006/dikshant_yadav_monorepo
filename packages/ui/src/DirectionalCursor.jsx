@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 
 /**
  * DirectionalCursor
@@ -31,24 +31,17 @@ export default function DirectionalCursor({
   scaled = false,
   arrowRotation = 0,
 }) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const smoothX = useSpring(mouseX, { stiffness: 500, damping: 28, mass: 0.5 });
-  const smoothY = useSpring(mouseY, { stiffness: 500, damping: 28, mass: 0.5 });
-
-  const handleMouseMove = useCallback(
-    (e) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    },
-    [mouseX, mouseY],
-  );
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
 
   useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [handleMouseMove]);
+    const move = (e) => {
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', move);
+    return () => window.removeEventListener('mousemove', move);
+  }, [cursorX, cursorY]);
 
   // Render via portal to document.body so the cursor escapes any transform
   // ancestor (e.g. locomotive-scroll containers) that would otherwise break
@@ -59,7 +52,7 @@ export default function DirectionalCursor({
   return createPortal(
     <motion.div
       className="pointer-events-none fixed left-0 top-0 z-[9999] mix-blend-difference"
-      style={{ x: smoothX, y: smoothY }}
+      style={{ x: cursorX, y: cursorY }}
     >
       <motion.div
         className="
