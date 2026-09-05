@@ -21,6 +21,10 @@ const Nav = ({ isDarkMode, toggleDarkMode, showNav, navCardToggleButton, navCard
   const cardStyle = {
     top: cardInset,
     height: `calc(100dvh - ${cardInset}px)`,
+    clipPath: showNav ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)',
+    transition: showNav
+      ? 'clip-path 1.1s cubic-bezier(0.16, 1, 0.3, 1)'
+      : 'clip-path 0.9s cubic-bezier(0.83, 0, 0.17, 1)',
   };
 
   return (
